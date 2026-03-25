@@ -1,0 +1,2689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AML Detection System — Deep Dive</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #060810; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: #0c0e18; }
+  ::-webkit-scrollbar-thumb { background: #2a2d42; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #3a3d52; }
+  button { cursor: pointer; }
+  button:focus { outline: none; }
+  code { font-family: 'IBM Plex Mono', monospace; }
+</style>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect } = React;
+
+const C = {
+  bg: "#060810",
+  surface: "#0c0e18",
+  card: "#131520",
+  border: "#1e2035",
+  accent: "#00d4aa",
+  accentDim: "#00d4aa18",
+  gold: "#f0b840",
+  goldDim: "#f0b84018",
+  red: "#f05545",
+  redDim: "#f0554518",
+  blue: "#4d9ef5",
+  blueDim: "#4d9ef518",
+  purple: "#a06df0",
+  purpleDim: "#a06df018",
+  orange: "#f08030",
+  orangeDim: "#f0803018",
+  text: "#dde0f0",
+  dim: "#6b708a",
+  faint: "#2a2d42",
+};
+
+const mono = "'IBM Plex Mono', monospace";
+const sans = "'DM Sans', 'Segoe UI', sans-serif";
+
+function Callout({ icon, title, color, children }) {
+  return (
+    <div style={{ marginTop: 18, padding: "16px 18px", background: color + "10", border: `1px solid ${color}28`, borderRadius: 10 }}>
+      <div style={{ fontSize: 13, color, fontFamily: mono, fontWeight: 600, marginBottom: 6 }}>{icon} {title}</div>
+      <div style={{ fontSize: 14, color: C.dim, lineHeight: 1.85 }}>{children}</div>
+    </div>
+  );
+}
+
+function Code({ children }) {
+  return <div style={{ fontFamily: mono, fontSize: 12, background: "#000", padding: 16, borderRadius: 8, lineHeight: 2.1, overflowX: "auto" }}>{children}</div>;
+}
+
+function Tabs({ items, active, onSelect }) {
+  return (
+    <div style={{ display: "flex", gap: 5, flexWrap: "wrap", marginBottom: 18 }}>
+      {items.map((s, i) => (
+        <button key={i} onClick={() => onSelect(i)} style={{
+          background: active === i ? C.accent : "transparent",
+          color: active === i ? C.bg : C.dim,
+          border: `1px solid ${active === i ? C.accent : C.border}`,
+          borderRadius: 6, padding: "7px 14px", cursor: "pointer",
+          fontFamily: mono, fontSize: 11, fontWeight: active === i ? 700 : 400,
+          transition: "all 0.15s",
+        }}>{s}</button>
+      ))}
+    </div>
+  );
+}
+
+function P({ children }) {
+  return <p style={{ color: C.dim, lineHeight: 1.85, marginBottom: 18, fontSize: 15 }}>{children}</p>;
+}
+
+function B({ children, color = C.text }) {
+  return <strong style={{ color }}>{children}</strong>;
+}
+
+function Bridge({ from, to, text }) {
+  return (
+    <div style={{ margin: "0 0 20px", padding: "14px 18px", background: `linear-gradient(135deg, ${C.purpleDim}, ${C.blueDim})`, borderRadius: 10, border: `1px solid ${C.purple}20`, display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, flexShrink: 0 }}>
+        <span style={{ fontFamily: mono, fontSize: 11, color: C.purple, fontWeight: 600 }}>{from}</span>
+        <span style={{ color: C.faint, fontSize: 16 }}>→</span>
+        <span style={{ fontFamily: mono, fontSize: 11, color: C.blue, fontWeight: 600 }}>{to}</span>
+      </div>
+      <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>{text}</div>
+    </div>
+  );
+}
+
+function Card({ color, title, children, style: s = {} }) {
+  return (
+    <div style={{ padding: 16, background: C.card, borderRadius: 10, border: `1px solid ${color}25`, borderLeft: `3px solid ${color}`, ...s }}>
+      {title && <div style={{ fontFamily: mono, fontSize: 13, color, fontWeight: 600, marginBottom: 8 }}>{title}</div>}
+      <div style={{ color: C.dim, fontSize: 13, lineHeight: 1.75 }}>{children}</div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// SECTION 1: THE AML PROBLEM
+// ═══════════════════════════════════════════
+function Section1() {
+  return (
+    <div>
+      <P>In the previous guide, we built a spam detector: extract features from an email, feed them through a neural network, get "spam or not." <B color={C.accent}>AML detection is the same core idea</B> — but dramatically harder. Let's understand why.</P>
+
+      <div style={{ background: "#000", borderRadius: 10, padding: 20, border: `1px solid ${C.border}`, fontFamily: mono, fontSize: 12, lineHeight: 2, marginBottom: 20 }}>
+        <span style={{ color: C.red }}>ALERT #47291</span> <span style={{ color: C.dim }}>— Flagged by Transaction Monitor</span><br />
+        <div style={{ borderTop: `1px solid ${C.border}`, margin: "6px 0" }} />
+        <span style={{ color: C.gold }}>Account:</span> <span style={{ color: C.text }}>Acme Exports Ltd → 14 shell entities in 3 jurisdictions</span><br />
+        <span style={{ color: C.gold }}>Pattern:</span> <span style={{ color: C.text }}>$9,500 × 47 deposits over 12 days (below $10K reporting threshold)</span><br />
+        <span style={{ color: C.gold }}>Network:</span> <span style={{ color: C.text }}>Recipient entities share a UBO with sanctioned individual</span><br />
+        <span style={{ color: C.gold }}>Typology:</span> <span style={{ color: C.red }}>Structuring + Layering via shell network</span>
+      </div>
+
+      <P>Unlike spam, where you classify one email at a time, money laundering involves <B>networks of entities transacting over time</B>. A single $9,500 transfer looks normal. But 47 of them, split across 14 entities that trace back to the same person, just below the reporting threshold? That's <B color={C.red}>structuring</B> — a classic laundering technique.</P>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+        <Card color={C.blue} title="Spam Detection">
+          <B color={C.text}>One input, one decision.</B> A single email → spam/not. Features are self-contained. The email has everything you need to decide.
+        </Card>
+        <Card color={C.red} title="AML Detection">
+          <B color={C.text}>Graph + time + context.</B> A single transaction means nothing alone. You need the network of entities, the history, the regulatory context, and the relationship patterns.
+        </Card>
+      </div>
+
+      <P>This is why AML systems have an infamous <B color={C.red}>95%+ false positive rate</B> in most banks. Rule-based systems flag everything that looks slightly odd. Our goal: build an intelligent system that brings that rate down dramatically using three types of AI:</P>
+
+      <div style={{ display: "grid", gap: 10, marginBottom: 16 }}>
+        {[
+          { icon: "🧠", name: "Neural Networks", desc: "Score individual transactions and customer behavior (same idea as spam)", color: C.accent },
+          { icon: "🕸️", name: "Graph Neural Networks + Graph RAG", desc: "Detect network-level patterns: shell company webs, circular flows, hidden beneficial owners", color: C.purple },
+          { icon: "📚", name: "Traditional RAG", desc: "Give investigators instant access to regulations, past SARs, typology libraries, and compliance rulings", color: C.gold },
+        ].map((item, i) => (
+          <div key={i} style={{ display: "flex", gap: 14, alignItems: "center", padding: "14px 16px", background: C.card, borderRadius: 10, border: `1px solid ${item.color}20` }}>
+            <div style={{ fontSize: 24, flexShrink: 0 }}>{item.icon}</div>
+            <div>
+              <div style={{ fontFamily: mono, fontSize: 13, color: item.color, fontWeight: 600 }}>{item.name}</div>
+              <div style={{ fontSize: 13, color: C.dim, marginTop: 2, lineHeight: 1.6 }}>{item.desc}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <Callout icon="🎯" title="The Architecture We're Building" color={C.accent}>
+        <B color={C.text}>Three AI systems feeding into one scoring engine.</B> The neural network scores individual transactions. The graph system scores entity networks. RAG provides context for investigators. The ensemble combines all signals to minimize false positives while catching real laundering.
+      </Callout>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// SECTION 2: FEATURE ENGINEERING
+// ═══════════════════════════════════════════
+function Section2() {
+  const [layer, setLayer] = useState(0);
+  const layers = [
+    {
+      name: "Transaction-Level Features",
+      color: C.blue,
+      features: [
+        { f: "amount", val: "$9,500", why: "Just below $10K CTR threshold — structuring signal" },
+        { f: "time_of_day", val: "03:22 AM", why: "Off-hours activity is unusual for business accounts" },
+        { f: "sender_country_risk", val: "0.82", why: "High-risk jurisdiction score from FATF greylist" },
+        { f: "is_round_amount", val: "0", why: "Launderers often use exact round numbers" },
+        { f: "days_since_account_open", val: "12", why: "Very new account — higher risk" },
+        { f: "currency_conversion", val: "1", why: "Cross-currency adds layering complexity" },
+      ],
+    },
+    {
+      name: "Behavioral Features",
+      color: C.accent,
+      features: [
+        { f: "tx_velocity_7d", val: "47", why: "47 transactions in 7 days vs. normal 3 — 15× spike" },
+        { f: "avg_amount_deviation", val: "0.94", why: "Amounts cluster near threshold — not natural spending" },
+        { f: "unique_counterparties_30d", val: "14", why: "Suddenly transacting with 14 new entities" },
+        { f: "dormancy_break", val: "1", why: "Account was dormant for 6 months, now highly active" },
+        { f: "amount_dispersion", val: "0.02", why: "All transactions nearly same amount — structuring" },
+        { f: "time_pattern_entropy", val: "0.3", why: "Low entropy = transactions at predictable intervals" },
+      ],
+    },
+    {
+      name: "Graph/Network Features",
+      color: C.purple,
+      features: [
+        { f: "counterparty_shared_UBO", val: "1", why: "Multiple recipients share same ultimate beneficial owner" },
+        { f: "circular_flow_detected", val: "1", why: "Money returns to originator through intermediaries" },
+        { f: "shell_company_score", val: "0.91", why: "Recipients flagged as likely shell entities" },
+        { f: "network_hop_count", val: "4", why: "Money passes through 4 entities before destination" },
+        { f: "sanctions_proximity", val: "2", why: "2 hops away from a sanctioned individual" },
+        { f: "community_risk_score", val: "0.87", why: "The cluster this entity belongs to has high aggregate risk" },
+      ],
+    },
+  ];
+
+  return (
+    <div>
+      <Bridge from="Problem" to="Data" text="We know what we're detecting. Now: how do we convert raw banking data into features a neural network can process?" />
+
+      <P>Remember the spam detector? We converted an email into numbers like <code style={{ color: C.accent, fontFamily: mono, background: C.accentDim, padding: "2px 6px", borderRadius: 4 }}>[1, 1, 0, 0.7, 5]</code>. For AML, we extract features at <B>three levels</B> — each one captures patterns the others can't. Toggle between them:</P>
+
+      <Tabs items={layers.map(l => l.name)} active={layer} onSelect={setLayer} />
+
+      <div style={{ background: C.surface, borderRadius: 12, border: `1px solid ${C.border}`, overflow: "hidden" }}>
+        <div style={{ padding: "12px 16px", background: layers[layer].color + "10", borderBottom: `1px solid ${C.border}` }}>
+          <span style={{ fontFamily: mono, fontSize: 12, color: layers[layer].color, fontWeight: 600 }}>
+            {layers[layer].name}
+          </span>
+        </div>
+        {layers[layer].features.map((feat, i) => (
+          <div key={i} style={{ display: "flex", gap: 12, padding: "12px 16px", borderBottom: i < layers[layer].features.length - 1 ? `1px solid ${C.border}` : "none", alignItems: "baseline" }}>
+            <div style={{ fontFamily: mono, fontSize: 12, color: layers[layer].color, fontWeight: 600, minWidth: 180, flexShrink: 0 }}>{feat.f}</div>
+            <div style={{ fontFamily: mono, fontSize: 12, color: C.text, minWidth: 60, flexShrink: 0 }}>{feat.val}</div>
+            <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6 }}>{feat.why}</div>
+          </div>
+        ))}
+      </div>
+
+      <P style={{ marginTop: 18 }}>The final feature vector for one transaction is the <B>concatenation</B> of all three layers — typically 200–500 features. This is what the neural network sees.</P>
+
+      <Callout icon="💡" title="Why Three Levels?" color={C.accent}>
+        <B color={C.text}>Transaction features</B> catch individual red flags (like threshold structuring). <B color={C.text}>Behavioral features</B> catch temporal patterns (like velocity spikes). <B color={C.text}>Graph features</B> catch network-level schemes (like shell company webs). A launderer might evade any one layer — evading all three simultaneously is exponentially harder. This is how we reduce false positives.
+      </Callout>
+
+      <Callout icon="⚠️" title="The Feature Engineering Bottleneck" color={C.gold}>
+        In traditional AML systems, analysts hand-craft these features and set manual thresholds ($10K, 30 days, etc.). This is brittle — launderers learn the thresholds. Our neural network will <B color={C.text}>learn the optimal thresholds and feature combinations from data</B>, just like the spam detector learned which words matter.
+      </Callout>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// SECTION 3: TRANSACTION SCORING NN
+// ═══════════════════════════════════════════
+function Section3() {
+  const [view, setView] = useState(0);
+
+  return (
+    <div>
+      <Bridge from="Features" to="Scoring Model" text="We have a 200+ dimensional feature vector per transaction. Now we feed it into a neural network — same architecture as the spam detector, just bigger." />
+
+      <Tabs items={["Architecture", "Training Data", "Why It Beats Rules"]} active={view} onSelect={setView} />
+
+      {view === 0 && (
+        <div>
+          <P>The transaction scoring model is a <B>direct extension</B> of our spam network. More inputs, more hidden layers, same principles:</P>
+
+          <svg viewBox="0 0 600 300" style={{ width: "100%", background: C.surface, borderRadius: 12, border: `1px solid ${C.border}`, marginBottom: 16 }}>
+            {/* Input layer */}
+            {Array.from({ length: 8 }).map((_, i) => {
+              const y = 30 + (i / 7) * 240;
+              return (
+                <g key={`in-${i}`}>
+                  <line x1={90} y1={y} x2={210} y2={70 + (i % 4) * 55} stroke={C.blue + "30"} strokeWidth="0.7" />
+                  <line x1={90} y1={y} x2={210} y2={70 + ((i + 1) % 4) * 55} stroke={C.blue + "20"} strokeWidth="0.5" />
+                  <circle cx={75} cy={y} r={12} fill={C.blue + "15"} stroke={C.blue + "50"} strokeWidth="1.5" />
+                  <text x={75} y={y + 1} textAnchor="middle" dominantBaseline="middle" fill={C.blue} fontSize="7" fontFamily={mono}>x{i + 1}</text>
+                </g>
+              );
+            })}
+            <text x={28} y={20} fill={C.dim} fontSize="8" fontFamily={mono}>200+ features</text>
+            <text x={75} y={290} textAnchor="middle" fill={C.dim} fontSize="8" fontFamily={mono}>Input</text>
+            <text x={40} y={130} fill={C.dim} fontSize="7" fontFamily={mono}>amt, vel,</text>
+            <text x={40} y={142} fill={C.dim} fontSize="7" fontFamily={mono}>graph, ...</text>
+
+            {/* Hidden 1 */}
+            {Array.from({ length: 4 }).map((_, i) => {
+              const y = 70 + i * 55;
+              return (
+                <g key={`h1-${i}`}>
+                  {Array.from({ length: 3 }).map((_, j) => (
+                    <line key={`h1c-${j}`} x1={230} y1={y} x2={340} y2={90 + j * 55} stroke={C.accent + "25"} strokeWidth="0.7" />
+                  ))}
+                  <circle cx={220} cy={y} r={14} fill={C.accent + "12"} stroke={C.accent + "50"} strokeWidth="1.5" />
+                  <text x={220} y={y + 1} textAnchor="middle" dominantBaseline="middle" fill={C.accent} fontSize="8" fontFamily={mono}>h{i + 1}</text>
+                </g>
+              );
+            })}
+            <text x={220} y={290} textAnchor="middle" fill={C.dim} fontSize="8" fontFamily={mono}>Hidden 1 (128)</text>
+            <text x={220} y={40} textAnchor="middle" fill={C.accent} fontSize="7" fontFamily={mono}>threshold patterns</text>
+
+            {/* Hidden 2 */}
+            {Array.from({ length: 3 }).map((_, i) => {
+              const y = 90 + i * 55;
+              return (
+                <g key={`h2-${i}`}>
+                  <line x1={360} y1={y} x2={440} y2={125} stroke={C.purple + "25"} strokeWidth="0.7" />
+                  <line x1={360} y1={y} x2={440} y2={175} stroke={C.purple + "25"} strokeWidth="0.7" />
+                  <circle cx={350} cy={y} r={14} fill={C.purple + "12"} stroke={C.purple + "50"} strokeWidth="1.5" />
+                  <text x={350} y={y + 1} textAnchor="middle" dominantBaseline="middle" fill={C.purple} fontSize="8" fontFamily={mono}>h{i + 5}</text>
+                </g>
+              );
+            })}
+            <text x={350} y={290} textAnchor="middle" fill={C.dim} fontSize="8" fontFamily={mono}>Hidden 2 (64)</text>
+            <text x={350} y={52} textAnchor="middle" fill={C.purple} fontSize="7" fontFamily={mono}>typology combos</text>
+
+            {/* Hidden 3 */}
+            {[125, 175].map((y, i) => (
+              <g key={`h3-${i}`}>
+                <line x1={465} y1={y} x2={530} y2={150} stroke={C.gold + "30"} strokeWidth="1" />
+                <circle cx={450} cy={y} r={14} fill={C.gold + "12"} stroke={C.gold + "50"} strokeWidth="1.5" />
+                <text x={450} y={y + 1} textAnchor="middle" dominantBaseline="middle" fill={C.gold} fontSize="8" fontFamily={mono}>h{i + 8}</text>
+              </g>
+            ))}
+            <text x={450} y={290} textAnchor="middle" fill={C.dim} fontSize="8" fontFamily={mono}>Hidden 3 (32)</text>
+            <text x={450} y={95} textAnchor="middle" fill={C.gold} fontSize="7" fontFamily={mono}>risk abstraction</text>
+
+            {/* Output */}
+            <circle cx={545} cy={150} r={18} fill={C.red + "15"} stroke={C.red + "60"} strokeWidth="2" />
+            <text x={545} y={146} textAnchor="middle" dominantBaseline="middle" fill={C.red} fontSize="8" fontFamily={mono} fontWeight="700">risk</text>
+            <text x={545} y={158} textAnchor="middle" dominantBaseline="middle" fill={C.red} fontSize="7" fontFamily={mono}>score</text>
+            <text x={545} y={290} textAnchor="middle" fill={C.dim} fontSize="8" fontFamily={mono}>Output</text>
+            <text x={545} y={182} textAnchor="middle" fill={C.red} fontSize="9" fontFamily={mono} fontWeight="700">0.0 → 1.0</text>
+          </svg>
+
+          <div style={{ display: "grid", gap: 8 }}>
+            {[
+              { layer: "Hidden 1 (128 neurons)", learns: "Individual feature patterns — threshold proximity, velocity anomalies, jurisdiction risk combinations", color: C.accent },
+              { layer: "Hidden 2 (64 neurons)", learns: "Typology combinations — 'structuring + new account + high-risk country' = elevated risk pattern", color: C.purple },
+              { layer: "Hidden 3 (32 neurons)", learns: "Abstract risk profiles — 'this looks like trade-based laundering' vs. 'this looks like smurfing'", color: C.gold },
+            ].map((item, i) => (
+              <Card key={i} color={item.color} title={item.layer}>
+                <B color={C.text}>Learns:</B> {item.learns}
+              </Card>
+            ))}
+          </div>
+
+          <Callout icon="🔗" title="Same Architecture, Different Features" color={C.accent}>
+            This is <B color={C.text}>exactly</B> the spam network from the previous guide with more inputs and more hidden neurons. The math is identical: weighted sum → activation → next layer. Backprop trains all weights. The only difference is the feature vector.
+          </Callout>
+        </div>
+      )}
+
+      {view === 1 && (
+        <div>
+          <P>The model needs labeled training data: transactions known to be suspicious or legitimate. This is one of AML's biggest challenges — here's how to build the dataset:</P>
+          <div style={{ display: "grid", gap: 10, marginBottom: 16 }}>
+            {[
+              { source: "Filed SARs (Suspicious Activity Reports)", desc: "Historical SARs your compliance team filed — these are confirmed suspicious. Typically ~0.1–0.5% of total transactions.", label: "Positive (suspicious)", color: C.red },
+              { source: "Regulatory enforcement actions", desc: "Cases where regulators confirmed laundering. Gold-standard labels but very rare.", label: "Positive (confirmed)", color: C.red },
+              { source: "Closed investigations — cleared", desc: "Alerts that analysts investigated and marked as false positives. This is the bulk of your data.", label: "Negative (clean)", color: C.accent },
+              { source: "Normal transaction population", desc: "Random sample from general transaction flow. Overwhelmingly clean, but may contain undetected laundering.", label: "Negative (assumed)", color: C.blue },
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", gap: 14, padding: "14px 16px", background: C.card, borderRadius: 10, border: `1px solid ${item.color}20`, alignItems: "flex-start" }}>
+                <div style={{ fontFamily: mono, fontSize: 10, color: item.color, fontWeight: 600, padding: "3px 8px", background: item.color + "15", borderRadius: 4, flexShrink: 0, whiteSpace: "nowrap" }}>{item.label}</div>
+                <div>
+                  <div style={{ fontSize: 13, color: C.text, fontWeight: 600, marginBottom: 2 }}>{item.source}</div>
+                  <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6 }}>{item.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <Callout icon="⚠️" title="Extreme Class Imbalance" color={C.gold}>
+            Maybe 0.1% of transactions are suspicious — 99.9% are clean. You can't just train normally or the model learns "predict clean always" (99.9% accuracy, 0% useful). Solutions: <B color={C.text}>focal loss</B> (down-weight easy negatives), <B color={C.text}>SMOTE oversampling</B> of positives, and <B color={C.text}>stratified mini-batches</B> that ensure each batch has positive samples.
+          </Callout>
+        </div>
+      )}
+
+      {view === 2 && (
+        <div>
+          <P>Traditional AML uses hand-coded rules like "flag any transaction &gt; $9,000 from a new account." Here's why the neural network is better:</P>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+            {[
+              { title: "Rules: Hard Thresholds", desc: "IF amount > $9,000 AND account_age < 30d → ALERT. Launderers learn the thresholds. Moving to $8,999 or splitting to 31 days evades it.", color: C.red, icon: "📏" },
+              { title: "NN: Soft Boundaries", desc: "The network learns that $9,500 from a 12-day-old account with high velocity is riskier than $15,000 from a 5-year account. It learns continuous risk gradients.", color: C.accent, icon: "📈" },
+              { title: "Rules: Feature Blindness", desc: "Each rule looks at 2–3 features. Misses multi-dimensional patterns where 5 features are each slightly unusual but collectively very suspicious.", color: C.red, icon: "👁️" },
+              { title: "NN: Feature Interaction", desc: "Hidden layers automatically learn interactions: 'slightly high velocity × slightly unusual amount × new counterparties × dormancy break = very suspicious.'", color: C.accent, icon: "🔀" },
+              { title: "Rules: Static", desc: "Require manual updates when laundering techniques evolve. Teams of analysts maintain hundreds of rules.", color: C.red, icon: "⏸️" },
+              { title: "NN: Adaptive", desc: "Retrain quarterly on new SAR data. The model automatically learns new techniques as they appear in the labeled data.", color: C.accent, icon: "🔄" },
+            ].map((item, i) => (
+              <Card key={i} color={item.color} title={`${item.icon} ${item.title}`}>
+                {item.desc}
+              </Card>
+            ))}
+          </div>
+
+          <Callout icon="📊" title="Impact on False Positives" color={C.accent}>
+            Rule-based systems typically produce <B color={C.red}>95–98% false positives</B>. A well-trained neural network can bring this to <B color={C.accent}>60–75%</B> on its own — and we're not done yet. Adding graph analysis and RAG context brings it even lower.
+          </Callout>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// SECTION 4: GRAPH NEURAL NETWORKS
+// ═══════════════════════════════════════════
+function Section4() {
+  const [step, setStep] = useState(0);
+
+  return (
+    <div>
+      <Bridge from="Transaction NN" to="Graph NN" text="The transaction NN scores individual transactions. But laundering is a NETWORK crime — we need to see the web of entities." />
+
+      <P>Consider this scenario: <B>Entity A</B> sends $9,500 to <B>Entity B</B>. Looks normal. But zoom out and you see A sends to B, C, D, E — all of which send to <B>Entity F</B> — which sends back to <B>Entity A</B>. That's a <B color={C.red}>circular layering scheme</B>, and no single-transaction model can catch it.</P>
+
+      <Tabs items={["The Transaction Graph", "How GNNs Work", "What GNNs Detect"]} active={step} onSelect={setStep} />
+
+      {step === 0 && (
+        <div>
+          <P>First, we build a <B color={C.purple}>graph</B> from banking data. Nodes are entities (people, companies, accounts). Edges are transactions, ownership links, or shared attributes:</P>
+          <svg viewBox="0 0 500 320" style={{ width: "100%", background: C.surface, borderRadius: 12, border: `1px solid ${C.border}`, marginBottom: 16 }}>
+            {/* edges */}
+            {[
+              [250, 55, 130, 140, C.red], [250, 55, 370, 140, C.red], [250, 55, 250, 155, C.red],
+              [130, 140, 80, 240, C.gold], [130, 140, 180, 240, C.gold],
+              [370, 140, 320, 240, C.gold], [370, 140, 420, 240, C.gold],
+              [250, 155, 250, 240, C.gold],
+              [80, 240, 250, 290, C.purple + "80"], [180, 240, 250, 290, C.purple + "80"],
+              [320, 240, 250, 290, C.purple + "80"], [420, 240, 250, 290, C.purple + "80"],
+              [250, 240, 250, 290, C.purple + "80"],
+              [250, 290, 250, 55, C.red],
+            ].map(([x1, y1, x2, y2, color], i) => (
+              <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke={color} strokeWidth={i === 13 ? 2 : 1} opacity={i === 13 ? 0.8 : 0.4} strokeDasharray={i === 13 ? "6,4" : "0"} />
+            ))}
+
+            {/* circular arrow label */}
+            <text x={290} y={175} fill={C.red} fontSize="9" fontFamily={mono} fontWeight="600">$ loops back!</text>
+            <text x={290} y={188} fill={C.red} fontSize="8" fontFamily={mono}>↻ circular flow</text>
+
+            {/* nodes */}
+            {[
+              { x: 250, y: 55, label: "Entity A", sub: "Originator", color: C.red, r: 20 },
+              { x: 130, y: 140, label: "Shell B", sub: "Layer 1", color: C.gold, r: 16 },
+              { x: 250, y: 155, label: "Shell C", sub: "Layer 1", color: C.gold, r: 16 },
+              { x: 370, y: 140, label: "Shell D", sub: "Layer 1", color: C.gold, r: 16 },
+              { x: 80, y: 240, label: "E1", sub: "Layer 2", color: C.blue, r: 13 },
+              { x: 180, y: 240, label: "E2", sub: "Layer 2", color: C.blue, r: 13 },
+              { x: 250, y: 240, label: "E3", sub: "Layer 2", color: C.blue, r: 13 },
+              { x: 320, y: 240, label: "E4", sub: "Layer 2", color: C.blue, r: 13 },
+              { x: 420, y: 240, label: "E5", sub: "Layer 2", color: C.blue, r: 13 },
+              { x: 250, y: 290, label: "Entity F", sub: "Aggregator", color: C.purple, r: 18 },
+            ].map((node, i) => (
+              <g key={`n-${i}`}>
+                <circle cx={node.x} cy={node.y} r={node.r} fill={node.color + "20"} stroke={node.color} strokeWidth="1.5" />
+                <text x={node.x} y={node.y - 2} textAnchor="middle" dominantBaseline="middle" fill={node.color} fontSize={node.r > 16 ? "8" : "7"} fontFamily={mono} fontWeight="600">{node.label}</text>
+                <text x={node.x} y={node.y + 9} textAnchor="middle" fill={C.dim} fontSize="6" fontFamily={mono}>{node.sub}</text>
+              </g>
+            ))}
+
+            <text x={250} y={16} textAnchor="middle" fill={C.dim} fontSize="9" fontFamily={mono}>Transaction Graph — Layering Scheme</text>
+          </svg>
+
+          <P>Each node has features (account age, jurisdiction, entity type). Each edge has features (amount, frequency, timing). A <B>Graph Neural Network</B> can process this entire structure at once.</P>
+        </div>
+      )}
+
+      {step === 1 && (
+        <div>
+          <P>A GNN extends the neural network concept to graph-structured data. The core idea is <B color={C.purple}>message passing</B> — each node updates its representation by aggregating information from its neighbors:</P>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 3, marginBottom: 16 }}>
+            {[
+              { step: "1. Initialize", desc: "Each node starts with its own feature vector (account age, type, jurisdiction, etc.) — same idea as our transaction features", color: C.blue },
+              { step: "2. Message: Gather from neighbors", desc: 'Each node collects feature vectors from all connected nodes. Entity A gathers from B, C, D. Think of it as "asking your neighbors what they know"', color: C.accent },
+              { step: "3. Aggregate", desc: "Combine all neighbor messages via sum, mean, or attention-weighted pooling. Now Entity A's representation encodes info about its immediate network", color: C.purple },
+              { step: "4. Update", desc: "Pass the aggregated message through a neural network (same weighted sum + activation from §2 of the NN guide!) to produce the node's new embedding", color: C.gold },
+              { step: "5. Repeat K times", desc: "After K rounds, each node's embedding encodes information from K hops away. With K=3, Entity A 'knows about' entities 3 layers deep in the network", color: C.red },
+            ].map((item, i) => (
+              <div key={i}>
+                {i > 0 && <div style={{ textAlign: "center", color: C.faint, fontSize: 14, lineHeight: "18px" }}>↓</div>}
+                <div style={{ display: "flex", gap: 12, padding: "12px 16px", background: item.color + "08", borderRadius: 8, border: `1px solid ${item.color}20`, alignItems: "flex-start" }}>
+                  <div style={{ fontFamily: mono, fontSize: 12, color: item.color, fontWeight: 700, minWidth: 100, flexShrink: 0 }}>{item.step}</div>
+                  <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>{item.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Code>
+            <span style={{ color: C.dim }}>{"// One GNN message-passing layer (pseudocode):"}</span><br />
+            <span style={{ color: C.blue }}>for</span><span style={{ color: C.text }}> each node v in graph:</span><br />
+            <span style={{ color: C.text }}>{"  "}messages = [</span><span style={{ color: C.accent }}>W</span><span style={{ color: C.text }}> · neighbor.embedding </span><span style={{ color: C.dim }}>for</span><span style={{ color: C.text }}> neighbor </span><span style={{ color: C.dim }}>in</span><span style={{ color: C.text }}> v.neighbors]</span><br />
+            <span style={{ color: C.text }}>{"  "}aggregated = </span><span style={{ color: C.purple }}>MEAN</span><span style={{ color: C.text }}>(messages)</span><br />
+            <span style={{ color: C.text }}>{"  "}v.embedding = </span><span style={{ color: C.gold }}>ReLU</span><span style={{ color: C.text }}>(</span><span style={{ color: C.accent }}>W₂</span><span style={{ color: C.text }}> · [v.embedding ‖ aggregated])</span><br /><br />
+            <span style={{ color: C.dim }}>{"// W and W₂ are learned weights — trained via backprop!"}</span><br />
+            <span style={{ color: C.dim }}>{"// Same gradient descent as the spam detector."}</span>
+          </Code>
+        </div>
+      )}
+
+      {step === 2 && (
+        <div>
+          <P>After message passing, each node's embedding encodes both its own features AND its network context. Now we can detect patterns <B>impossible to see</B> from individual transactions:</P>
+
+          <div style={{ display: "grid", gap: 10, marginBottom: 16 }}>
+            {[
+              { name: "Structuring Networks (Smurfing)", desc: "Multiple individuals (smurfs) deposit small amounts that aggregate into a large sum. The GNN sees the fan-in pattern: many → one.", icon: "🐜", color: C.red },
+              { name: "Layering via Shell Companies", desc: "Money passes through multiple intermediary entities to obscure origin. The GNN detects chains of newly-created entities with no real business activity.", icon: "🏢", color: C.gold },
+              { name: "Circular Flows", desc: "Money leaves Entity A and returns to it through a chain of intermediaries. The GNN's multi-hop aggregation naturally detects cycles.", icon: "🔄", color: C.purple },
+              { name: "Sanctions Proximity", desc: "Entity isn't sanctioned, but is 2 hops from a sanctioned entity. After 2 GNN layers, the sanctioned entity's 'risk signal' propagates to all 2-hop neighbors.", icon: "⚠️", color: C.blue },
+              { name: "Shared UBO Detection", desc: "Entities appear unrelated but share an ultimate beneficial owner. Ownership edges in the graph connect them; GNN embeddings become similar.", icon: "👤", color: C.accent },
+              { name: "Community Risk Scoring", desc: "A cluster of entities transact heavily among themselves but rarely with outsiders. The GNN identifies this community and assigns aggregate risk based on member profiles.", icon: "🕸️", color: C.orange },
+            ].map((item, i) => (
+              <Card key={i} color={item.color} title={`${item.icon} ${item.name}`}>
+                {item.desc}
+              </Card>
+            ))}
+          </div>
+
+          <Callout icon="💡" title="GNN Output → Feature for Ensemble" color={C.accent}>
+            The GNN produces a <B color={C.text}>graph risk score</B> and a <B color={C.text}>node embedding</B> per entity. These become <B color={C.text}>additional features</B> fed into the main scoring model. So the ensemble sees both individual transaction signals AND network-level signals.
+          </Callout>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// SECTION 5: GRAPH RAG
+// ═══════════════════════════════════════════
+function Section5() {
+  const [tab, setTab] = useState(0);
+
+  return (
+    <div>
+      <Bridge from="GNN (Detection)" to="Graph RAG (Investigation)" text="GNN finds suspicious networks. Now the investigator needs to UNDERSTAND why. Graph RAG lets them query the graph in natural language." />
+
+      <P>When an alert fires, an investigator needs to answer questions like: <B color={C.gold}>"Show me all entities connected to this account within 3 hops and highlight any sanctions links."</B> Graph RAG makes this possible.</P>
+
+      <Tabs items={["What Is Graph RAG?", "The Knowledge Graph", "Query Pipeline", "Example Investigation"]} active={tab} onSelect={setTab} />
+
+      {tab === 0 && (
+        <div>
+          <P><B>Traditional RAG</B> = retrieve text chunks from documents, stuff them into an LLM prompt. <B color={C.purple}>Graph RAG</B> = retrieve <em>subgraphs</em> (connected clusters of entities and relationships) from a knowledge graph, then let the LLM reason over both structure and text.</P>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+            <Card color={C.blue} title="Traditional RAG">
+              <B color={C.text}>Retrieves:</B> Text chunks from documents<br />
+              <B color={C.text}>Good for:</B> "What does regulation XYZ say about threshold reporting?"<br />
+              <B color={C.text}>Limitation:</B> Can't answer "how is Entity A connected to sanctioned Entity Z through intermediaries?"
+            </Card>
+            <Card color={C.purple} title="Graph RAG">
+              <B color={C.text}>Retrieves:</B> Subgraphs — entities + relationships + properties<br />
+              <B color={C.text}>Good for:</B> "Trace money flow from A to Z" or "Find all common directors"<br />
+              <B color={C.text}>Superpower:</B> Relationship traversal, path finding, community detection — then LLM explains it
+            </Card>
+          </div>
+
+          <Callout icon="🔗" title="Why Not Just Use the GNN Directly?" color={C.accent}>
+            The GNN gives you a <B color={C.text}>risk score</B> (a number). Graph RAG gives you an <B color={C.text}>explanation</B> (a narrative). The investigator needs both: the score to prioritize, and the narrative to write the SAR. Graph RAG bridges the gap between AI detection and human understanding.
+          </Callout>
+        </div>
+      )}
+
+      {tab === 1 && (
+        <div>
+          <P>The knowledge graph powering Graph RAG combines multiple data sources into one unified structure:</P>
+          <div style={{ display: "grid", gap: 8, marginBottom: 16 }}>
+            {[
+              { node: "Customer Entities", edges: "owns_account, has_director, registered_in, beneficial_owner_of", sources: "KYC data, corporate registries", color: C.blue },
+              { node: "Accounts", edges: "transacts_with, held_by, at_institution", sources: "Core banking system", color: C.accent },
+              { node: "Transactions", edges: "from_account, to_account, on_date, in_currency", sources: "Transaction monitoring system", color: C.gold },
+              { node: "Sanctions/PEP Entries", edges: "matches_entity, associated_with", sources: "OFAC, UN, EU sanctions lists", color: C.red },
+              { node: "Past SARs/Cases", edges: "filed_about, investigated_by, related_to_typology", sources: "Case management system", color: C.purple },
+              { node: "Regulatory Rules", edges: "applies_to_jurisdiction, defines_threshold, requires_reporting", sources: "Compliance documents (also in text RAG)", color: C.orange },
+            ].map((item, i) => (
+              <div key={i} style={{ display: "grid", gridTemplateColumns: "140px 1fr 1fr", gap: 8, padding: "12px 14px", background: C.card, borderRadius: 8, border: `1px solid ${item.color}20`, alignItems: "center" }}>
+                <div style={{ fontFamily: mono, fontSize: 11, color: item.color, fontWeight: 600 }}>{item.node}</div>
+                <div style={{ fontSize: 11, color: C.dim, fontFamily: mono }}>{item.edges}</div>
+                <div style={{ fontSize: 11, color: C.dim }}>{item.sources}</div>
+              </div>
+            ))}
+          </div>
+          <Callout icon="📊" title="Scale" color={C.gold}>
+            A typical bank's knowledge graph: <B color={C.text}>~50M nodes</B> (entities + accounts), <B color={C.text}>~500M edges</B> (transactions + relationships), updated daily. Stored in a graph database (Neo4j, TigerGraph, or Amazon Neptune).
+          </Callout>
+        </div>
+      )}
+
+      {tab === 2 && (
+        <div>
+          <P>When an investigator asks a question, Graph RAG follows this pipeline:</P>
+          <div style={{ display: "flex", flexDirection: "column", gap: 3, marginBottom: 16 }}>
+            {[
+              { s: "1. Natural Language Query", d: '"Show all money flows from Acme Exports to entities with sanctions connections in the last 90 days"', c: C.blue },
+              { s: "2. LLM → Graph Query", d: "LLM converts NL to a Cypher/SPARQL query: MATCH (a:Entity {name:'Acme'})-[:SENT*1..4]->(b)-[:ASSOCIATED_WITH]->(s:Sanctioned) WHERE tx.date > date()-90d RETURN path", c: C.accent },
+              { s: "3. Subgraph Retrieval", d: "Graph DB executes query, returns matching subgraph: 23 entities, 47 transactions, 3 paths to sanctioned entities with full properties", c: C.purple },
+              { s: "4. Graph Summarization", d: "LLM receives the subgraph (serialized as triplets or adjacency) + node/edge properties + any related document chunks from traditional RAG", c: C.gold },
+              { s: "5. Narrative Generation", d: 'LLM produces: "Acme Exports routed $447K through 4 shell companies in Panama, 2 of which share a director with Entity X, which is on the OFAC SDN list. The flow pattern matches the \'layering via trade invoices\' typology."', c: C.red },
+            ].map((item, i) => (
+              <div key={i}>
+                {i > 0 && <div style={{ textAlign: "center", color: C.faint, fontSize: 14, lineHeight: "18px" }}>↓</div>}
+                <div style={{ padding: "12px 16px", background: item.c + "08", borderRadius: 8, border: `1px solid ${item.c}20` }}>
+                  <div style={{ fontFamily: mono, fontSize: 12, color: item.c, fontWeight: 700, marginBottom: 4 }}>{item.s}</div>
+                  <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7, fontFamily: i === 1 || i === 4 ? mono : sans, fontSize: i === 1 ? 11 : 13 }}>{item.d}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {tab === 3 && (
+        <div>
+          <P>Here's a realistic investigation flow with Graph RAG:</P>
+          <div style={{ background: "#000", borderRadius: 10, padding: 20, border: `1px solid ${C.border}`, fontFamily: mono, fontSize: 12, lineHeight: 2.2, marginBottom: 16 }}>
+            <span style={{ color: C.blue }}>Investigator:</span> <span style={{ color: C.text }}>"Why was Acme Exports flagged?"</span><br /><br />
+            <span style={{ color: C.accent }}>Graph RAG:</span> <span style={{ color: C.dim }}>"Acme triggered 3 signals: (1) 47 transactions in 12 days averaging $9,500 each — classic structuring pattern; (2) 14 counterparties, 11 of which were incorporated in the same jurisdiction within 30 days of each other; (3) two counterparties share a beneficial owner with an OFAC-listed entity."</span><br /><br />
+            <span style={{ color: C.blue }}>Investigator:</span> <span style={{ color: C.text }}>"Show me the path to the sanctioned entity."</span><br /><br />
+            <span style={{ color: C.accent }}>Graph RAG:</span> <span style={{ color: C.dim }}>"Acme → Panama Trading Co → Global Imports LLC → [shared director: J. Smith] → Sanctioned Entity X. The shared directorship is through J. Smith, who became director of Global Imports 14 days after OFAC listing of Entity X."</span><br /><br />
+            <span style={{ color: C.blue }}>Investigator:</span> <span style={{ color: C.text }}>"Have we seen this pattern before?"</span><br /><br />
+            <span style={{ color: C.accent }}>Graph RAG + Text RAG:</span> <span style={{ color: C.dim }}>"Yes — SAR-2024-8834 describes a similar layering scheme through Panamanian shells. That case resulted in enforcement action. The current network shares 2 intermediary entities with that case."</span>
+          </div>
+
+          <Callout icon="🎯" title="Graph RAG's Role in False Positive Reduction" color={C.accent}>
+            Graph RAG doesn't just explain alerts — it helps <B color={C.text}>triage</B> them. If the graph shows the flagged entity has a clean network (well-known counterparties, no sanctions proximity, no circular flows), the investigator can quickly close the alert. This is how Graph RAG directly reduces false positive burden.
+          </Callout>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// SECTION 6: TRADITIONAL RAG
+// ═══════════════════════════════════════════
+function Section6() {
+  const [tab, setTab] = useState(0);
+
+  return (
+    <div>
+      <Bridge from="Graph RAG (relationships)" to="Text RAG (regulations)" text="Graph RAG handles entity relationships. But investigators also need to reference thousands of pages of regulations, typologies, and compliance guidance." />
+
+      <Tabs items={["Architecture", "Document Corpus", "How It Reduces FPs"]} active={tab} onSelect={setTab} />
+
+      {tab === 0 && (
+        <div>
+          <P>Traditional RAG for AML retrieves relevant text passages from compliance documents and feeds them to the LLM alongside the alert context:</P>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 3, marginBottom: 16 }}>
+            {[
+              { s: "1. Document Ingestion", d: "BSA/AML handbook, FATF typologies, internal policies, past SAR narratives, FinCEN advisories → chunked into ~500-token passages", c: C.blue },
+              { s: "2. Embedding & Indexing", d: "Each chunk is embedded into a vector (same concept as word embeddings in LLMs — a dense numerical representation). Stored in a vector database (Pinecone, Weaviate, pgvector)", c: C.accent },
+              { s: "3. Query Embedding", d: 'Investigator question or alert context → embedded into the same vector space. "Structuring via shell companies in Panama" → ℝ¹⁵³⁶', c: C.purple },
+              { s: "4. Similarity Search", d: "Find top-K document chunks closest to the query vector (cosine similarity). Returns relevant regulatory passages, past SAR excerpts, typology descriptions", c: C.gold },
+              { s: "5. LLM Generation", d: "The retrieved chunks + original question → LLM prompt. LLM generates an answer grounded in actual compliance documents, with citations", c: C.red },
+            ].map((item, i) => (
+              <div key={i}>
+                {i > 0 && <div style={{ textAlign: "center", color: C.faint, fontSize: 14, lineHeight: "18px" }}>↓</div>}
+                <div style={{ padding: "12px 16px", background: item.c + "08", borderRadius: 8, border: `1px solid ${item.c}20` }}>
+                  <div style={{ fontFamily: mono, fontSize: 12, color: item.c, fontWeight: 700, marginBottom: 4 }}>{item.s}</div>
+                  <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>{item.d}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Callout icon="🔗" title="Connection to Neural Networks" color={C.accent}>
+            The embedding model IS a neural network (usually a Transformer like BERT or E5). It was trained to produce similar vectors for semantically similar text — so "structuring" and "breaking up deposits to avoid reporting" end up close in vector space. Same training principles from our NN guide!
+          </Callout>
+        </div>
+      )}
+
+      {tab === 1 && (
+        <div>
+          <P>The document corpus for AML RAG typically includes:</P>
+          <div style={{ display: "grid", gap: 8 }}>
+            {[
+              { doc: "BSA/AML Examination Manual", pages: "~450 pages", use: "Regulatory requirements, examiner expectations, definition of suspicious activity", color: C.blue },
+              { doc: "FATF Typology Reports", pages: "~200 per report, 50+ reports", use: "Detailed descriptions of money laundering methods with red flag indicators", color: C.gold },
+              { doc: "FinCEN Advisories & Guidance", pages: "~100+ documents", use: "Current risks: cryptocurrency, real estate, trade-based laundering, human trafficking", color: C.accent },
+              { doc: "Internal SAR Narratives", pages: "Thousands of past SARs", use: "How YOUR institution wrote SARs for similar patterns — style, structure, required elements", color: C.purple },
+              { doc: "Internal Policies & Procedures", pages: "~200–500 pages", use: "Your bank's specific thresholds, EDD requirements, risk rating methodology", color: C.red },
+              { doc: "Sanctions Lists + Guidance", pages: "OFAC SDN, EU, UN lists + guidance", use: "Who is sanctioned, why, and what secondary sanctions apply", color: C.orange },
+            ].map((item, i) => (
+              <div key={i} style={{ display: "grid", gridTemplateColumns: "180px 100px 1fr", gap: 8, padding: "12px 14px", background: C.card, borderRadius: 8, border: `1px solid ${item.color}15`, alignItems: "center" }}>
+                <div style={{ fontFamily: mono, fontSize: 11, color: item.color, fontWeight: 600 }}>{item.doc}</div>
+                <div style={{ fontSize: 11, color: C.dim, fontFamily: mono }}>{item.pages}</div>
+                <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.5 }}>{item.use}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {tab === 2 && (
+        <div>
+          <P>Text RAG reduces false positives in three ways:</P>
+          <div style={{ display: "grid", gap: 12 }}>
+            <Card color={C.accent} title="1. Typology Matching">
+              When an alert fires, RAG retrieves relevant FATF typologies. If the transaction pattern <B color={C.text}>closely matches a known laundering typology</B>, confidence increases. If it matches a known <B color={C.text}>legitimate business pattern</B> (e.g., seasonal import/export), the alert can be de-escalated. <B color={C.accent}>Impact: helps investigators distinguish real typologies from business-as-usual patterns.</B>
+            </Card>
+            <Card color={C.gold} title="2. Regulatory Context">
+              RAG retrieves the specific BSA/AML requirements for this scenario. "Does a $9,500 wire require a CTR? No, the threshold is $10,000. But structuring to avoid CTRs IS suspicious." <B color={C.gold}>Impact: prevents mis-categorization of alerts, ensures correct regulatory framing.</B>
+            </Card>
+            <Card color={C.purple} title="3. SAR Narrative Generation">
+              When an alert IS confirmed suspicious, RAG retrieves past SAR narratives for similar cases and helps generate a draft. This cuts SAR writing time from <B color={C.text}>2–4 hours to 20–30 minutes</B>, freeing analysts to investigate more alerts. <B color={C.purple}>Impact: increases throughput, so more alerts get proper human review.</B>
+            </Card>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// SECTION 7: THE ENSEMBLE — ALL PIECES TOGETHER
+// ═══════════════════════════════════════════
+function Section7() {
+  const [phase, setPhase] = useState(0);
+
+  return (
+    <div>
+      <Bridge from="Individual Models" to="The Ensemble" text="We have three AI systems. Now we combine their signals into a single scoring engine that's smarter than any individual component." />
+
+      <P>Here's the full pipeline from a raw transaction to a final decision:</P>
+
+      <Tabs items={["The Pipeline", "Score Fusion", "Confidence Calibration"]} active={phase} onSelect={setPhase} />
+
+      {phase === 0 && (
+        <div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            {[
+              { stage: "Raw Transaction", desc: "$9,500 wire: Acme Exports → Panama Trading Co", color: C.blue, icon: "📥" },
+              { stage: "Feature Extraction", desc: "200+ features: transaction-level + behavioral + graph features (§2)", color: C.accent, icon: "⚙️" },
+              { stage: "Transaction NN Score", desc: "Neural network outputs risk score: 0.72 (§3)", color: C.gold, icon: "🧠" },
+              { stage: "GNN Network Score", desc: "Graph neural network scores entity's network: 0.88 — detects shell company cluster (§4)", color: C.purple, icon: "🕸️" },
+              { stage: "Rule Engine Flags", desc: "Traditional rules catch: amount near threshold, new account, high-risk jurisdiction (kept as one signal)", color: C.orange, icon: "📏" },
+              { stage: "Ensemble Scoring Model", desc: "A gradient-boosted tree (XGBoost/LightGBM) takes ALL signals above as input features and outputs final score: 0.91", color: C.red, icon: "🎯" },
+              { stage: "Alert Triage", desc: "Score > 0.85 → high priority queue. Graph RAG + Text RAG provide investigation context. Investigator reviews with full context.", color: C.accent, icon: "👤" },
+            ].map((item, i) => (
+              <div key={i}>
+                {i > 0 && <div style={{ textAlign: "center", color: C.faint, fontSize: 14, lineHeight: "18px" }}>↓</div>}
+                <div style={{ display: "flex", gap: 14, padding: "14px 16px", background: item.color + "08", borderRadius: 8, border: `1px solid ${item.color}20`, alignItems: "flex-start" }}>
+                  <div style={{ fontSize: 20, flexShrink: 0 }}>{item.icon}</div>
+                  <div>
+                    <div style={{ fontFamily: mono, fontSize: 13, color: item.color, fontWeight: 700, marginBottom: 2 }}>{item.stage}</div>
+                    <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>{item.desc}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {phase === 1 && (
+        <div>
+          <P>The ensemble model combines all signals. Here's why this is powerful:</P>
+
+          <Code>
+            <span style={{ color: C.dim }}>{"// Inputs to the ensemble model:"}</span><br />
+            <span style={{ color: C.blue }}>transaction_nn_score</span><span style={{ color: C.dim }}>{": 0.72"}</span><span style={{ color: C.dim }}>{"    // catches individual anomalies"}</span><br />
+            <span style={{ color: C.purple }}>gnn_network_score</span><span style={{ color: C.dim }}>{":   0.88"}</span><span style={{ color: C.dim }}>{"    // catches network patterns"}</span><br />
+            <span style={{ color: C.orange }}>rule_flag_count</span><span style={{ color: C.dim }}>{":     3"}</span><span style={{ color: C.dim }}>{"       // traditional rule hits"}</span><br />
+            <span style={{ color: C.accent }}>gnn_embedding[0:32]</span><span style={{ color: C.dim }}>{":"}</span><span style={{ color: C.dim }}>{"        // raw graph features"}</span><br />
+            <span style={{ color: C.gold }}>behavioral_features</span><span style={{ color: C.dim }}>{":"}</span><span style={{ color: C.dim }}>{"        // velocity, patterns"}</span><br /><br />
+            <span style={{ color: C.dim }}>{"// The ensemble learns:"}</span><br />
+            <span style={{ color: C.dim }}>{"// - When the NN says 0.5 but the GNN says 0.9"}</span><br />
+            <span style={{ color: C.dim }}>{"//   → trust the GNN (it found network evidence)"}</span><br />
+            <span style={{ color: C.dim }}>{"// - When the NN says 0.8 but GNN says 0.1"}</span><br />
+            <span style={{ color: C.dim }}>{"//   → maybe just unusual business, not laundering"}</span><br />
+            <span style={{ color: C.dim }}>{"// - When rules fire but both models say low risk"}</span><br />
+            <span style={{ color: C.dim }}>{"//   → probably false positive from rigid rules"}</span>
+          </Code>
+
+          <Callout icon="🤔" title="Why Not Just Use The Best Single Model?" color={C.gold}>
+            Because they catch <B color={C.text}>different types</B> of laundering. The transaction NN excels at behavioral anomalies but misses network schemes. The GNN excels at network patterns but may miss individual structuring. Rules catch known patterns but false-alarm on everything else. <B color={C.text}>The ensemble learns when to trust each signal.</B>
+          </Callout>
+        </div>
+      )}
+
+      {phase === 2 && (
+        <div>
+          <P>A critical final step: <B>calibrate</B> the ensemble's output so that a score of 0.90 actually means "90% chance of being truly suspicious." This requires:</P>
+
+          <div style={{ display: "grid", gap: 10 }}>
+            <Card color={C.accent} title="Platt Scaling">
+              Fit a logistic regression on the ensemble's outputs vs. actual labels on a held-out validation set. This maps raw scores to true probabilities. Without calibration, the scores are just ordinal rankings — "higher is riskier" — but the actual numbers are meaningless.
+            </Card>
+            <Card color={C.gold} title="Dynamic Thresholds">
+              Instead of one threshold for all alerts, set <B color={C.text}>tier-based thresholds</B>: Tier 1 (auto-file SAR): score &gt; 0.95 with graph evidence. Tier 2 (urgent review): 0.80–0.95. Tier 3 (batch review): 0.60–0.80. Below 0.60: suppress. This alone cuts false positives by 40–60% compared to a single threshold.
+            </Card>
+            <Card color={C.purple} title="Feedback Loop">
+              When investigators close alerts as false positives or true positives, those labels feed back into the training data. The ensemble retrains quarterly, getting better each cycle. <B color={C.text}>This is how the system continuously improves.</B>
+            </Card>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// SECTION 8: MINIMIZING FALSE POSITIVES
+// ═══════════════════════════════════════════
+function Section8() {
+  const [view, setView] = useState(0);
+
+  return (
+    <div>
+      <Bridge from="Architecture" to="Results" text="We've built the system. Now let's quantify how each component contributes to false positive reduction and see the complete strategy." />
+
+      <Tabs items={["FP Reduction Breakdown", "The Full Strategy", "Practical Deployment"]} active={view} onSelect={setView} />
+
+      {view === 0 && (
+        <div>
+          <P>Here's the estimated false positive reduction from each component, stacking cumulatively:</P>
+
+          <div style={{ background: C.surface, borderRadius: 12, padding: 20, border: `1px solid ${C.border}`, marginBottom: 16 }}>
+            {[
+              { name: "Rule-Based Baseline", fp: "95–98%", bar: 97, color: C.red, note: "Current state at most banks" },
+              { name: "+ Transaction NN", fp: "70–80%", bar: 75, color: C.gold, note: "Soft boundaries > hard thresholds" },
+              { name: "+ GNN Network Analysis", fp: "50–65%", bar: 57, color: C.purple, note: "Network context eliminates many FPs" },
+              { name: "+ Ensemble Scoring", fp: "35–50%", bar: 42, color: C.accent, note: "Model combination + calibration" },
+              { name: "+ Graph RAG Triage", fp: "25–40%", bar: 32, color: C.blue, note: "Faster investigation, better context" },
+              { name: "+ Feedback Loop (12mo)", fp: "15–30%", bar: 22, color: C.accent, note: "Continuous learning from analyst decisions" },
+            ].map((item, i) => (
+              <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                <div style={{ fontFamily: mono, fontSize: 11, color: item.color, fontWeight: 600, minWidth: 170, flexShrink: 0 }}>{item.name}</div>
+                <div style={{ flex: 1, position: "relative", height: 24, background: C.card, borderRadius: 4, overflow: "hidden" }}>
+                  <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${item.bar}%`, background: item.color + "30", borderRadius: 4, transition: "width 0.5s ease" }} />
+                  <div style={{ position: "absolute", right: 8, top: 0, height: "100%", display: "flex", alignItems: "center", fontFamily: mono, fontSize: 11, color: item.color, fontWeight: 700 }}>{item.fp}</div>
+                </div>
+              </div>
+            ))}
+            <div style={{ fontFamily: mono, fontSize: 10, color: C.dim, marginTop: 8, textAlign: "right" }}>← lower is better (fewer false positives)</div>
+          </div>
+
+          <Callout icon="📉" title="From 97% FP to ~25% FP" color={C.accent}>
+            Each layer addresses a <B color={C.text}>different type</B> of false positive. The NN eliminates threshold-based FPs. The GNN eliminates FPs where the network is clean. The ensemble eliminates FPs where signals disagree. RAG eliminates FPs by giving investigators the right context. <B color={C.text}>No single technique achieves this — it's the combination.</B>
+          </Callout>
+        </div>
+      )}
+
+      {view === 1 && (
+        <div>
+          <P>Here's the complete strategy in one view — every technique and how it connects to the goal of fewer false positives:</P>
+
+          <div style={{ display: "grid", gap: 8 }}>
+            {[
+              { technique: "Multi-Level Feature Engineering", mechanism: "Transaction + behavioral + graph features ensure no single evasion technique can hide across all feature types", fpImpact: "Addresses: single-dimension evasion", color: C.blue },
+              { technique: "Transaction Neural Network", mechanism: "Learns continuous risk gradients instead of binary thresholds. Captures multi-feature interactions automatically", fpImpact: "Eliminates: threshold-gaming FPs", color: C.gold },
+              { technique: "Graph Neural Network", mechanism: "Detects network-level schemes invisible to transaction models. Scores entity context, not just individual transactions", fpImpact: "Eliminates: isolated-transaction FPs", color: C.purple },
+              { technique: "Ensemble Model (XGBoost)", mechanism: "Learns optimal weighting of all signals. Understands when each sub-model is reliable vs. unreliable", fpImpact: "Eliminates: conflicting-signal FPs", color: C.accent },
+              { technique: "Calibrated Dynamic Thresholds", mechanism: "Tier-based alerting ensures high-confidence alerts get priority and low-confidence ones are suppressed", fpImpact: "Eliminates: low-confidence alert noise", color: C.orange },
+              { technique: "Graph RAG Investigation", mechanism: "Investigators see full network context and entity relationships, enabling fast triage of clearly clean networks", fpImpact: "Reduces: investigation FP burden", color: C.purple },
+              { technique: "Text RAG Compliance Context", mechanism: "Typology matching identifies known legitimate patterns. Regulatory context prevents mis-categorization", fpImpact: "Reduces: mis-categorization FPs", color: C.gold },
+              { technique: "Feedback Loop Retraining", mechanism: "Analyst decisions on alerts become new training labels. System learns institution-specific patterns quarterly", fpImpact: "Addresses: all FP types over time", color: C.red },
+            ].map((item, i) => (
+              <div key={i} style={{ padding: "12px 16px", background: C.card, borderRadius: 8, border: `1px solid ${item.color}15` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+                  <div style={{ fontFamily: mono, fontSize: 12, color: item.color, fontWeight: 700 }}>{item.technique}</div>
+                  <div style={{ fontFamily: mono, fontSize: 10, color: C.dim, flexShrink: 0, marginLeft: 8 }}>{item.fpImpact}</div>
+                </div>
+                <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>{item.mechanism}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {view === 2 && (
+        <div>
+          <P>A realistic deployment plan for a mid-size bank:</P>
+
+          <div style={{ display: "grid", gap: 10 }}>
+            {[
+              { phase: "Phase 1: Shadow Mode (3 months)", tasks: "Deploy the NN alongside existing rules. Run both systems in parallel. Compare: which alerts does the NN score differently? Start building labeled dataset from analyst decisions.", color: C.blue },
+              { phase: "Phase 2: Ensemble + Graph (3 months)", tasks: "Add GNN once the transaction graph is built. Train ensemble on 6+ months of analyst labels. Begin suppressing lowest-tier alerts from rule engine when ensemble score is low.", color: C.accent },
+              { phase: "Phase 3: RAG Integration (2 months)", tasks: "Deploy Graph RAG + Text RAG for investigation support. Measure: SAR writing time, alerts investigated per analyst per day, analyst satisfaction scores.", color: C.purple },
+              { phase: "Phase 4: Full Production (ongoing)", tasks: "Ensemble becomes primary scoring engine. Rules become one input signal instead of sole decision-maker. Quarterly retraining. Monthly model monitoring. Continuous feedback loop.", color: C.gold },
+            ].map((item, i) => (
+              <Card key={i} color={item.color} title={item.phase}>
+                {item.tasks}
+              </Card>
+            ))}
+          </div>
+
+          <Callout icon="⚖️" title="Regulatory Consideration" color={C.red}>
+            Regulators require <B color={C.text}>model explainability</B>. This is why the architecture uses an ensemble of interpretable components rather than one black-box model. Each component's contribution is traceable: "This alert fired because the GNN detected a circular flow (weight: 0.4) + the NN flagged threshold structuring (weight: 0.3) + 3 rule hits (weight: 0.3)." Graph RAG then provides the narrative explanation for the SAR.
+          </Callout>
+
+          <div style={{ marginTop: 20, padding: 24, background: `linear-gradient(135deg, ${C.accentDim}, ${C.purpleDim})`, borderRadius: 14, border: `1px solid ${C.accent}25` }}>
+            <div style={{ fontSize: 16, color: C.accent, fontFamily: mono, fontWeight: 700, marginBottom: 14 }}>The Complete Thread — NN Guide → AML System</div>
+            <div style={{ fontSize: 14, color: C.dim, lineHeight: 2.2 }}>
+              {[
+                { n: "1", t: "Neuron: weighted sum + activation → one classification (spam)", color: C.blue },
+                { n: "2", t: "Layers: multiple neurons → complex pattern detection", color: C.accent },
+                { n: "3", t: "Training: backprop + gradient descent → learned features", color: C.gold },
+                { n: "4", t: "AML transaction NN: same architecture, financial features (§3)", color: C.gold },
+                { n: "5", t: "GNN: extend neurons to graphs via message passing (§4)", color: C.purple },
+                { n: "6", t: "Graph RAG: retrieve subgraphs + LLM explanation (§5)", color: C.purple },
+                { n: "7", t: "Text RAG: retrieve regulations + typologies for context (§6)", color: C.gold },
+                { n: "8", t: "Ensemble: combine all signals, calibrate, deploy (§7–8)", color: C.accent },
+              ].map((line, i) => (
+                <div key={i} style={{ display: "flex", gap: 10, alignItems: "baseline" }}>
+                  <span style={{ color: line.color, fontFamily: mono, fontWeight: 700, minWidth: 18 }}>{line.n}.</span>
+                  <span><B color={C.text}>{line.t}</B></span>
+                </div>
+              ))}
+            </div>
+            <div style={{ marginTop: 14, padding: 14, background: C.accent + "12", borderRadius: 8, border: `1px solid ${C.accent}25` }}>
+              <div style={{ fontSize: 14, color: C.accent, lineHeight: 1.8 }}>
+                <B color={C.text}>Every component traces back to the same foundations</B> — layers of differentiable functions trained by gradient descent. The GNN is a neural network over graphs. The RAG embeddings come from a Transformer. The ensemble learns from the same backprop. One idea, applied at different scales and structures.
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// SECTION 9: SYSTEM ARCHITECTURE & C4 DIAGRAMS
+// ═══════════════════════════════════════════
+
+function DBox({ x, y, w, h, color, label, sub, icon, rx = 10, dashed = false }) {
+  return (
+    <g>
+      <rect x={x} y={y} width={w} height={h} rx={rx} fill={color + "12"} stroke={color + "70"} strokeWidth="1.5" strokeDasharray={dashed ? "6,3" : "0"} />
+      {icon && <text x={x + w / 2} y={y + (sub ? h / 2 - 6 : h / 2 - 2)} textAnchor="middle" dominantBaseline="middle" fontSize="14">{icon}</text>}
+      <text x={x + w / 2} y={y + (icon ? h / 2 + 8 : h / 2 - (sub ? 4 : 0))} textAnchor="middle" dominantBaseline="middle" fill={color} fontSize="11" fontFamily={mono} fontWeight="600">{label}</text>
+      {sub && <text x={x + w / 2} y={y + (icon ? h / 2 + 20 : h / 2 + 10)} textAnchor="middle" dominantBaseline="middle" fill={C.dim} fontSize="8" fontFamily={mono}>{sub}</text>}
+    </g>
+  );
+}
+
+function DArrow({ x1, y1, x2, y2, color = C.dim, label, dashed = false, labelSide = "above" }) {
+  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  const a = Math.atan2(y2 - y1, x2 - x1);
+  return (
+    <g>
+      <line x1={x1} y1={y1} x2={x2} y2={y2} stroke={color + "80"} strokeWidth="1.2" strokeDasharray={dashed ? "4,3" : "0"} />
+      <polygon points={`${x2},${y2} ${x2 - 8 * Math.cos(a - 0.4)},${y2 - 8 * Math.sin(a - 0.4)} ${x2 - 8 * Math.cos(a + 0.4)},${y2 - 8 * Math.sin(a + 0.4)}`} fill={color + "80"} />
+      {label && <text x={mx} y={my + (labelSide === "below" ? 12 : -6)} textAnchor="middle" fill={color} fontSize="7" fontFamily={mono} fontWeight="500">{label}</text>}
+    </g>
+  );
+}
+
+function DBoundary({ x, y, w, h, label, color = C.faint }) {
+  return (
+    <g>
+      <rect x={x} y={y} width={w} height={h} rx={14} fill="none" stroke={color} strokeWidth="1.5" strokeDasharray="8,4" />
+      <rect x={x + 12} y={y - 8} width={label.length * 5.8 + 16} height={16} rx={4} fill={C.bg} />
+      <text x={x + 20} y={y + 1} fill={color} fontSize="9" fontFamily={mono} fontWeight="600">{label}</text>
+    </g>
+  );
+}
+
+function Section9() {
+  const [tab, setTab] = useState(0);
+
+  return (
+    <div>
+      <Bridge from="Strategy" to="Blueprint" text="We've designed the AI models. Now the actual system architecture — how services, databases, and pipelines connect in production." />
+
+      <Tabs items={["System Architecture", "C4 Context", "C4 Container", "C4 Component", "Infrastructure"]} active={tab} onSelect={setTab} />
+
+      {/* ─── TAB 0: HIGH-LEVEL ARCHITECTURE ─── */}
+      {tab === 0 && (
+        <div>
+          <P>The <B color={C.accent}>high-level system architecture</B> showing every subsystem and data flow — from raw transaction ingestion to the investigator dashboard.</P>
+
+          <div style={{ background: C.surface, borderRadius: 14, border: `1px solid ${C.border}`, padding: "14px 6px 6px", marginBottom: 16, overflowX: "auto" }}>
+            <div style={{ textAlign: "center", fontFamily: mono, fontSize: 9, color: C.dim, marginBottom: 6 }}>AML Detection Platform — System Architecture Overview</div>
+            <svg viewBox="0 0 780 600" style={{ width: "100%", minWidth: 600 }}>
+              {/* ── DATA SOURCES ── */}
+              <DBoundary x={10} y={18} w={760} h={72} label="External Data Sources" color={C.blue + "60"} />
+              <DBox x={28} y={34} w={118} h={44} color={C.blue} label="Core Banking" sub="Transactions, Accts" />
+              <DBox x={160} y={34} w={118} h={44} color={C.blue} label="KYC / CDD" sub="Customer Due Diligence" />
+              <DBox x={292} y={34} w={118} h={44} color={C.blue} label="Sanctions Lists" sub="OFAC, UN, EU" />
+              <DBox x={424} y={34} w={118} h={44} color={C.blue} label="Corp Registry" sub="UBO, Directors" />
+              <DBox x={556} y={34} w={195} h={44} color={C.blue} label="External Intel" sub="PEP, Adverse Media, FATF" />
+
+              {/* ── INGESTION ── */}
+              <DBoundary x={10} y={108} w={760} h={58} label="Ingestion & Streaming" color={C.accent + "50"} />
+              <DBox x={50} y={122} w={195} h={34} color={C.accent} label="Apache Kafka / Event Hub" sub="Real-time txn stream" />
+              <DBox x={270} y={122} w={195} h={34} color={C.accent} label="ETL / Batch Pipelines" sub="Airflow + dbt — daily" />
+              <DBox x={490} y={122} w={250} h={34} color={C.accent} label="Schema Registry + CDC (Debezium)" sub="Change data capture" />
+
+              {/* Arrows sources → ingestion */}
+              {[87, 219, 351, 483, 653].map((sx, i) => (
+                <DArrow key={`s${i}`} x1={sx} y1={80} x2={sx < 350 ? 148 : (sx < 500 ? 367 : 615)} y2={122} color={C.blue} />
+              ))}
+
+              {/* ── DATA STORES ── */}
+              <DBoundary x={10} y={182} w={380} h={90} label="Data Storage" color={C.gold + "50"} />
+              <DBox x={25} y={202} w={140} h={56} color={C.gold} label="Graph Database" sub="Neo4j / TigerGraph" icon="🕸️" />
+              <DBox x={185} y={202} w={185} h={56} color={C.gold} label="Feature Store" sub="Feast + Redis online / S3 offline" icon="📦" />
+
+              <DBoundary x={405} y={182} w={365} h={90} label="Vector & Document Store" color={C.purple + "50"} />
+              <DBox x={418} y={202} w={155} h={56} color={C.purple} label="Vector DB" sub="Pinecone / pgvector" icon="🧲" />
+              <DBox x={590} y={202} w={165} h={56} color={C.purple} label="Document Store" sub="Elasticsearch / S3" icon="📄" />
+
+              <DArrow x1={148} y1={158} x2={95} y2={202} color={C.accent} label="events" />
+              <DArrow x1={367} y1={158} x2={277} y2={202} color={C.accent} label="features" />
+              <DArrow x1={367} y1={158} x2={495} y2={202} color={C.accent} label="embeddings" />
+              <DArrow x1={615} y1={158} x2={672} y2={202} color={C.accent} label="docs" />
+
+              {/* ── ML / AI ENGINE ── */}
+              <DBoundary x={10} y={290} w={760} h={105} label="ML / AI Scoring Engine" color={C.red + "50"} />
+              <DBox x={25} y={312} w={130} h={66} color={C.accent} label="Transaction NN" sub="PyTorch Serve" icon="🧠" />
+              <DBox x={170} y={312} w={130} h={66} color={C.purple} label="Graph NN" sub="PyG + FastAPI" icon="🕸️" />
+              <DBox x={315} y={312} w={130} h={66} color={C.gold} label="Ensemble" sub="XGBoost — fusion" icon="🎯" />
+              <DBox x={460} y={312} w={120} h={66} color={C.orange} label="Rule Engine" sub="Drools / custom" icon="📏" />
+              <DBox x={595} y={312} w={155} h={66} color={C.red} label="Alert Generator" sub="Score → Alert → Kafka" icon="🚨" />
+
+              <DArrow x1={95} y1={260} x2={90} y2={312} color={C.gold} />
+              <DArrow x1={277} y1={260} x2={235} y2={312} color={C.gold} />
+              <DArrow x1={157} y1={345} x2={170} y2={345} color={C.accent} />
+              <DArrow x1={302} y1={345} x2={315} y2={345} color={C.purple} />
+              <DArrow x1={447} y1={345} x2={460} y2={345} color={C.gold} />
+              <DArrow x1={582} y1={345} x2={595} y2={345} color={C.orange} />
+
+              {/* ── RAG LAYER ── */}
+              <DBoundary x={10} y={412} w={465} h={78} label="RAG Intelligence Layer" color={C.purple + "50"} />
+              <DBox x={25} y={430} w={130} h={48} color={C.purple} label="Graph RAG" sub="Cypher + LLM" />
+              <DBox x={168} y={430} w={130} h={48} color={C.gold} label="Text RAG" sub="Vector search + LLM" />
+              <DBox x={311} y={430} w={150} h={48} color={C.accent} label="LLM Orchestrator" sub="LangChain / Claude API" />
+
+              <DArrow x1={95} y1={260} x2={90} y2={430} color={C.purple} dashed />
+              <DArrow x1={495} y1={260} x2={233} y2={430} color={C.purple} dashed />
+              <DArrow x1={157} y1={454} x2={168} y2={454} color={C.purple} />
+              <DArrow x1={300} y1={454} x2={311} y2={454} color={C.gold} />
+
+              {/* ── APP LAYER ── */}
+              <DBoundary x={490} y={412} w={280} h={78} label="Application Layer" color={C.accent + "50"} />
+              <DBox x={505} y={430} w={115} h={48} color={C.accent} label="Case Manager" sub="Alert lifecycle" />
+              <DBox x={635} y={430} w={120} h={48} color={C.accent} label="SAR Generator" sub="Draft narratives" />
+
+              <DArrow x1={672} y1={380} x2={562} y2={430} color={C.red} label="alerts" />
+              <DArrow x1={463} y1={454} x2={505} y2={454} color={C.accent} label="context" />
+              <DArrow x1={622} y1={454} x2={635} y2={454} color={C.accent} />
+
+              {/* ── PRESENTATION ── */}
+              <DBoundary x={120} y={508} w={540} h={60} label="Presentation Layer" color={C.text + "30"} />
+              <DBox x={140} y={522} w={150} h={36} color={C.text} label="Investigator UI" sub="React + Grafana" />
+              <DBox x={305} y={522} w={150} h={36} color={C.text} label="Risk Reporting" sub="BI / Tableau" />
+              <DBox x={470} y={522} w={170} h={36} color={C.text} label="Compliance Portal" sub="Audit trail + exports" />
+
+              <DArrow x1={562} y1={480} x2={380} y2={522} color={C.accent} />
+              <DArrow x1={695} y1={480} x2={555} y2={522} color={C.accent} />
+
+              {/* Feedback loop */}
+              <path d="M 140 542 Q 8 542 8 345 Q 8 320 25 318" fill="none" stroke={C.red + "50"} strokeWidth="1.5" strokeDasharray="6,3" />
+              <text x={5} y={435} fill={C.red} fontSize="7" fontFamily={mono} transform="rotate(-90,5,435)" textAnchor="middle">feedback loop</text>
+            </svg>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+            {[
+              { color: C.blue, label: "Data Sources", desc: "5+ external systems feed transactions, KYC, sanctions" },
+              { color: C.accent, label: "Ingestion", desc: "Kafka real-time + Airflow batch + CDC" },
+              { color: C.gold, label: "Storage", desc: "Graph DB, Feature Store, Vector DB, Doc Store" },
+              { color: C.red, label: "ML Engine", desc: "Txn NN → GNN → Ensemble → Alerts" },
+              { color: C.purple, label: "RAG Layer", desc: "Graph RAG + Text RAG + LLM gateway" },
+              { color: C.text, label: "Presentation", desc: "Investigator dashboard, reports, audit" },
+            ].map((item, i) => (
+              <div key={i} style={{ padding: "10px 12px", background: C.card, borderRadius: 8, borderTop: `2px solid ${item.color}` }}>
+                <div style={{ fontFamily: mono, fontSize: 11, color: item.color, fontWeight: 600, marginBottom: 4 }}>{item.label}</div>
+                <div style={{ fontSize: 11, color: C.dim, lineHeight: 1.5 }}>{item.desc}</div>
+              </div>
+            ))}
+          </div>
+
+          <Callout icon="🔄" title="The Feedback Loop" color={C.red}>
+            The dashed red line is critical: investigator decisions feed back into training data. Each reviewed alert improves the next model generation — this is <B color={C.text}>continuous learning</B>.
+          </Callout>
+        </div>
+      )}
+
+      {/* ─── TAB 1: C4 CONTEXT ─── */}
+      {tab === 1 && (
+        <div>
+          <P>The <B color={C.accent}>C4 Context Diagram</B> (Level 1) shows the system as a single box plus all external actors and systems. It answers: <B>"What is this system and who interacts with it?"</B></P>
+
+          <div style={{ background: C.surface, borderRadius: 14, border: `1px solid ${C.border}`, padding: "14px 6px 6px", marginBottom: 16 }}>
+            <div style={{ textAlign: "center", fontFamily: mono, fontSize: 9, color: C.dim, marginBottom: 4 }}>C4 Level 1 — System Context Diagram</div>
+            <svg viewBox="0 0 700 500" style={{ width: "100%" }}>
+              {/* Actors */}
+              <circle cx={180} cy={48} r={18} fill={C.blue + "20"} stroke={C.blue} strokeWidth="1.5" />
+              <text x={180} y={45} textAnchor="middle" fontSize="15">👤</text>
+              <text x={180} y={78} textAnchor="middle" fill={C.blue} fontSize="10" fontFamily={mono} fontWeight="600">AML Investigator</text>
+              <text x={180} y={90} textAnchor="middle" fill={C.dim} fontSize="8" fontFamily={mono}>Reviews alerts, files SARs</text>
+
+              <circle cx={520} cy={48} r={18} fill={C.gold + "20"} stroke={C.gold} strokeWidth="1.5" />
+              <text x={520} y={45} textAnchor="middle" fontSize="15">👔</text>
+              <text x={520} y={78} textAnchor="middle" fill={C.gold} fontSize="10" fontFamily={mono} fontWeight="600">Compliance Officer</text>
+              <text x={520} y={90} textAnchor="middle" fill={C.dim} fontSize="8" fontFamily={mono}>Oversees, reports to regulators</text>
+
+              {/* Main system */}
+              <rect x={175} y={130} width={350} height={120} rx={16} fill={C.accent + "10"} stroke={C.accent} strokeWidth="2.5" />
+              <text x={350} y={162} textAnchor="middle" fill={C.accent} fontSize="14" fontFamily={mono} fontWeight="700">AML Detection Platform</text>
+              <text x={350} y={184} textAnchor="middle" fill={C.dim} fontSize="9" fontFamily={mono}>Scores transactions, detects laundering</text>
+              <text x={350} y={197} textAnchor="middle" fill={C.dim} fontSize="9" fontFamily={mono}>patterns, assists investigations,</text>
+              <text x={350} y={210} textAnchor="middle" fill={C.dim} fontSize="9" fontFamily={mono}>generates SAR narratives</text>
+              <text x={350} y={240} textAnchor="middle" fill={C.accent + "90"} fontSize="9" fontFamily={mono}>[Software System]</text>
+
+              <DArrow x1={180} y1={98} x2={270} y2={130} color={C.blue} label="Reviews alerts, gives feedback" />
+              <DArrow x1={520} y1={98} x2={430} y2={130} color={C.gold} label="Manages policies, views reports" />
+
+              {/* External systems */}
+              <DBox x={10} y={168} w={128} h={56} color={C.blue} label="Core Banking" sub="[External System]" icon="🏦" />
+              <DArrow x1={140} y1={196} x2={175} y2={196} color={C.blue} label="txns" labelSide="below" />
+
+              <DBox x={562} y={168} w={128} h={56} color={C.red} label="Sanctions / PEP" sub="[External System]" icon="🚫" />
+              <DArrow x1={562} y1={196} x2={527} y2={196} color={C.red} label="watchlists" labelSide="below" />
+
+              <DBox x={40} y={310} w={150} h={56} color={C.purple} label="Corp Registry / KYC" sub="[External System]" icon="🏛️" />
+              <DArrow x1={192} y1={330} x2={255} y2={252} color={C.purple} label="entity & UBO data" />
+
+              <DBox x={510} y={310} w={150} h={56} color={C.gold} label="FinCEN / Regulator" sub="[External System]" icon="⚖️" />
+              <DArrow x1={445} y1={252} x2={510} y2={330} color={C.gold} label="SAR filings" />
+
+              <DBox x={250} y={400} w={200} h={52} color={C.orange} label="FATF / Typology Database" sub="[External Knowledge Base]" icon="📚" />
+              <DArrow x1={350} y1={252} x2={350} y2={400} color={C.orange} label="typologies, red flags, guidance" />
+
+              <DBox x={30} y={420} w={150} h={48} color={C.dim} label="Audit Archive" sub="[External Storage]" icon="🗄️" />
+              <DArrow x1={240} y1={252} x2={105} y2={420} color={C.dim} dashed label="audit trails" />
+
+              {/* Legend */}
+              <rect x={555} y={425} width={130} height={55} rx={8} fill={C.card} stroke={C.border} strokeWidth="1" />
+              <text x={620} y={439} textAnchor="middle" fill={C.dim} fontSize="8" fontFamily={mono} fontWeight="600">LEGEND</text>
+              <line x1={565} y1={453} x2={585} y2={453} stroke={C.accent} strokeWidth="2.5" />
+              <text x={592} y={456} fill={C.dim} fontSize="7" fontFamily={mono}>Our System</text>
+              <line x1={565} y1={468} x2={585} y2={468} stroke={C.blue} strokeWidth="1.5" />
+              <text x={592} y={471} fill={C.dim} fontSize="7" fontFamily={mono}>External Systems</text>
+            </svg>
+          </div>
+
+          <Callout icon="📐" title="C4 Level 1: Context" color={C.accent}>
+            The entire platform is <B color={C.text}>one green box</B>. We see 2 human actors (investigator, compliance officer) and 5 external systems. The next level zooms inside that box.
+          </Callout>
+        </div>
+      )}
+
+      {/* ─── TAB 2: C4 CONTAINER ─── */}
+      {tab === 2 && (
+        <div>
+          <P>The <B color={C.accent}>C4 Container Diagram</B> (Level 2) zooms into the platform showing all <B>deployable units</B> — services, databases, and applications.</P>
+
+          <div style={{ background: C.surface, borderRadius: 14, border: `1px solid ${C.border}`, padding: "14px 6px 6px", marginBottom: 16, overflowX: "auto" }}>
+            <div style={{ textAlign: "center", fontFamily: mono, fontSize: 9, color: C.dim, marginBottom: 4 }}>C4 Level 2 — Container Diagram</div>
+            <svg viewBox="0 0 760 640" style={{ width: "100%", minWidth: 600 }}>
+              <DBoundary x={15} y={20} w={730} h={608} label="AML Detection Platform [Software System]" color={C.accent + "40"} />
+
+              {/* Row 1: Ingestion */}
+              <DBox x={30} y={48} w={155} h={52} color={C.accent} label="API Gateway" sub="Kong / AWS ALB" />
+              <text x={107} y={112} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Container: API GW]</text>
+              <DBox x={205} y={48} w={160} h={52} color={C.accent} label="Stream Processor" sub="Kafka Streams / Flink" />
+              <text x={285} y={112} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Container: JVM]</text>
+              <DBox x={385} y={48} w={160} h={52} color={C.gold} label="Feature Pipeline" sub="Airflow + dbt + Feast" />
+              <text x={465} y={112} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Container: Python]</text>
+              <DBox x={565} y={48} w={160} h={52} color={C.purple} label="Graph Builder" sub="Neo4j ETL pipeline" />
+              <text x={645} y={112} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Container: Python]</text>
+
+              <DArrow x1={187} y1={74} x2={205} y2={74} color={C.accent} />
+              <DArrow x1={367} y1={74} x2={385} y2={74} color={C.accent} />
+              <DArrow x1={547} y1={74} x2={565} y2={74} color={C.gold} />
+
+              {/* Row 2: Data Stores */}
+              <DBox x={30} y={135} w={120} h={66} color={C.gold} label="Feature Store" sub="Redis + Feast" icon="📦" />
+              <text x={90} y={212} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Database]</text>
+              <DBox x={168} y={135} w={120} h={66} color={C.purple} label="Graph DB" sub="Neo4j Cluster" icon="🕸️" />
+              <text x={228} y={212} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Database]</text>
+              <DBox x={306} y={135} w={120} h={66} color={C.purple} label="Vector DB" sub="Pinecone / pgvector" icon="🧲" />
+              <text x={366} y={212} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Database]</text>
+              <DBox x={444} y={135} w={130} h={66} color={C.blue} label="Document Store" sub="Elasticsearch" icon="📄" />
+              <text x={509} y={212} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Search Engine]</text>
+              <DBox x={592} y={135} w={130} h={66} color={C.dim} label="Event Store" sub="Kafka Topics" icon="📬" />
+              <text x={657} y={212} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Kafka]</text>
+
+              <DArrow x1={465} y1={102} x2={90} y2={135} color={C.gold} />
+              <DArrow x1={645} y1={102} x2={228} y2={135} color={C.purple} />
+              <DArrow x1={465} y1={102} x2={366} y2={135} color={C.gold} />
+              <DArrow x1={465} y1={102} x2={509} y2={135} color={C.gold} />
+              <DArrow x1={285} y1={102} x2={657} y2={135} color={C.accent} />
+
+              {/* Row 3: ML Services */}
+              <DBoundary x={25} y={228} w={375} h={108} label="ML Scoring Services" color={C.red + "40"} />
+              <DBox x={38} y={252} w={100} h={66} color={C.accent} label="Txn NN" sub="PyTorch Serve" icon="🧠" />
+              <text x={88} y={328} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Python]</text>
+              <DBox x={152} y={252} w={100} h={66} color={C.purple} label="GNN Svc" sub="PyG + FastAPI" icon="🕸️" />
+              <text x={202} y={328} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Python]</text>
+              <DBox x={266} y={252} w={118} h={66} color={C.gold} label="Ensemble" sub="XGBoost + FastAPI" icon="🎯" />
+              <text x={325} y={328} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Python]</text>
+
+              <DArrow x1={140} y1={285} x2={152} y2={285} color={C.accent} />
+              <DArrow x1={254} y1={285} x2={266} y2={285} color={C.purple} />
+              <DArrow x1={90} y1={203} x2={88} y2={252} color={C.gold} />
+              <DArrow x1={228} y1={203} x2={202} y2={252} color={C.purple} />
+
+              {/* Rule + Alert */}
+              <DBox x={420} y={252} w={130} h={66} color={C.orange} label="Rule Engine" sub="Drools / Python" icon="📏" />
+              <text x={485} y={328} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Java/Py]</text>
+              <DBox x={568} y={252} w={150} h={66} color={C.red} label="Alert Service" sub="FastAPI + Postgres" icon="🚨" />
+              <text x={643} y={328} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Python]</text>
+
+              <DArrow x1={386} y1={285} x2={420} y2={285} color={C.gold} />
+              <DArrow x1={552} y1={285} x2={568} y2={285} color={C.orange} />
+
+              {/* Row 4: RAG Services */}
+              <DBoundary x={25} y={350} w={430} h={95} label="RAG Intelligence Services" color={C.purple + "40"} />
+              <DBox x={38} y={372} w={120} h={56} color={C.purple} label="Graph RAG" sub="Cypher + LLM" />
+              <text x={98} y={438} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Python]</text>
+              <DBox x={170} y={372} w={120} h={56} color={C.gold} label="Text RAG" sub="Retriever + LLM" />
+              <text x={230} y={438} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Python]</text>
+              <DBox x={302} y={372} w={140} h={56} color={C.accent} label="LLM Gateway" sub="Claude API / vLLM" />
+              <text x={372} y={438} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[API Proxy]</text>
+
+              <DArrow x1={228} y1={203} x2={98} y2={372} color={C.purple} dashed />
+              <DArrow x1={366} y1={203} x2={230} y2={372} color={C.purple} dashed />
+              <DArrow x1={160} y1={400} x2={170} y2={400} color={C.purple} />
+              <DArrow x1={292} y1={400} x2={302} y2={400} color={C.gold} />
+
+              {/* Application services */}
+              <DBox x={478} y={372} w={120} h={56} color={C.accent} label="Case Manager" sub="Node + Postgres" />
+              <text x={538} y={438} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Service]</text>
+              <DBox x={612} y={372} w={120} h={56} color={C.accent} label="SAR Writer" sub="LLM-powered" />
+              <text x={672} y={438} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Python]</text>
+
+              <DArrow x1={643} y1={320} x2={538} y2={372} color={C.red} label="alerts" />
+              <DArrow x1={444} y1={400} x2={478} y2={400} color={C.accent} label="context" />
+              <DArrow x1={600} y1={400} x2={612} y2={400} color={C.accent} />
+
+              {/* Row 5: Frontend */}
+              <DBox x={150} y={468} w={200} h={48} color={C.text} label="Investigator Web App" sub="React + TailwindCSS" />
+              <text x={250} y={526} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[SPA: React]</text>
+              <DBox x={400} y={468} w={200} h={48} color={C.text} label="Reporting Dashboard" sub="Grafana + Superset" />
+              <text x={500} y={526} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[SPA: Grafana]</text>
+
+              <DArrow x1={538} y1={430} x2={300} y2={468} color={C.accent} />
+              <DArrow x1={538} y1={430} x2={490} y2={468} color={C.accent} />
+
+              {/* Feedback */}
+              <path d="M 150 494 Q 15 494 15 285 Q 15 260 38 258" fill="none" stroke={C.red + "50"} strokeWidth="1.5" strokeDasharray="6,3" />
+              <text x={8} y={390} fill={C.red} fontSize="7" fontFamily={mono} transform="rotate(-90,8,390)" textAnchor="middle">analyst feedback</text>
+
+              <text x={107} y={42} textAnchor="middle" fill={C.accent} fontSize="7" fontFamily={mono}>↓ external traffic</text>
+
+              {/* Container count */}
+              <text x={720} y={614} textAnchor="end" fill={C.dim} fontSize="8" fontFamily={mono}>16 containers total</text>
+            </svg>
+          </div>
+
+          <P>Each box is an independently <B>deployable container</B>. The diagram shows <B color={C.accent}>16 containers</B>: 8 compute services, 5 data stores, and 3 frontend/application components.</P>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            {[
+              { label: "Compute (8)", desc: "Txn NN, GNN, Ensemble, Rules, Alert, Graph RAG, Text RAG, LLM Gateway", color: C.accent },
+              { label: "Data Stores (5)", desc: "Feature Store, Graph DB, Vector DB, Doc Store, Event Store", color: C.gold },
+              { label: "Apps (3)", desc: "Case Manager, SAR Writer, Investigator UI + Reports", color: C.blue },
+              { label: "Infra (4)", desc: "API Gateway, Stream Processor, Feature Pipeline, Graph Builder", color: C.purple },
+            ].map((item, i) => (
+              <Card key={i} color={item.color} title={item.label}>{item.desc}</Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── TAB 3: C4 COMPONENT ─── */}
+      {tab === 3 && (
+        <div>
+          <P>The <B color={C.accent}>C4 Component Diagram</B> (Level 3) zooms into the <B>ML Scoring Engine</B> — the most critical container — showing its 7 internal components.</P>
+
+          <div style={{ background: C.surface, borderRadius: 14, border: `1px solid ${C.border}`, padding: "14px 6px 6px", marginBottom: 16, overflowX: "auto" }}>
+            <div style={{ textAlign: "center", fontFamily: mono, fontSize: 9, color: C.dim, marginBottom: 4 }}>C4 Level 3 — Component Diagram — ML Scoring Engine</div>
+            <svg viewBox="0 0 720 540" style={{ width: "100%", minWidth: 560 }}>
+              <DBoundary x={15} y={15} w={690} h={510} label="ML Scoring Engine [Container: Python Services on K8s]" color={C.red + "40"} />
+
+              {/* External inputs */}
+              <DBox x={25} y={42} w={125} h={42} color={C.gold} label="Feature Store" sub="[External: Redis]" dashed />
+              <DBox x={168} y={42} w={125} h={42} color={C.purple} label="Graph DB" sub="[External: Neo4j]" dashed />
+              <DBox x={311} y={42} w={125} h={42} color={C.accent} label="Event Store" sub="[External: Kafka]" dashed />
+              <DBox x={560} y={42} w={130} h={42} color={C.dim} label="Model Registry" sub="[External: MLflow]" dashed />
+
+              {/* Feature Assembler */}
+              <DBox x={50} y={120} w={200} h={55} color={C.accent} label="Feature Assembler" sub="Joins txn + behavioral + graph" />
+              <text x={150} y={186} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Component: Python module]</text>
+              <DArrow x1={87} y1={86} x2={110} y2={120} color={C.gold} label="txn features" />
+              <DArrow x1={230} y1={86} x2={190} y2={120} color={C.purple} label="graph features" />
+              <DArrow x1={373} y1={86} x2={230} y2={120} color={C.accent} label="trigger" />
+
+              {/* Txn NN Scorer */}
+              <DBox x={50} y={210} w={180} h={60} color={C.accent} label="Transaction NN Scorer" sub="PyTorch model inference" />
+              <text x={140} y={281} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Component: PyTorch]</text>
+              <DArrow x1={150} y1={177} x2={140} y2={210} color={C.accent} label="feature vector (200+)" />
+
+              {/* GNN Scorer */}
+              <DBox x={270} y={210} w={180} h={60} color={C.purple} label="GNN Scorer" sub="PyG + subgraph extract" />
+              <text x={360} y={281} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Component: PyG / DGL]</text>
+              <DArrow x1={230} y1={86} x2={340} y2={210} color={C.purple} label="k-hop subgraph" />
+
+              {/* Model Loader */}
+              <DBox x={520} y={120} w={165} h={55} color={C.dim} label="Model Loader" sub="Version mgmt + A/B test" />
+              <text x={602} y={186} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Component: Python]</text>
+              <DArrow x1={625} y1={86} x2={602} y2={120} color={C.dim} label="model artifacts" />
+              <DArrow x1={540} y1={177} x2={232} y2={222} color={C.dim} dashed label="loads NN weights" />
+              <DArrow x1={540} y1={177} x2={360} y2={210} color={C.dim} dashed label="loads GNN weights" />
+
+              {/* Rule Evaluator */}
+              <DBox x={500} y={210} w={185} h={60} color={C.orange} label="Rule Evaluator" sub="Configurable rule engine" />
+              <text x={592} y={281} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Component: Drools/Py]</text>
+              <DArrow x1={373} y1={70} x2={552} y2={210} color={C.accent} label="txn data" />
+
+              {/* Ensemble Combiner */}
+              <rect x={170} y={310} width={270} height={65} rx={12} fill={C.gold + "15"} stroke={C.gold} strokeWidth="2" />
+              <text x={305} y={335} textAnchor="middle" fill={C.gold} fontSize="12" fontFamily={mono} fontWeight="700">Ensemble Combiner</text>
+              <text x={305} y={352} textAnchor="middle" fill={C.dim} fontSize="9" fontFamily={mono}>XGBoost meta-model — fuses all signals</text>
+              <text x={305} y={387} textAnchor="middle" fill={C.gold} fontSize="8" fontFamily={mono} fontWeight="600">[Component: XGBoost + Calibration]</text>
+
+              <DArrow x1={140} y1={272} x2={230} y2={310} color={C.accent} label="nn_score" />
+              <DArrow x1={360} y1={272} x2={320} y2={310} color={C.purple} label="gnn_score + emb" />
+              <DArrow x1={592} y1={272} x2={400} y2={310} color={C.orange} label="rule_flags" />
+
+              {/* Calibrator */}
+              <DBox x={490} y={318} w={190} h={50} color={C.red} label="Calibrator + Thresholds" sub="Platt scaling, tier routing" />
+              <text x={585} y={380} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Component: Python]</text>
+              <DArrow x1={442} y1={342} x2={490} y2={342} color={C.gold} label="raw score" />
+
+              {/* Alert Publisher */}
+              <rect x={220} y={430} width={280} height={55} rx={10} fill={C.red + "12"} stroke={C.red + "70"} strokeWidth="1.5" />
+              <text x={360} y={452} textAnchor="middle" fill={C.red} fontSize="11" fontFamily={mono} fontWeight="600">Alert Publisher</text>
+              <text x={360} y={468} textAnchor="middle" fill={C.dim} fontSize="8" fontFamily={mono}>Publishes scored alerts to downstream</text>
+              <text x={360} y={498} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Component: Kafka Producer]</text>
+              <DArrow x1={585} y1={370} x2={430} y2={430} color={C.red} label="calibrated score + tier" />
+              <DArrow x1={305} y1={377} x2={340} y2={430} color={C.gold} label="feature snapshot" />
+
+              <text x={360} y={520} textAnchor="middle" fill={C.red} fontSize="9" fontFamily={mono} fontWeight="600">→ Alert Service → Case Manager → Investigator</text>
+            </svg>
+          </div>
+
+          <P>The 7 components inside the scoring engine:</P>
+          <div style={{ display: "grid", gap: 8 }}>
+            {[
+              { name: "Feature Assembler", role: "Joins features from Feature Store + Graph DB into a single vector. Handles missing data and normalization.", color: C.accent },
+              { name: "Transaction NN Scorer", role: "PyTorch inference on feature vector. Batched for ~10K txns/sec on GPU. Outputs risk score + embeddings.", color: C.accent },
+              { name: "GNN Scorer", role: "Extracts k-hop subgraph from Neo4j, runs message passing, outputs network risk + node embedding.", color: C.purple },
+              { name: "Rule Evaluator", role: "Traditional rule set (configurable). Binary flags + hit count. Kept for regulatory transparency.", color: C.orange },
+              { name: "Ensemble Combiner", role: "XGBoost meta-model fusing all scores + embeddings + flags. Retrained quarterly on analyst labels.", color: C.gold },
+              { name: "Calibrator + Thresholds", role: "Platt scaling → true probability. Tier routing: T1 (auto-escalate), T2 (urgent), T3 (batch).", color: C.red },
+              { name: "Alert Publisher", role: "Packages score + tier + features into alert event → Kafka for Case Manager + RAG services.", color: C.red },
+            ].map((item, i) => (
+              <Card key={i} color={item.color} title={item.name}>{item.role}</Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── TAB 4: INFRASTRUCTURE ─── */}
+      {tab === 4 && (
+        <div>
+          <P>The <B color={C.accent}>infrastructure view</B> — how services are deployed, scaled, and monitored in production.</P>
+
+          <div style={{ display: "grid", gap: 10, marginBottom: 20 }}>
+            {[
+              {
+                title: "Compute & Orchestration", color: C.accent,
+                items: [
+                  { k: "Orchestration", v: "Kubernetes (EKS / GKE) — all services as pods with HPA autoscaling" },
+                  { k: "ML Serving", v: "TorchServe (NN), Triton (GNN), FastAPI wrappers (ensemble + rules)" },
+                  { k: "GPU Nodes", v: "NN + GNN on A10G/T4 instances. Ensemble + rules on CPU nodes" },
+                  { k: "Scaling Trigger", v: "HPA on Kafka consumer lag — auto-scales when txn volume spikes" },
+                ]
+              },
+              {
+                title: "Data Pipelines", color: C.gold,
+                items: [
+                  { k: "Real-Time", v: "Kafka → Flink → Feature Store + Graph DB → ML Scoring (p99 < 500ms)" },
+                  { k: "Batch", v: "Airflow: nightly graph rebuild, weekly feature recalc, quarterly retrain" },
+                  { k: "CDC", v: "Debezium captures changes from core banking → Kafka topics" },
+                  { k: "Feature Store", v: "Feast: Redis online store (ms latency) + S3 offline store (training)" },
+                ]
+              },
+              {
+                title: "RAG Infrastructure", color: C.purple,
+                items: [
+                  { k: "Embeddings", v: "Batch: docs → chunk → embed (E5-large) → upsert to vector DB" },
+                  { k: "Graph RAG", v: "LLM → Cypher → Neo4j → subgraph serialize → LLM summarize" },
+                  { k: "LLM Gateway", v: "Claude API with fallback, rate limits, prompt caching, cost tracking" },
+                  { k: "Caching", v: "Redis for frequent graph queries + embeddings — 80%+ hit rate" },
+                ]
+              },
+              {
+                title: "Observability & Governance", color: C.red,
+                items: [
+                  { k: "Model Monitor", v: "Evidently AI: drift detection on features + predictions — alerts on shift" },
+                  { k: "Metrics", v: "Prometheus + Grafana: latency, throughput, errors, Kafka lag, GPU util" },
+                  { k: "Audit Trail", v: "Every score + features + model version → immutable store for regulators" },
+                  { k: "Model Registry", v: "MLflow: version control, A/B testing, one-click rollback" },
+                ]
+              },
+            ].map((section, si) => (
+              <div key={si} style={{ background: C.card, borderRadius: 12, border: `1px solid ${section.color}20`, overflow: "hidden" }}>
+                <div style={{ padding: "10px 16px", background: section.color + "10", borderBottom: `1px solid ${section.color}15` }}>
+                  <span style={{ fontFamily: mono, fontSize: 13, color: section.color, fontWeight: 700 }}>{section.title}</span>
+                </div>
+                {section.items.map((item, ii) => (
+                  <div key={ii} style={{ display: "flex", gap: 10, padding: "10px 16px", borderBottom: ii < section.items.length - 1 ? `1px solid ${C.border}` : "none", alignItems: "baseline" }}>
+                    <div style={{ fontFamily: mono, fontSize: 11, color: section.color, fontWeight: 600, minWidth: 100, flexShrink: 0 }}>{item.k}</div>
+                    <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6 }}>{item.v}</div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          <Callout icon="⚡" title="Latency Budget (Real-Time Path)" color={C.accent}>
+            <B color={C.text}>Kafka</B> (50ms) → <B color={C.text}>Feature Assembly</B> (100ms) → <B color={C.text}>NN Inference</B> (80ms batched) → <B color={C.text}>GNN</B> (200ms, subgraph extraction dominates) → <B color={C.text}>Ensemble</B> (20ms) → <B color={C.text}>Alert Publish</B> (30ms). Total p99: <B color={C.accent}>~500ms</B> — well within the 2-second SLA.
+          </Callout>
+
+          <Callout icon="💰" title="Monthly Cost Estimate (Mid-Size Bank)" color={C.gold}>
+            K8s cluster (GPU+CPU): ~$15K. Neo4j: ~$8K. Vector DB: ~$2K. Kafka: ~$5K. LLM API: ~$3K. Total: <B color={C.text}>~$35–40K/mo</B> — a fraction of savings from reduced FP investigation ($50–100 per alert × thousands of alerts/month).
+          </Callout>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// SECTION 10: LIVE WALKTHROUGH
+// ═══════════════════════════════════════════
+
+const WALK_STEPS = [
+  {
+    id: 0,
+    stage: "Raw Transaction Arrives",
+    layer: "Core Banking → Kafka",
+    icon: "📥",
+    color: C.blue,
+    latency: "0 ms",
+    description: "A wire transfer is initiated from Acme Exports Ltd to Panama Trading Co. The core banking system publishes a raw transaction event to Apache Kafka.",
+    dataLabel: "Raw Kafka Event",
+    data: `{
+  "txn_id": "WR-2026-0321-47291",
+  "timestamp": "2026-03-21T03:22:14Z",
+  "type": "WIRE_TRANSFER",
+  "sender": {
+    "account_id": "ACCT-88421",
+    "entity": "Acme Exports Ltd",
+    "country": "US",
+    "account_age_days": 12
+  },
+  "receiver": {
+    "account_id": "ACCT-PAN-6614",
+    "entity": "Panama Trading Co",
+    "country": "PA",
+    "bank": "Banco Nacional de Panamá"
+  },
+  "amount": 9500.00,
+  "currency": "USD",
+  "reference": "Invoice INV-2026-331"
+}`,
+    insight: "Notice: $9,500 is just below the $10,000 CTR reporting threshold. The timestamp is 3:22 AM — unusual for a business account. The account is only 12 days old. None of these alone is conclusive, but together they're worth examining.",
+  },
+  {
+    id: 1,
+    stage: "CDC & Schema Validation",
+    layer: "Kafka → Stream Processor",
+    icon: "🔄",
+    color: C.accent,
+    latency: "+50 ms",
+    description: "The Kafka Streams / Flink consumer picks up the event. It validates the schema, deduplicates (idempotency check), enriches with CDC data from the KYC system, and routes to the feature pipeline.",
+    dataLabel: "Enriched Event (after CDC join)",
+    data: `{
+  "txn_id": "WR-2026-0321-47291",
+  ...original fields...,
+  "cdc_enrichment": {
+    "sender_kyc": {
+      "risk_rating": "HIGH",
+      "entity_type": "CORPORATE",
+      "industry": "Import/Export",
+      "onboarded": "2026-03-09",
+      "beneficial_owner": "John M. Carter",
+      "pep_match": false,
+      "adverse_media_hits": 0
+    },
+    "receiver_kyc": {
+      "risk_rating": "NOT_ON_FILE",
+      "jurisdiction_risk": 0.82,
+      "fatf_greylist": true
+    }
+  },
+  "dedup_key": "sha256:a4f2b8...",
+  "processing_ts": "2026-03-21T03:22:14.050Z"
+}`,
+    insight: "The receiver is in Panama (FATF greylist, jurisdiction risk 0.82) and is NOT in our KYC system — we've never onboarded them. The sender was onboarded only 12 days ago and is rated HIGH risk. All of this metadata was joined in real-time via CDC from the KYC database.",
+  },
+  {
+    id: 2,
+    stage: "Feature Extraction",
+    layer: "Feature Pipeline → Feature Store",
+    icon: "⚙️",
+    color: C.gold,
+    latency: "+100 ms",
+    description: "The feature pipeline computes 200+ features across three levels: transaction-level, behavioral (from historical patterns), and graph-level (from the entity's network). Results are written to the Feature Store (Redis) for real-time serving.",
+    dataLabel: "Feature Vector (37 of 200+ shown)",
+    data: `{
+  "txn_features": {
+    "amount": 9500.00,
+    "amount_to_ctr_ratio": 0.95,
+    "is_round_amount": false,
+    "hour_of_day": 3,
+    "is_business_hours": false,
+    "cross_border": true,
+    "sender_country_risk": 0.15,
+    "receiver_country_risk": 0.82,
+    "currency_conversion": false,
+    "days_since_account_open": 12
+  },
+  "behavioral_features": {
+    "tx_count_7d": 47,
+    "tx_count_7d_zscore": 8.4,
+    "avg_amount_7d": 9487.23,
+    "amount_std_7d": 42.10,
+    "amount_dispersion": 0.004,
+    "unique_counterparties_7d": 14,
+    "counterparty_velocity_zscore": 12.1,
+    "dormancy_days_before_spike": 183,
+    "dormancy_break": true,
+    "time_entropy_7d": 0.31,
+    "weekend_tx_ratio_7d": 0.62,
+    "max_daily_amount_7d": 47500.00,
+    "structuring_score": 0.94
+  },
+  "graph_features": {
+    "counterparty_shared_ubo": true,
+    "network_density": 0.73,
+    "circular_flow_detected": true,
+    "shell_company_score": 0.91,
+    "sanctions_proximity_hops": 2,
+    "community_risk_score": 0.87,
+    "betweenness_centrality": 0.42,
+    "pagerank_score": 0.068,
+    "in_degree": 3,
+    "out_degree": 14,
+    "clustering_coefficient": 0.89,
+    "avg_neighbor_risk": 0.74,
+    "triangle_count": 8,
+    "path_to_sanctioned_entity": "ACCT-88421→PAN-6614→GLB-2201→[SANCTIONED:ENT-X]"
+  }
+}`,
+    insight: "The behavioral features are screaming: 47 transactions in 7 days (z-score 8.4 = extreme outlier), all clustering around $9,500 (dispersion 0.004 = nearly identical amounts), 14 new counterparties, and a dormancy break after 183 days. The structuring score of 0.94 is computed from the combination of near-threshold amounts + high velocity + low dispersion. The graph features show the entity is 2 hops from a sanctioned entity, with a circular flow detected.",
+  },
+  {
+    id: 3,
+    stage: "Transaction NN Scoring",
+    layer: "Feature Store → Transaction NN (PyTorch)",
+    icon: "🧠",
+    color: C.accent,
+    latency: "+80 ms",
+    description: "The 200+ feature vector is fed through the 3-layer neural network (128→64→32→1). Each hidden layer applies weighted sum + ReLU activation — the same perceptron math from §2, just scaled up. The output sigmoid gives a probability.",
+    dataLabel: "NN Inference Trace",
+    data: `Transaction NN Inference:
+─────────────────────────────────────
+Input:  feature_vector ∈ ℝ²⁰⁷ (normalized)
+
+Layer 1 (128 neurons, ReLU):
+  z₁ = W₁ · x + b₁        → ℝ¹²⁸
+  h₁ = ReLU(z₁)            → 94/128 neurons active
+  Key activations:
+    neuron_12 (threshold_detector):  0.97 ← high
+    neuron_45 (velocity_anomaly):    0.94 ← high
+    neuron_88 (jurisdiction_risk):   0.81 ← moderate
+
+Layer 2 (64 neurons, ReLU):
+  z₂ = W₂ · h₁ + b₂       → ℝ⁶⁴
+  h₂ = ReLU(z₂)            → 41/64 neurons active
+  Key activations:
+    neuron_7  (structuring_pattern):  0.96
+    neuron_31 (new_acct_risk_combo):  0.88
+
+Layer 3 (32 neurons, ReLU):
+  z₃ = W₃ · h₂ + b₃       → ℝ³²
+  h₃ = ReLU(z₃)            → 22/32 neurons active
+
+Output (sigmoid):
+  logit = W_out · h₃ + b_out = 2.14
+  score = σ(2.14) = 0.895
+
+─────────────────────────────────────
+Transaction NN Risk Score: 0.895
+Confidence Interval (MC Dropout): [0.84, 0.93]
+Inference Time: 0.8 ms (batched, GPU)`,
+    insight: "The NN outputs 0.895 — high risk. Notice how Layer 1 detects individual signals (threshold proximity, velocity anomaly, jurisdiction risk), Layer 2 combines them into patterns (structuring, new-account-risk-combo), and the output compresses everything into a single probability. This is exactly the hierarchical feature composition we discussed in the NN guide §6.",
+  },
+  {
+    id: 4,
+    stage: "Graph Neural Network Scoring",
+    layer: "Graph DB → GNN Service (PyG)",
+    icon: "🕸️",
+    color: C.purple,
+    latency: "+200 ms",
+    description: "The GNN service extracts a 3-hop subgraph around Acme Exports from Neo4j, runs 3 rounds of message passing so each node absorbs information from its network neighborhood, then classifies the entity.",
+    dataLabel: "GNN Processing Trace",
+    data: `GNN Subgraph Extraction (Neo4j):
+─────────────────────────────────────
+MATCH (a:Entity {id:'ACME-EXP'})-[*1..3]-(n)
+RETURN subgraph
+
+Subgraph Stats:
+  Nodes: 23 entities
+  Edges: 47 transaction edges + 12 ownership edges
+  Sanctioned in 3-hop: 1 (Entity-X, via 2 intermediaries)
+
+Message Passing (3 rounds):
+─────────────────────────────────────
+Round 1 — Direct neighbors:
+  Acme gathers from: Panama Trading, Shell-B, Shell-C,
+  Shell-D, ... (14 counterparties)
+  → Embedding now encodes: "transacts with many new,
+     high-risk, related entities"
+
+Round 2 — 2-hop neighborhood:
+  Acme now sees: counterparties' counterparties
+  → Embedding now encodes: "counterparties share
+     beneficial owner + funnel to common aggregator"
+
+Round 3 — 3-hop neighborhood:
+  Acme now sees: Entity-X (OFAC sanctioned)
+  → Embedding now encodes: "2 hops from sanctioned
+     entity via shared directorship"
+
+Classification Head:
+  node_embedding ∈ ℝ⁶⁴  →  MLP  →  risk_score
+
+─────────────────────────────────────
+GNN Network Risk Score: 0.92
+Detected Patterns:
+  ✓ Circular flow (A→B,C,D→F→A)
+  ✓ Shell company cluster (11/14 counterparties
+    incorporated within 30 days of each other)
+  ✓ Sanctions proximity: 2 hops to OFAC Entity-X
+  ✓ Shared UBO across 6 counterparties
+Subgraph Extraction Time: 180 ms
+Inference Time: 20 ms`,
+    insight: "The GNN scores 0.92 — even higher than the transaction NN, because the network evidence is overwhelming. The key detection: 11 of 14 counterparties were incorporated within 30 days of each other (shell company cluster), money flows in a circle, and there's a 2-hop path to a sanctioned entity. No single-transaction model could ever see this — it requires the graph structure.",
+  },
+  {
+    id: 5,
+    stage: "Rule Engine Evaluation",
+    layer: "Feature Store → Rule Engine (Drools)",
+    icon: "📏",
+    color: C.orange,
+    latency: "+20 ms",
+    description: "In parallel with the ML models, the traditional rule engine evaluates the transaction against the bank's configured rule set. This provides interpretable, auditable flags that regulators expect to see.",
+    dataLabel: "Rule Engine Results",
+    data: `Rule Evaluation Results:
+─────────────────────────────────────
+Rule ID   | Rule Name                     | Result
+----------|-------------------------------|--------
+R-001     | Amount near CTR threshold     | ✓ FIRED
+          | ($9,000-$9,999)               |
+R-014     | New account (<30 days) +      | ✓ FIRED
+          | international wire            |
+R-027     | High-risk jurisdiction        | ✓ FIRED
+          | (FATF greylist receiver)       |
+R-033     | Velocity spike (>10x          | ✓ FIRED
+          | normal in 7 days)             |
+R-041     | Dormancy break + sudden       | ✓ FIRED
+          | high activity                 |
+R-055     | Multiple same-amount txns     | ✓ FIRED
+          | within 30 days                |
+R-072     | Cross-border to non-KYC       | ✓ FIRED
+          | counterparty                  |
+R-089     | Beneficiary in sanctioned     | ✗ no
+          | country                       |
+R-091     | PEP match on sender           | ✗ no
+
+─────────────────────────────────────
+Rules Fired: 7 / 42 active rules
+Rule Severity Score: HIGH (5+ critical rules)
+Evaluation Time: 18 ms`,
+    insight: "7 out of 42 rules fired — that's a lot. In a pure rule-based system, this would be just another alert in a pile of thousands. The rules give interpretable evidence (great for regulators), but they also fire on many legitimate transactions. The ML models add the nuance to distinguish this truly suspicious case from a business that just happens to do a lot of international wires.",
+  },
+  {
+    id: 6,
+    stage: "Ensemble Score Fusion",
+    layer: "All Scores → Ensemble (XGBoost)",
+    icon: "🎯",
+    color: C.gold,
+    latency: "+20 ms",
+    description: "The XGBoost ensemble model takes ALL signals as input — NN score, GNN score, GNN embedding, rule flags, and select raw features — and produces a single fused risk score. It has learned the optimal weighting from thousands of past analyst decisions.",
+    dataLabel: "Ensemble Input & Output",
+    data: `Ensemble Model Input:
+─────────────────────────────────────
+transaction_nn_score:      0.895
+gnn_network_score:         0.920
+gnn_embedding[0:31]:       [0.42, -0.18, 0.91, ...]
+rule_flags_count:          7
+rule_severity:             HIGH (encoded: 3)
+structuring_score:         0.94
+tx_count_7d_zscore:        8.4
+sanctions_proximity_hops:  2
+circular_flow_detected:    1
+shell_company_score:       0.91
+dormancy_break:            1
+account_age_days:          12
+
+XGBoost Decision Path:
+─────────────────────────────────────
+Tree 1: gnn_score > 0.85 → LEFT
+  → sanctions_proximity ≤ 3 → LEFT
+  → circular_flow = 1 → LEAF: +0.32
+
+Tree 2: nn_score > 0.80 → LEFT
+  → structuring_score > 0.90 → LEFT
+  → LEAF: +0.28
+
+Tree 3: rule_flags > 5 → LEFT
+  → shell_company_score > 0.85 → LEFT
+  → LEAF: +0.19
+
+... (150 trees total) ...
+
+Raw Ensemble Output:  4.82 (log-odds)
+─────────────────────────────────────
+Calibrated Score (Platt): 0.964
+Alert Tier: TIER 1 — AUTO-ESCALATE
+Confidence: VERY HIGH`,
+    insight: "The ensemble fuses all signals and outputs 0.964 after Platt calibration — meaning there's a 96.4% probability this is genuinely suspicious. Notice how the XGBoost trees naturally combine evidence: Tree 1 uses the GNN + sanctions proximity + circular flow, Tree 2 uses the NN + structuring score, Tree 3 uses rules + shell company evidence. Each tree captures a different \"reasoning path.\" The final score is higher than any individual model because all three systems agree strongly.",
+  },
+  {
+    id: 7,
+    stage: "Alert Generation & Routing",
+    layer: "Ensemble → Alert Service → Kafka",
+    icon: "🚨",
+    color: C.red,
+    latency: "+30 ms",
+    description: "The calibrated score exceeds the Tier 1 threshold (0.95). The Alert Service creates a structured alert, snapshots all features and scores for audit trail, and publishes to the alert Kafka topic for downstream consumption.",
+    dataLabel: "Generated Alert Event",
+    data: `{
+  "alert_id": "AML-2026-0321-00847",
+  "timestamp": "2026-03-21T03:22:14.480Z",
+  "tier": "TIER_1",
+  "priority": "AUTO_ESCALATE",
+  "calibrated_score": 0.964,
+
+  "transaction": {
+    "txn_id": "WR-2026-0321-47291",
+    "amount": 9500.00,
+    "sender": "Acme Exports Ltd",
+    "receiver": "Panama Trading Co"
+  },
+
+  "scores": {
+    "transaction_nn": 0.895,
+    "gnn_network": 0.920,
+    "rule_flags": 7,
+    "ensemble_raw": 4.82,
+    "ensemble_calibrated": 0.964
+  },
+
+  "detected_typologies": [
+    "STRUCTURING",
+    "LAYERING_VIA_SHELL_COMPANIES",
+    "SANCTIONS_PROXIMITY"
+  ],
+
+  "key_evidence": [
+    "47 txns in 7d, avg $9,487 (structuring)",
+    "11/14 counterparties incorporated <30d ago",
+    "Circular flow: ACME→shells→Entity-F→ACME",
+    "2-hop path to OFAC Entity-X via shared dir.",
+    "183-day dormancy break"
+  ],
+
+  "model_version": "ensemble-v3.2.1-2026Q1",
+  "feature_snapshot_uri": "s3://aml-audit/snapshots/AML-2026-0321-00847.parquet",
+
+  "routing": {
+    "assigned_queue": "HIGH_PRIORITY",
+    "sla_hours": 4,
+    "auto_escalate": true
+  }
+}`,
+    insight: "The alert packages everything: scores from all models, detected typologies, key evidence bullets, model version (for reproducibility), and a pointer to the full feature snapshot in S3 (regulators can audit exactly what the model saw). The alert is routed to the HIGH_PRIORITY queue with a 4-hour SLA.",
+  },
+  {
+    id: 8,
+    stage: "Graph RAG — Investigation Context",
+    layer: "Alert → Graph RAG → LLM",
+    icon: "🕸️",
+    color: C.purple,
+    latency: "+800 ms",
+    description: "When the investigator opens the alert, Graph RAG automatically generates a contextual briefing. It queries Neo4j for the relevant subgraph, serializes it, and sends it to the LLM with the alert context.",
+    dataLabel: "Graph RAG Pipeline",
+    data: `Step 1 — Auto-generated Cypher Query:
+─────────────────────────────────────
+MATCH path = (a:Entity {name:'Acme Exports Ltd'})
+  -[:SENT_TO*1..3]->(intermediary)
+  -[:HAS_DIRECTOR|BENEFICIAL_OWNER*0..2]->
+  (related)
+WHERE related.sanctions_status = 'LISTED'
+   OR intermediary.shell_score > 0.8
+RETURN path, nodes(path), relationships(path)
+LIMIT 50
+
+Step 2 — Subgraph Retrieved:
+─────────────────────────────────────
+23 nodes, 59 edges returned
+Key paths:
+  Acme → Panama Trading → Global Imports
+    → [Director: J.Smith] → Entity-X [OFAC]
+  Acme → Shell-B → Shell-C → Entity-F → Acme
+    (circular flow confirmed)
+
+Step 3 — LLM Prompt (condensed):
+─────────────────────────────────────
+System: You are an AML investigation assistant.
+Given the following entity network and alert
+context, provide a structured investigation
+briefing.
+
+[Serialized subgraph: 23 nodes, 59 edges with
+ all properties...]
+[Alert context: scores, typologies, evidence...]
+
+Step 4 — LLM Investigation Briefing:
+─────────────────────────────────────
+"Acme Exports Ltd (US, onboarded 2026-03-09)
+executed 47 wire transfers totaling $446,500 over
+12 days, averaging $9,500 per transaction — a
+pattern consistent with structuring to evade CTR
+reporting.
+
+The funds were distributed across 14 counter-
+parties, 11 of which were incorporated in Panama
+within a 30-day window (Mar 2-31, 2026),
+suggesting coordinated shell company creation.
+
+Money flow analysis reveals a circular pattern:
+Acme → [5 shells] → Entity-F (Bahamas) → back
+to Acme via a BVI intermediary.
+
+SANCTIONS NEXUS: Panama Trading Co and Global
+Imports LLC share a director (J. Smith, DOB
+1978-04-12) with Entity-X, which was added to
+the OFAC SDN list on 2025-11-14. J. Smith became
+director of Global Imports just 14 days after
+Entity-X was sanctioned.
+
+Recommended Actions:
+1. File SAR — structuring + sanctions proximity
+2. Enhanced Due Diligence on all 14 counterparties
+3. Escalate to sanctions compliance team
+4. Consider blocking further outbound wires"`,
+    insight: "Graph RAG turns raw graph data into a human-readable investigation narrative. The investigator doesn't need to manually trace paths through the graph — the system does it automatically and presents the evidence in narrative form. Notice how it connects the dots: J. Smith became director of Global Imports 14 days AFTER Entity-X was sanctioned — a temporal relationship that requires both graph structure and timeline analysis.",
+  },
+  {
+    id: 9,
+    stage: "Text RAG — Regulatory & Typology Context",
+    layer: "Alert → Text RAG → LLM",
+    icon: "📚",
+    color: C.gold,
+    latency: "+600 ms",
+    description: "In parallel with Graph RAG, the Text RAG system retrieves relevant regulatory passages and typology descriptions from the compliance document corpus to support the investigation.",
+    dataLabel: "Text RAG Retrieval Results",
+    data: `Vector Similarity Search:
+─────────────────────────────────────
+Query embedding: "structuring wire transfers
+shell companies Panama sanctions proximity"
+
+Top-K Retrieved Chunks (cosine similarity):
+
+[1] FATF Report: Trade-Based Money Laundering
+    (similarity: 0.94)
+    "...use of shell companies in free trade
+    zones to layer proceeds through multiple
+    jurisdictions... common red flags include
+    transactions just below reporting thresholds,
+    newly incorporated entities, and complex
+    ownership structures..."
+
+[2] BSA/AML Manual §5.4: Structuring
+    (similarity: 0.92)
+    "...structuring involves breaking transactions
+    into smaller amounts to evade CTR filing
+    requirements... financial institutions must
+    report suspicious patterns even when
+    individual transactions are below $10,000..."
+
+[3] FinCEN Advisory FIN-2025-A003
+    (similarity: 0.89)
+    "...increased scrutiny on Panama-based entities
+    following FATF greylist designation...
+    institutions should perform enhanced due
+    diligence on all correspondent relationships..."
+
+[4] Internal SAR-2024-8834 Narrative
+    (similarity: 0.87)
+    "...similar layering scheme using Panamanian
+    shells detected in Q3 2024... resulted in
+    enforcement action... network shared 2
+    intermediary entities with current case..."
+
+─────────────────────────────────────
+LLM Synthesis:
+"This transaction pattern closely matches the
+FATF 'trade-based laundering via shell companies'
+typology. Per BSA/AML §5.4, structuring is
+independently reportable. FinCEN Advisory
+FIN-2025-A003 specifically flags Panama-based
+entities for enhanced scrutiny. Notably, internal
+case SAR-2024-8834 describes an identical scheme
+— that case shared 2 intermediary entities with
+this alert and resulted in enforcement action."`,
+    insight: "Text RAG grounds the investigation in authoritative sources: FATF typology reports, BSA/AML regulations, FinCEN advisories, and even past internal SARs. The key find here: SAR-2024-8834 describes an identical scheme and shares 2 intermediaries with the current case — this is a direct connection that would take a human analyst hours to discover manually.",
+  },
+  {
+    id: 10,
+    stage: "Investigator Dashboard",
+    layer: "Case Manager → React UI",
+    icon: "👤",
+    color: C.text,
+    latency: "Human time",
+    description: "Everything converges on the investigator's screen: the alert with scores, the Graph RAG briefing, the Text RAG regulatory context, and an interactive network visualization. The investigator reviews, decides, and that decision feeds back into the training pipeline.",
+    dataLabel: "Investigator Actions & Feedback Loop",
+    data: `Investigator Dashboard — Alert AML-2026-0321-00847
+─────────────────────────────────────
+┌─ ALERT SUMMARY ───────────────────┐
+│ Score: 0.964 (Tier 1)             │
+│ Typologies: Structuring, Layering,│
+│             Sanctions Proximity    │
+│ SLA: 4 hours | Assigned: A. Patel │
+└────────────────────────────────────┘
+
+┌─ AI BRIEFING (Graph RAG) ─────────┐
+│ [Full narrative from Step 8]       │
+│ Interactive graph visualization    │
+│ Click any node → entity details   │
+└────────────────────────────────────┘
+
+┌─ REGULATORY CONTEXT (Text RAG) ───┐
+│ [FATF, BSA/AML, FinCEN citations] │
+│ Similar past case: SAR-2024-8834  │
+└────────────────────────────────────┘
+
+Investigator Decision Options:
+─────────────────────────────────────
+ [✓ Confirm — File SAR]
+ [ ] Escalate to Sanctions Team
+ [ ] Request Enhanced Due Diligence
+ [ ] Dismiss — False Positive
+ [ ] Dismiss — Known Pattern (explain)
+
+Decision: ✓ CONFIRM — FILE SAR
+Time to decision: 18 minutes
+(vs. avg 2.5 hours without AI assistance)
+
+─────────────────────────────────────
+Feedback Loop Activated:
+  → Label: TRUE_POSITIVE
+  → Added to training dataset v2026-Q2
+  → SAR draft auto-generated from Graph RAG
+    briefing (review & submit in 12 min)
+  → Total case time: 30 minutes
+  → Previous avg without system: 4-6 hours`,
+    insight: "The investigator confirmed the alert and filed a SAR in 30 minutes total. Without the AI system, this would have taken 4–6 hours of manual graph tracing, regulatory lookup, and SAR writing. The TRUE_POSITIVE label feeds back into the training pipeline — the next model version will learn from this case. The SAR narrative was auto-drafted from the Graph RAG briefing, saving another 2+ hours.",
+  },
+];
+
+function Section10() {
+  const [activeStep, setActiveStep] = useState(0);
+  const [autoPlay, setAutoPlay] = useState(false);
+  const step = WALK_STEPS[activeStep];
+
+  useEffect(() => {
+    if (!autoPlay) return;
+    if (activeStep >= WALK_STEPS.length - 1) { setAutoPlay(false); return; }
+    const t = setTimeout(() => setActiveStep(s => s + 1), 3000);
+    return () => clearTimeout(t);
+  }, [autoPlay, activeStep]);
+
+  return (
+    <div>
+      <P>Let's trace <B color={C.accent}>one real transaction</B> through every layer of the architecture. We'll follow a $9,500 wire transfer from Acme Exports Ltd to Panama Trading Co — watching the actual data transformations, scores, and decisions at each stage.</P>
+
+      {/* ── TIMELINE BAR ── */}
+      <div style={{ background: C.surface, borderRadius: 12, padding: "16px 12px", border: `1px solid ${C.border}`, marginBottom: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+          <span style={{ fontFamily: mono, fontSize: 11, color: C.accent, fontWeight: 600 }}>Transaction Lifecycle — Stage {activeStep + 1}/{WALK_STEPS.length}</span>
+          <div style={{ display: "flex", gap: 6 }}>
+            <button onClick={() => setActiveStep(Math.max(0, activeStep - 1))} style={{ background: C.card, color: C.dim, border: `1px solid ${C.border}`, borderRadius: 5, padding: "4px 10px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>◀</button>
+            <button onClick={() => setActiveStep(Math.min(WALK_STEPS.length - 1, activeStep + 1))} style={{ background: C.accent, color: C.bg, border: "none", borderRadius: 5, padding: "4px 10px", cursor: "pointer", fontFamily: mono, fontSize: 10, fontWeight: 700 }}>▶</button>
+            <button onClick={() => { setActiveStep(0); setTimeout(() => setAutoPlay(true), 100); }} style={{ background: "transparent", color: C.green, border: `1px solid ${C.green}50`, borderRadius: 5, padding: "4px 10px", cursor: "pointer", fontFamily: mono, fontSize: 10 }}>▶▶ Auto</button>
+          </div>
+        </div>
+
+        {/* Stage pills */}
+        <div style={{ display: "flex", gap: 3, marginBottom: 10, overflowX: "auto", paddingBottom: 4 }}>
+          {WALK_STEPS.map((s, i) => (
+            <button key={i} onClick={() => { setAutoPlay(false); setActiveStep(i); }} style={{
+              background: activeStep === i ? s.color : (i < activeStep ? s.color + "25" : "transparent"),
+              color: activeStep === i ? C.bg : (i < activeStep ? s.color : C.faint),
+              border: `1px solid ${activeStep === i ? s.color : (i < activeStep ? s.color + "40" : C.border)}`,
+              borderRadius: 14, padding: "4px 10px", cursor: "pointer",
+              fontFamily: mono, fontSize: 9, fontWeight: activeStep === i ? 700 : 400,
+              transition: "all 0.15s", whiteSpace: "nowrap", flexShrink: 0,
+            }}>
+              {s.icon} {i + 1}
+            </button>
+          ))}
+        </div>
+
+        {/* Progress bar */}
+        <div style={{ height: 3, background: C.faint, borderRadius: 2, overflow: "hidden" }}>
+          <div style={{ height: "100%", width: `${((activeStep + 1) / WALK_STEPS.length) * 100}%`, background: step.color, borderRadius: 2, transition: "width 0.3s ease" }} />
+        </div>
+      </div>
+
+      {/* ── STAGE HEADER ── */}
+      <div style={{ display: "flex", gap: 14, alignItems: "center", padding: "16px 18px", background: step.color + "10", borderRadius: 12, border: `1px solid ${step.color}30`, marginBottom: 16 }}>
+        <div style={{ fontSize: 28, flexShrink: 0 }}>{step.icon}</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 8 }}>
+            <div style={{ fontFamily: mono, fontSize: 15, color: step.color, fontWeight: 700 }}>
+              Stage {step.id + 1}: {step.stage}
+            </div>
+            <div style={{ fontFamily: mono, fontSize: 11, color: C.dim, padding: "2px 8px", background: C.card, borderRadius: 4 }}>
+              ⏱ {step.latency}
+            </div>
+          </div>
+          <div style={{ fontFamily: mono, fontSize: 11, color: C.dim, marginTop: 4 }}>{step.layer}</div>
+        </div>
+      </div>
+
+      {/* ── DESCRIPTION ── */}
+      <P>{step.description}</P>
+
+      {/* ── DATA PANEL ── */}
+      <div style={{ background: "#000", borderRadius: 12, border: `1px solid ${step.color}25`, overflow: "hidden", marginBottom: 16 }}>
+        <div style={{ padding: "10px 16px", background: step.color + "08", borderBottom: `1px solid ${step.color}20`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontFamily: mono, fontSize: 11, color: step.color, fontWeight: 600 }}>{step.dataLabel}</span>
+          <span style={{ fontFamily: mono, fontSize: 9, color: C.dim }}>Stage {step.id + 1}/{WALK_STEPS.length}</span>
+        </div>
+        <div style={{ padding: "14px 16px", fontFamily: mono, fontSize: 11, color: C.dim, lineHeight: 1.7, whiteSpace: "pre-wrap", overflowX: "auto", maxHeight: 420, overflowY: "auto" }}>
+          {step.data.split('\n').map((line, i) => {
+            const isKey = line.includes('":') || line.includes(': ') && !line.startsWith(' ');
+            const isHeader = line.includes('─') || line.includes('Step ') || line.includes('Layer ') || line.includes('Round ') || line.includes('Tree ');
+            const isHighlight = line.includes('✓') || line.includes('FIRED') || line.includes('Score:') || line.includes('score:') || line.includes('TIER') || line.includes('CONFIRM');
+            const isWarning = line.includes('SANCTIONED') || line.includes('OFAC') || line.includes('sanctions') || line.includes('circular');
+            return (
+              <div key={i} style={{
+                color: isHeader ? step.color : isHighlight ? C.accent : isWarning ? C.red : (line.trim().startsWith('//') || line.trim().startsWith('←') ? C.dim : C.text + "cc"),
+                fontWeight: isHeader ? 600 : 400,
+              }}>
+                {line || '\u00A0'}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── INSIGHT ── */}
+      <Callout icon="💡" title="What Just Happened" color={step.color}>
+        {step.insight}
+      </Callout>
+
+      {/* ── CUMULATIVE LATENCY ── */}
+      <div style={{ marginTop: 16, padding: "12px 16px", background: C.card, borderRadius: 10, border: `1px solid ${C.border}` }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <span style={{ fontFamily: mono, fontSize: 11, color: C.dim }}>Cumulative Latency</span>
+          <span style={{ fontFamily: mono, fontSize: 11, color: C.accent }}>
+            {step.id <= 7 ? `~${[0, 50, 150, 230, 430, 450, 470, 500][step.id]}ms` : step.id === 8 ? "~1.3s" : step.id === 9 ? "~1.9s" : "Human"}
+          </span>
+        </div>
+        <div style={{ display: "flex", gap: 2 }}>
+          {WALK_STEPS.slice(0, 8).map((s, i) => (
+            <div key={i} style={{
+              flex: i === 4 ? 3 : i === 2 ? 2 : 1,
+              height: 6, borderRadius: 3,
+              background: i <= activeStep ? s.color : C.faint,
+              transition: "background 0.3s ease",
+            }} title={`${s.stage}: ${s.latency}`} />
+          ))}
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+          <span style={{ fontFamily: mono, fontSize: 8, color: C.dim }}>0ms</span>
+          <span style={{ fontFamily: mono, fontSize: 8, color: C.dim }}>500ms (SLA: 2s)</span>
+        </div>
+      </div>
+
+      {/* ── ARCHITECTURE POSITION INDICATOR ── */}
+      {activeStep <= 7 && (
+        <div style={{ marginTop: 16, padding: "14px 16px", background: C.surface, borderRadius: 10, border: `1px solid ${C.border}` }}>
+          <div style={{ fontFamily: mono, fontSize: 10, color: C.dim, marginBottom: 10 }}>Where we are in the architecture:</div>
+          <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+            {[
+              { name: "Kafka", stage: [0, 1] },
+              { name: "Feature Pipeline", stage: [2] },
+              { name: "Transaction NN", stage: [3] },
+              { name: "GNN", stage: [4] },
+              { name: "Rules", stage: [5] },
+              { name: "Ensemble", stage: [6] },
+              { name: "Alert Svc", stage: [7] },
+            ].map((comp, i) => {
+              const isActive = comp.stage.includes(activeStep);
+              const isPast = comp.stage.every(s => s < activeStep);
+              return (
+                <div key={i} style={{
+                  padding: "5px 10px", borderRadius: 6,
+                  fontFamily: mono, fontSize: 10,
+                  background: isActive ? step.color + "20" : "transparent",
+                  color: isActive ? step.color : isPast ? C.accent + "80" : C.faint,
+                  border: `1px solid ${isActive ? step.color + "50" : isPast ? C.accent + "30" : C.border}`,
+                  fontWeight: isActive ? 700 : 400,
+                }}>
+                  {isPast ? "✓ " : isActive ? "→ " : ""}{comp.name}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// SECTION 11: ADVANCED DESIGN PATTERNS
+// ═══════════════════════════════════════════
+
+function Section11() {
+  const [tab, setTab] = useState(0);
+
+  return (
+    <div>
+      <Bridge from="Current Design" to="Production Hardening" text="Our system works. Now let's evolve it with advanced patterns that reduce false positives further, improve explainability, and close critical blind spots." />
+
+      <Tabs items={["Multi-Axis Scoring", "Tuning Matrix & Recurrence", "Dual-Track Escalation", "Enhanced Architecture", "Remaining Blind Spots"]} active={tab} onSelect={setTab} />
+
+      {/* ─── TAB 0: MULTI-AXIS SCORING ─── */}
+      {tab === 0 && (
+        <div>
+          <P>Our current system feeds a flat 200+ feature vector into the Transaction NN. But AML risk manifests at <B color={C.accent}>different levels of granularity</B>. A $9,500 wire is suspicious at the transaction level. 47 such wires in a week are suspicious at the account level. The same client doing this across 3 accounts is suspicious at the client level. And the client being connected to sanctioned entities is suspicious at the network level.</P>
+
+          <P>Instead of collapsing everything into one vector, we should <B>score independently at each axis, then aggregate</B>:</P>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 3, marginBottom: 20 }}>
+            {[
+              {
+                axis: "Transaction Axis",
+                icon: "📄",
+                color: C.blue,
+                evaluates: "Each individual movement of funds in isolation",
+                examples: "Near-threshold amount ($9,500), high-risk beneficiary country, unusual timestamp (3 AM), round amount detection, suspicious keywords in reference fields",
+                output: "Binary flag or score per transaction — e.g., HRG_flag: 1, structuring_proximity: 0.95",
+                model: "Rule-based models for binary checks (is beneficiary in FATF greylist?), lightweight NN for multi-feature scoring",
+              },
+              {
+                axis: "Account Axis",
+                icon: "🏦",
+                color: C.accent,
+                evaluates: "Behavior within a specific account over a lookback window (7d, 30d, 90d)",
+                examples: "Flow-through ratio (credits ≈ debits, money just passes through), velocity spikes, dormancy breaks, amount dispersion clustering, counterparty diversification rate",
+                output: "Continuous score per account per typology — e.g., flow_through_score: 0.96 for ACCT-88421 over 30d",
+                model: "Time-series NN or rule-based models with rolling windows. Each account scored independently before any client-level aggregation",
+              },
+              {
+                axis: "Client Axis",
+                icon: "👤",
+                color: C.gold,
+                evaluates: "Consolidated behavior across ALL accounts and transactions owned by one entity",
+                examples: "Total cross-border volume across all accounts, aggregate velocity, KYC risk rating vs. actual behavior deviation, product utilization anomalies",
+                output: "Client-level risk score per typology — aggregates account scores using typology-specific logic (max, sum, weighted average)",
+                model: "Supervised classifier trained on historical SAR data, or aggregation rules that combine account-level outputs",
+              },
+              {
+                axis: "Network Axis",
+                icon: "🕸️",
+                color: C.purple,
+                evaluates: "The entity's position and relationships within the broader transaction graph",
+                examples: "Shell company cluster detection, circular flows, sanctions proximity (N-hop), shared UBO discovery, community risk scoring, betweenness centrality",
+                output: "Network risk score + node embedding — e.g., gnn_score: 0.92, shell_cluster: true, sanctions_hops: 2",
+                model: "Graph Neural Network (our existing GNN from §4) — this is the axis that most enterprise AML systems completely miss",
+              },
+            ].map((item, i) => (
+              <div key={i} style={{ padding: 16, background: C.card, borderRadius: 12, border: `1px solid ${item.color}25` }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
+                  <div style={{ fontFamily: mono, fontSize: 14, color: item.color, fontWeight: 700 }}>{item.icon} {item.axis}</div>
+                  <div style={{ fontFamily: mono, fontSize: 10, color: C.dim, padding: "2px 8px", background: C.surface, borderRadius: 4 }}>{item.model.split('.')[0].split(',')[0]}</div>
+                </div>
+                <div style={{ display: "grid", gap: 6, fontSize: 13, color: C.dim, lineHeight: 1.7 }}>
+                  <div><B color={C.text}>Evaluates:</B> {item.evaluates}</div>
+                  <div><B color={C.text}>Examples:</B> {item.examples}</div>
+                  <div><B color={C.text}>Output:</B> <span style={{ fontFamily: mono, fontSize: 12, color: item.color }}>{item.output}</span></div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Callout icon="💡" title="Why Not Just One Big Vector?" color={C.accent}>
+            <B color={C.text}>Premature aggregation destroys signal.</B> If you collapse 47 transaction scores into one client feature before scoring, you lose the distribution shape — are they all 0.95, or is one 0.95 and the rest 0.01? The multi-axis approach preserves granularity: each axis produces its own score with its own explainability drivers, and aggregation happens only after scoring, with typology-specific logic that preserves context.
+          </Callout>
+
+          <Code>
+            <span style={{ color: C.dim }}>{"// Multi-axis scoring pipeline (pseudocode):"}</span><br />
+            <span style={{ color: C.blue }}>txn_scores</span><span style={{ color: C.dim }}>{" = [score_txn(t) for t in transactions]"}</span><br />
+            <span style={{ color: C.accent }}>acct_scores</span><span style={{ color: C.dim }}>{" = [score_acct(a, window=30d) for a in accounts]"}</span><br />
+            <span style={{ color: C.gold }}>client_score</span><span style={{ color: C.dim }}>{" = aggregate(acct_scores, method='typology_specific')"}</span><br />
+            <span style={{ color: C.purple }}>network_score</span><span style={{ color: C.dim }}>{" = gnn_score(entity_subgraph)"}</span><br /><br />
+            <span style={{ color: C.dim }}>{"// Each score carries its own Decision Drivers:"}</span><br />
+            <span style={{ color: C.text }}>{"txn_scores[0] = {score: 0.95, drivers: {country: 'KP', amount: 9500}}"}</span><br />
+            <span style={{ color: C.text }}>{"acct_scores[0] = {score: 0.96, drivers: {flow_ratio: 0.98, volume: 2.4M}}"}</span><br /><br />
+            <span style={{ color: C.dim }}>{"// Aggregation preserves drivers, doesn't flatten them"}</span>
+          </Code>
+        </div>
+      )}
+
+      {/* ─── TAB 1: TUNING MATRIX & RECURRENCE ─── */}
+      {tab === 1 && (
+        <div>
+          <P>Our current system uses a single set of thresholds with Platt calibration. But a $50K wire from a Swiss private bank is normal — the same wire from a newly onboarded MSB in a FATF greylist country is alarming. <B color={C.accent}>Thresholds should be population-specific.</B></P>
+
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontFamily: mono, fontSize: 13, color: C.accent, fontWeight: 600, marginBottom: 12 }}>The 5-Dimensional Tuning Matrix</div>
+            <P>Every threshold in the system is keyed to a <B>5-dimensional population group</B>. This means a single risk typology (e.g., "structuring") has different trigger points depending on the client's profile:</P>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 16 }}>
+              {[
+                { dim: "1. Country / Jurisdiction", ex: "US vs. Cayman Islands vs. Switzerland — different regulatory environments, different baselines", color: C.blue },
+                { dim: "2. Client Type", ex: "Retail individual vs. Corporate vs. MSB vs. Trust vs. Correspondent bank", color: C.accent },
+                { dim: "3. Product Type", ex: "Wire transfers vs. ACH vs. Trade finance vs. Securities vs. Cash deposits", color: C.gold },
+                { dim: "4. Risk Level", ex: "Low / Medium / High / PEP — based on KYC assessment at onboarding", color: C.red },
+                { dim: "5. Transaction Profile", ex: "Expected volume/value bands from the client's declared business activity", color: C.purple },
+              ].map((item, i) => (
+                <Card key={i} color={item.color} title={item.dim}>
+                  {item.ex}
+                </Card>
+              ))}
+            </div>
+
+            <Code>
+              <span style={{ color: C.dim }}>{"// Threshold lookup for structuring typology:"}</span><br />
+              <span style={{ color: C.accent }}>threshold</span><span style={{ color: C.dim }}>{" = tuning_matrix.get("}</span><br />
+              <span style={{ color: C.dim }}>{"  country="}</span><span style={{ color: C.blue }}>"US"</span><span style={{ color: C.dim }}>{","}</span><br />
+              <span style={{ color: C.dim }}>{"  client_type="}</span><span style={{ color: C.accent }}>"MSB"</span><span style={{ color: C.dim }}>{","}</span><br />
+              <span style={{ color: C.dim }}>{"  product="}</span><span style={{ color: C.gold }}>"WIRE"</span><span style={{ color: C.dim }}>{","}</span><br />
+              <span style={{ color: C.dim }}>{"  risk_level="}</span><span style={{ color: C.red }}>"HIGH"</span><span style={{ color: C.dim }}>{","}</span><br />
+              <span style={{ color: C.dim }}>{"  txn_profile="}</span><span style={{ color: C.purple }}>"CROSS_BORDER"</span><br />
+              <span style={{ color: C.dim }}>{")"}</span><br />
+              <span style={{ color: C.dim }}>{"// → threshold = 0.62 (tighter for high-risk MSB)"}</span><br /><br />
+              <span style={{ color: C.dim }}>{"// Same typology, different population:"}</span><br />
+              <span style={{ color: C.dim }}>{"// Swiss private bank, corporate, low risk →"}</span><br />
+              <span style={{ color: C.dim }}>{"// → threshold = 0.88 (looser, well-established)"}</span>
+            </Code>
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontFamily: mono, fontSize: 13, color: C.red, fontWeight: 600, marginBottom: 12 }}>The Recurrence Engine (Velocity Penalty)</div>
+            <P>A client triggering the "high-risk geography" rule <B>once</B> might be legitimate business. Triggering it <B>5 times in one day</B> is a pattern. The Recurrence Engine applies <B color={C.red}>compounding multipliers</B> for repeat threshold breaches within an evaluation window:</P>
+
+            <div style={{ background: C.surface, borderRadius: 12, padding: 20, border: `1px solid ${C.border}`, marginBottom: 16 }}>
+              <div style={{ fontFamily: mono, fontSize: 11, color: C.dim, marginBottom: 12 }}>Recurrence multiplier effect on final score:</div>
+              {[
+                { breaches: 1, mult: "1.0×", score: "0.75", bar: 37, color: C.accent },
+                { breaches: 2, mult: "1.3×", score: "0.83", bar: 42, color: C.gold },
+                { breaches: 3, mult: "1.6×", score: "0.89", bar: 52, color: C.orange },
+                { breaches: 5, mult: "2.2×", score: "0.96", bar: 72, color: C.red },
+                { breaches: 10, mult: "3.0×", score: "0.99", bar: 95, color: C.red },
+              ].map((item, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                  <div style={{ fontFamily: mono, fontSize: 11, color: C.dim, minWidth: 85 }}>{item.breaches} breach{item.breaches > 1 ? "es" : ""}</div>
+                  <div style={{ fontFamily: mono, fontSize: 11, color: item.color, minWidth: 40 }}>{item.mult}</div>
+                  <div style={{ flex: 1, height: 16, background: C.card, borderRadius: 4, overflow: "hidden", position: "relative" }}>
+                    <div style={{ position: "absolute", left: 0, top: 0, height: "100%", width: `${item.bar}%`, background: item.color + "40", borderRadius: 4 }} />
+                    <div style={{ position: "absolute", right: 6, top: 0, height: "100%", display: "flex", alignItems: "center", fontFamily: mono, fontSize: 10, color: item.color, fontWeight: 600 }}>{item.score}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: mono, fontSize: 13, color: C.green, fontWeight: 600, marginBottom: 12 }}>Self-Tuning via Feedback + BTL Testing</div>
+            <P>The Tuning Matrix isn't static. It auto-adjusts based on two feedback mechanisms:</P>
+            <div style={{ display: "grid", gap: 10 }}>
+              <Card color={C.accent} title="Disposition Feedback">
+                When analysts close alerts as TP (True Positive) or FP (False Positive), the system tracks the hit rate per 5D population cell. If a cell consistently generates false positives (e.g., "France × Corporate × Trade Finance × High Risk × Cross-Border" has 92% FP rate), the threshold <B color={C.text}>tightens automatically</B>. If it yields dense TPs, the threshold loosens to capture more.
+              </Card>
+              <Card color={C.purple} title="Below-The-Line (BTL) Testing">
+                Periodically, the system samples scores <B color={C.text}>just below the active threshold</B> (e.g., scores in the 0.55–0.65 range when the threshold is 0.65) and sends them for targeted analyst review. If genuine suspicious activity is discovered in these BTL samples, the threshold is automatically lowered to capture that risk band. This is <B color={C.text}>active learning</B> — the system proactively searches for its own blind spots.
+              </Card>
+            </div>
+          </div>
+
+          <Callout icon="⚠️" title="Bootstrap & Sparse Cell Challenges" color={C.gold}>
+            Two practical challenges: (1) <B color={C.text}>Cold start</B> — new population cells have no feedback history. Solution: inherit thresholds from the nearest populated parent cell in the hierarchy (e.g., "Country × Client Type" if the full 5D cell is empty). (2) <B color={C.text}>Sparse cells</B> — rare combinations may never accumulate enough data. Solution: Bayesian smoothing that blends the cell's sparse data with the global prior, weighted by sample size.
+          </Callout>
+        </div>
+      )}
+
+      {/* ─── TAB 2: DUAL-TRACK ESCALATION ─── */}
+      {tab === 2 && (
+        <div>
+          <P>Our current system uses a single ensemble score → threshold → alert. But in AML, some signals are <B color={C.red}>non-negotiable</B> — a confirmed transaction with a FATF-blacklisted jurisdiction MUST escalate regardless of what the ML model says. This creates a tension between regulatory compliance and model flexibility.</P>
+
+          <P>The solution: a <B color={C.accent}>dual-track escalation engine</B> that separates hard compliance rules from probabilistic scoring:</P>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
+            <div style={{ padding: 18, background: C.red + "08", borderRadius: 12, border: `1px solid ${C.red}30` }}>
+              <div style={{ fontFamily: mono, fontSize: 14, color: C.red, fontWeight: 700, marginBottom: 10 }}>Track A: Deterministic Auto-Escalation</div>
+              <div style={{ color: C.dim, fontSize: 13, lineHeight: 1.8, marginBottom: 12 }}>
+                Evaluates signals against <B color={C.text}>absolute, non-negotiable compliance thresholds</B>. If any of these trigger, the alert is instantly escalated — the ML model's opinion is irrelevant.
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {[
+                  "Direct transaction with OFAC SDN entity",
+                  "Confirmed sanctions match on beneficiary",
+                  "FATF blacklist jurisdiction (auto-escalate)",
+                  "Court order / law enforcement freeze",
+                  "PEP with unexplained wealth source",
+                ].map((rule, i) => (
+                  <div key={i} style={{ padding: "6px 10px", background: C.red + "10", borderRadius: 6, fontFamily: mono, fontSize: 11, color: C.red, display: "flex", alignItems: "center", gap: 6 }}>
+                    <span>⚡</span> {rule}
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 12, fontFamily: mono, fontSize: 11, color: C.red, fontWeight: 600 }}>→ Instant ATL (Above The Line) — bypasses ML</div>
+            </div>
+
+            <div style={{ padding: 18, background: C.accent + "08", borderRadius: 12, border: `1px solid ${C.accent}30` }}>
+              <div style={{ fontFamily: mono, fontSize: 14, color: C.accent, fontWeight: 700, marginBottom: 10 }}>Track B: ML Probabilistic Consolidator</div>
+              <div style={{ color: C.dim, fontSize: 13, lineHeight: 1.8, marginBottom: 12 }}>
+                If no auto-escalation triggers, all typology scores are fed into a <B color={C.text}>supervised classifier</B> trained on historical SARs. It blends known-risk and unknown-risk signals:
+              </div>
+              <Code>
+                <span style={{ color: C.accent }}>final_score</span><span style={{ color: C.dim }}>{" ="}</span><br />
+                <span style={{ color: C.dim }}>{"  ("}</span><span style={{ color: C.gold }}>W_sup</span><span style={{ color: C.dim }}>{" × supervised_score) +"}</span><br />
+                <span style={{ color: C.dim }}>{"  ("}</span><span style={{ color: C.purple }}>W_unsup</span><span style={{ color: C.dim }}>{" × anomaly_score)"}</span><br /><br />
+                <span style={{ color: C.dim }}>{"// W_sup=0.7, W_unsup=0.3 (business-tunable)"}</span><br />
+                <span style={{ color: C.dim }}>{"// supervised: known typologies (structuring, etc)"}</span><br />
+                <span style={{ color: C.dim }}>{"// anomaly: zero-day unknown patterns"}</span>
+              </Code>
+              <div style={{ marginTop: 12, fontFamily: mono, fontSize: 11, color: C.accent, fontWeight: 600 }}>→ Score-based ATL/BTL with population thresholds</div>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontFamily: mono, fontSize: 13, color: C.gold, fontWeight: 600, marginBottom: 12 }}>Typology-Specific Alert Templates</div>
+            <P>When an alert is escalated, the packaging isn't generic. Each risk typology has its own <B>formatting template</B> that dictates exactly which data elements to include and how to structure them for investigators:</P>
+
+            <div style={{ background: C.surface, borderRadius: 12, border: `1px solid ${C.border}`, overflow: "hidden" }}>
+              {[
+                { level: "Level 1 — Executive Summary", content: "Entity name, jurisdiction, primary escalation reason, overall risk score, assigned tier and SLA", color: C.accent },
+                { level: "Level 2 — Typology Breakdown", content: "Per-typology: which axis fired, final score, breached threshold, recurrence count, aggregated decision drivers with the specific data points that caused each score", color: C.gold },
+                { level: "Level 3 — Zero-Day Context", content: "Unsupervised anomaly score, top anomaly contributors (e.g., 'unseen_geo_volume', 'txn_velocity_spike'), reconstruction loss breakdown", color: C.purple },
+                { level: "Level 4 — Network Context", content: "Graph RAG briefing, entity relationship map, sanctions proximity paths, shell company cluster analysis — the investigation narrative", color: C.purple },
+                { level: "Level 5 — Regulatory Context", content: "Text RAG: matched FATF typologies, applicable BSA/AML sections, similar past SARs, FinCEN advisories", color: C.gold },
+              ].map((item, i) => (
+                <div key={i} style={{ padding: "12px 16px", borderBottom: i < 4 ? `1px solid ${C.border}` : "none", display: "flex", gap: 12, alignItems: "baseline" }}>
+                  <div style={{ fontFamily: mono, fontSize: 11, color: item.color, fontWeight: 600, minWidth: 180, flexShrink: 0 }}>{item.level}</div>
+                  <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.6 }}>{item.content}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Callout icon="🎯" title="Why Dual-Track Matters for Regulators" color={C.red}>
+            Regulators require that certain compliance obligations are <B color={C.text}>deterministic and auditable</B> — you can't tell an examiner "our ML model decided not to escalate a sanctions match." Track A ensures these non-negotiables always escalate. Track B handles the nuanced, probabilistic cases where ML adds value. The escalation reason in the alert explicitly states which track triggered it.
+          </Callout>
+        </div>
+      )}
+
+      {/* ─── TAB 3: ENHANCED ARCHITECTURE DIAGRAM ─── */}
+      {tab === 3 && (
+        <div>
+          <P>Here's the <B color={C.accent}>evolved system architecture</B> incorporating all advanced patterns: multi-axis scoring, the tuning matrix, recurrence engine, dual-track escalation, and the full RAG stack. New/enhanced components are highlighted with a <span style={{ color: C.green }}>green border</span>.</P>
+
+          <div style={{ background: C.surface, borderRadius: 14, border: `1px solid ${C.border}`, padding: "14px 6px 6px", marginBottom: 16, overflowX: "auto" }}>
+            <div style={{ textAlign: "center", fontFamily: mono, fontSize: 9, color: C.dim, marginBottom: 6 }}>Enhanced AML Platform — With Advanced Scoring Patterns</div>
+            <svg viewBox="0 0 780 750" style={{ width: "100%", minWidth: 600 }}>
+              {/* ── DATA SOURCES ── */}
+              <DBoundary x={10} y={18} w={760} h={65} label="External Data Sources" color={C.blue + "60"} />
+              <DBox x={25} y={32} w={110} h={40} color={C.blue} label="Core Banking" sub="Txns, Accounts" />
+              <DBox x={148} y={32} w={100} h={40} color={C.blue} label="KYC / CDD" sub="Due Diligence" />
+              <DBox x={261} y={32} w={100} h={40} color={C.blue} label="Sanctions" sub="OFAC, UN, EU" />
+              <DBox x={374} y={32} w={100} h={40} color={C.blue} label="Corp Registry" sub="UBO, Directors" />
+              <DBox x={487} y={32} w={130} h={40} color={C.blue} label="Market/Trade Data" sub="Commodity prices, BoL" />
+              <DBox x={630} y={32} w={130} h={40} color={C.blue} label="External Intel" sub="PEP, FATF, Media" />
+
+              {/* ── INGESTION ── */}
+              <DBoundary x={10} y={100} w={760} h={50} label="Ingestion Layer" color={C.accent + "50"} />
+              <DBox x={30} y={112} w={170} h={28} color={C.accent} label="Kafka + Flink (Real-Time)" />
+              <DBox x={215} y={112} w={170} h={28} color={C.accent} label="Airflow + dbt (Batch)" />
+              <DBox x={400} y={112} w={170} h={28} color={C.accent} label="Debezium CDC" />
+              <DBox x={585} y={112} w={170} h={28} color={C.accent} label="Schema Registry" />
+
+              {/* Arrows to ingestion */}
+              {[80, 198, 311, 424, 552, 695].map((sx, i) => (
+                <DArrow key={`si${i}`} x1={sx} y1={74} x2={sx < 300 ? 115 : (sx < 500 ? 485 : 670)} y2={112} color={C.blue} />
+              ))}
+
+              {/* ── FEATURE FACTORY (Layer 1) — enhanced ── */}
+              <DBoundary x={10} y={166} w={510} h={96} label="Layer 1: Feature Factory (Stateless, API-Served)" color={C.gold + "50"} />
+              <rect x={10} y={166} width={510} height={96} rx={14} fill="none" stroke={C.green + "40"} strokeWidth="2" strokeDasharray="0" />
+              <DBox x={25} y={188} w={115} h={56} color={C.gold} label="Txn Features" sub="Immutable per-event" icon="📄" />
+              <DBox x={152} y={188} w={115} h={56} color={C.gold} label="Acct Features" sub="Rolling windows" icon="🏦" />
+              <DBox x={279} y={188} w={115} h={56} color={C.gold} label="Entity Features" sub="Latest KYC state" icon="👤" />
+              <DBox x={400} y={188} w={105} h={56} color={C.gold} label="JSON API" sub="On-demand fetch" icon="🔌" />
+
+              {/* Data stores */}
+              <DBoundary x={535} y={166} w={235} h={96} label="Data Stores" color={C.purple + "40"} />
+              <DBox x={545} y={186} w={100} h={28} color={C.purple} label="Graph DB" sub="Neo4j" />
+              <DBox x={660} y={186} w={100} h={28} color={C.purple} label="Vector DB" sub="Pinecone" />
+              <DBox x={545} y={224} w={100} h={28} color={C.dim} label="Feature Store" sub="Redis+Feast" />
+              <DBox x={660} y={224} w={100} h={28} color={C.dim} label="Doc Store" sub="Elastic" />
+
+              {/* Arrows ingestion → Layer 1 */}
+              <DArrow x1={115} y1={142} x2={82} y2={188} color={C.accent} />
+              <DArrow x1={300} y1={142} x2={209} y2={188} color={C.accent} />
+              <DArrow x1={485} y1={142} x2={336} y2={188} color={C.accent} />
+              <DArrow x1={670} y1={142} x2={595} y2={186} color={C.accent} />
+
+              {/* ── TUNING MATRIX (shared, left side) — NEW ── */}
+              <rect x={10} y={280} width={130} height={250} rx={12} fill={C.green + "06"} stroke={C.green} strokeWidth="2" />
+              <text x={75} y={298} textAnchor="middle" fill={C.green} fontSize="10" fontFamily={mono} fontWeight="700">Tuning Matrix</text>
+              <text x={75} y={312} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>[Control Plane]</text>
+              <text x={75} y={338} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>5D Population</text>
+              <text x={75} y={350} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>Thresholds</text>
+              {["Country", "Client Type", "Product", "Risk Level", "Txn Profile"].map((d, i) => (
+                <text key={d} x={75} y={375 + i * 14} textAnchor="middle" fill={C.green} fontSize="7" fontFamily={mono}>{d}</text>
+              ))}
+              <text x={75} y={460} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>Self-tuning via</text>
+              <text x={75} y={472} textAnchor="middle" fill={C.dim} fontSize="7" fontFamily={mono}>feedback loop</text>
+              <text x={75} y={505} textAnchor="middle" fill={C.green} fontSize="8" fontFamily={mono} fontWeight="600">★ NEW</text>
+
+              {/* ── LAYER 2: MULTI-AXIS SCORING — enhanced ── */}
+              <DBoundary x={152} y={278} w={618} h={104} label="Layer 2: Multi-Axis Scoring Engine" color={C.red + "40"} />
+              <rect x={152} y={278} width={618} height={104} rx={14} fill="none" stroke={C.green + "40"} strokeWidth="2" />
+              <DBox x={162} y={300} w={105} h={64} color={C.blue} label="Txn Axis" sub="Per-event scoring" icon="📄" />
+              <DBox x={280} y={300} w={105} h={64} color={C.accent} label="Acct Axis" sub="Window scoring" icon="🏦" />
+              <DBox x={398} y={300} w={105} h={64} color={C.gold} label="Client Axis" sub="Aggregate scoring" icon="👤" />
+              <DBox x={516} y={300} w={105} h={64} color={C.purple} label="Network Axis" sub="GNN scoring" icon="🕸️" />
+              <DBox x={634} y={300} w={125} h={64} color={C.orange} label="Anomaly Detector" sub="Unsupervised" icon="🔮" />
+
+              {/* Arrows Feature Factory → Layer 2 */}
+              <DArrow x1={82} y1={246} x2={214} y2={300} color={C.gold} />
+              <DArrow x1={209} y1={246} x2={332} y2={300} color={C.gold} />
+              <DArrow x1={336} y1={246} x2={450} y2={300} color={C.gold} />
+              <DArrow x1={595} y1={216} x2={568} y2={300} color={C.purple} />
+
+              {/* Tuning matrix arrows to Layer 2 */}
+              <DArrow x1={142} y1={340} x2={162} y2={340} color={C.green} dashed label="params" />
+
+              {/* ── LAYER 3: SIGNAL AGGREGATOR — NEW ── */}
+              <rect x={152} y={398} width={400} height={65} rx={12} fill={C.gold + "08"} stroke={C.green} strokeWidth="2" />
+              <text x={352} y={420} textAnchor="middle" fill={C.gold} fontSize="12" fontFamily={mono} fontWeight="700">Layer 3: Signal Aggregator</text>
+              <text x={352} y={436} textAnchor="middle" fill={C.dim} fontSize="8" fontFamily={mono}>Threshold evaluation + Score aggregation + Recurrence Engine</text>
+              <text x={352} y={452} textAnchor="middle" fill={C.dim} fontSize="8" fontFamily={mono}>Outputs: Consolidated Score Matrix per Client per Typology</text>
+
+              {/* Arrows Layer 2 → Layer 3 */}
+              <DArrow x1={214} y1={366} x2={250} y2={398} color={C.blue} />
+              <DArrow x1={332} y1={366} x2={310} y2={398} color={C.accent} />
+              <DArrow x1={450} y1={366} x2={370} y2={398} color={C.gold} />
+              <DArrow x1={568} y1={366} x2={430} y2={398} color={C.purple} />
+              <DArrow x1={696} y1={366} x2={500} y2={398} color={C.orange} />
+
+              {/* Tuning matrix → Layer 3 */}
+              <DArrow x1={142} y1={430} x2={152} y2={430} color={C.green} dashed label="thresholds" />
+
+              {/* ── LAYER 4: DUAL-TRACK ESCALATION — NEW ── */}
+              <DBoundary x={152} y={478} w={400} h={72} label="Layer 4: Dual-Track Escalation" color={C.red + "40"} />
+              <rect x={152} y={478} width={400} height={72} rx={14} fill="none" stroke={C.green + "40"} strokeWidth="2" />
+              <DBox x={165} y={498} w={175} h={38} color={C.red} label="Track A: Auto-Escalate" sub="Hard compliance rules" />
+              <DBox x={355} y={498} w={185} h={38} color={C.accent} label="Track B: ML Consolidator" sub="Supervised + Unsupervised blend" />
+              <DArrow x1={352} y1={465} x2={252} y2={498} color={C.gold} />
+              <DArrow x1={352} y1={465} x2={447} y2={498} color={C.gold} />
+
+              {/* ── RAG LAYER (right side) ── */}
+              <DBoundary x={572} y={398} w={198} h={152} label="RAG Intelligence" color={C.purple + "40"} />
+              <DBox x={582} y={420} w={178} h={36} color={C.purple} label="Graph RAG" sub="Subgraph + LLM narrative" />
+              <DBox x={582} y={466} w={178} h={36} color={C.gold} label="Text RAG" sub="Regulations + Typologies" />
+              <DBox x={582} y={512} w={178} h={28} color={C.accent} label="LLM Gateway (Claude)" />
+
+              <DArrow x1={595} y1={216} x2={671} y2={420} color={C.purple} dashed />
+
+              {/* ── LAYER 5: ALERT PACKAGING ── */}
+              <rect x={152} y={566} width={618} height={50} rx={10} fill={C.red + "08"} stroke={C.red + "50"} strokeWidth="1.5" />
+              <text x={461} y={586} textAnchor="middle" fill={C.red} fontSize="11" fontFamily={mono} fontWeight="700">Layer 5: Alert Packaging & Distribution</text>
+              <text x={461} y={600} textAnchor="middle" fill={C.dim} fontSize="8" fontFamily={mono}>Typology-specific templates → Hierarchical Alert Objects → API to Case Manager</text>
+
+              <DArrow x1={252} y1={538} x2={350} y2={566} color={C.red} />
+              <DArrow x1={447} y1={538} x2={450} y2={566} color={C.accent} />
+              <DArrow x1={671} y1={542} x2={600} y2={566} color={C.purple} label="RAG context" />
+
+              {/* ── PRESENTATION ── */}
+              <DBoundary x={152} y={632} w={618} h={50} label="Investigator UI + Reporting + Compliance Portal" color={C.text + "30"} />
+              <DArrow x1={461} y1={618} x2={461} y2={645} color={C.red} />
+
+              {/* ── FEEDBACK LOOP ── */}
+              <path d="M 152 658 Q 5 658 5 430 Q 5 310 10 298" fill="none" stroke={C.green + "70"} strokeWidth="2" strokeDasharray="6,3" />
+              <text x={-2} y={490} fill={C.green} fontSize="8" fontFamily={mono} fontWeight="600" transform="rotate(-90,-2,490)" textAnchor="middle">feedback → self-tune</text>
+
+              {/* ── Legend ── */}
+              <rect x={575} y={646} width={190} height={34} rx={6} fill={C.card} stroke={C.border} strokeWidth="1" />
+              <line x1={585} y1={660} x2={605} y2={660} stroke={C.green} strokeWidth="2" />
+              <text x={612} y={663} fill={C.dim} fontSize="7" fontFamily={mono}>New / Enhanced component</text>
+              <line x1={585} y1={674} x2={605} y2={674} stroke={C.green} strokeWidth="1.5" strokeDasharray="4,3" />
+              <text x={612} y={677} fill={C.dim} fontSize="7" fontFamily={mono}>Self-tuning feedback loop</text>
+            </svg>
+          </div>
+
+          <P>Key changes from the original architecture:</P>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            {[
+              { label: "Feature Factory (L1)", desc: "Stateless API serving immutable txn features + rolling acct features + latest entity state as JSON objects", color: C.gold },
+              { label: "Multi-Axis Scoring (L2)", desc: "4 independent axes (Txn, Acct, Client, Network) + unsupervised anomaly detector, each outputting scores + decision drivers", color: C.red },
+              { label: "Signal Aggregator (L3)", desc: "NEW: Typology-specific aggregation + Recurrence Engine + threshold evaluation against the 5D Tuning Matrix", color: C.gold },
+              { label: "Dual-Track Escalation (L4)", desc: "NEW: Track A (hard compliance auto-escalate) + Track B (ML consolidator blending supervised + unsupervised scores)", color: C.red },
+              { label: "Tuning Matrix", desc: "NEW: 5D population-specific thresholds that self-tune from analyst feedback + BTL active learning", color: C.green },
+              { label: "Alert Packaging (L5)", desc: "ENHANCED: 5-level hierarchical alerts with typology-specific templates including RAG context", color: C.accent },
+            ].map((item, i) => (
+              <Card key={i} color={item.color} title={item.label}>{item.desc}</Card>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ─── TAB 4: REMAINING BLIND SPOTS ─── */}
+      {tab === 4 && (
+        <div>
+          <P>Even with all these enhancements, the system has <B color={C.red}>critical blind spots</B> that require entirely new components. These represent the next frontier — attack vectors that no amount of tuning the existing architecture can address:</P>
+
+          <div style={{ display: "grid", gap: 12 }}>
+            {[
+              {
+                gap: "SWIFT / Payment Message Integrity",
+                severity: "CRITICAL",
+                color: C.red,
+                problem: "The entire pipeline operates on post-processed transaction data. If someone strips identifying information from SWIFT MT103/MT202 messages before they enter the AML Data Layer, our system never sees the original sanctioned party names. Wire stripping — deliberately removing or altering beneficiary fields in international payment messages — is completely invisible.",
+                solution: "A SWIFT Message Integrity Analyzer sitting BEFORE the AML Data Layer. It compares messages at gateway entry/exit points, flags blank originator fields, detects resubmission of previously blocked payments, and cross-references cover payments (MT202COV) against customer payments (MT103) for discrepancies.",
+                realWorld: "Major European banks were found to have stripped identifying information from thousands of transactions involving sanctioned countries, removing references to sanctioned parties and resubmitting blocked payments as lump sums.",
+              },
+              {
+                gap: "Employee Behavior Analytics",
+                severity: "CRITICAL",
+                color: C.red,
+                problem: "The system monitors transactions and entities — not employees. An insider who opens 140 fraudulent accounts with forged signatures, accepts bribes to process suspicious cash, or issues hundreds of ATM cards to shell accounts is completely invisible to every layer of our pipeline. The system assumes good-faith data entry.",
+                solution: "An Employee Behavior Analytics module that monitors: cash processing volume per employee (flag outliers), account opening patterns (same employee opening many accounts without customer present), gift/benefit anomalies, dual-control violations, and geographic velocity of accounts opened by the same employee.",
+                realWorld: "At multiple major banks, employees colluded with launderers — accepting gift cards to process transactions, opening dozens of shell accounts, issuing 600+ debit cards used in 120,000 ATM withdrawals across jurisdictions.",
+              },
+              {
+                gap: "Trade-Based Money Laundering (TBML)",
+                severity: "HIGH",
+                color: C.orange,
+                problem: "The system has no trade document analysis capability. $1,000-per-gallon paint cans, 344,820 metric tons of pipes in one shipment, goods shipped to addresses that don't exist — none of these are detectable because the system never ingests or analyzes trade invoices, bills of lading, or commodity pricing.",
+                solution: "A Trade Document Analyzer that uses NLP on invoices + commodity pricing databases for value comparison + shipping route plausibility checks + volume/weight sanity checks + duplicate invoice detection. Integrate with the Feature Factory as trade-specific features.",
+                realWorld: "Investigators found clients claiming to ship impossible quantities of goods — single transactions for 344,820 metric tons of pipes and paint cans priced at over $1,000 each — all going undetected because no system compared declared values against market benchmarks.",
+              },
+              {
+                gap: "Coverage Meta-Monitoring",
+                severity: "HIGH",
+                color: C.orange,
+                problem: "How do we know 100% of transaction types, channels, and products are actually feeding into the pipeline? If someone excludes ACH transactions, Zelle payments, or check activity from the ingestion layer, the system monitors whatever it receives without knowing what it's missing. New products can launch without monitoring coverage.",
+                solution: "A Coverage Meta-Monitor that: (a) maintains a registry of ALL transaction types/channels/products, (b) continuously audits that each category has data flowing into the pipeline, (c) alerts when a category goes silent or a new product launches without monitoring, (d) runs periodic red-team simulations through all channels to verify detection.",
+                realWorld: "A major North American bank was found to have excluded 92% of total transaction volume — approximately $18.3 trillion — from its automated monitoring, including all domestic ACH, most check activity, and new products like peer-to-peer payment apps.",
+              },
+              {
+                gap: "Real-Time Feature Computation",
+                severity: "MEDIUM",
+                color: C.gold,
+                problem: "If the Feature Factory computes features in daily batches, a structuring attack happening over 4 hours within the same day won't be caught until the next morning's batch. The system needs sub-second feature freshness for high-risk typologies like velocity-based structuring.",
+                solution: "A dual-mode Feature Factory: daily batch for stable features (KYC, entity demographics) + real-time streaming computation via Flink for volatile features (velocity, amount clustering, counterparty diversity). Our Kafka→Flink path already supports this — the Feature Factory just needs to serve both modes.",
+                realWorld: "Same-day structuring — splitting $50K across 6 transactions in 3 hours — is specifically designed to exploit batch processing gaps, where the aggregation that would catch the pattern doesn't run until overnight.",
+              },
+              {
+                gap: "Model Retraining (Not Just Threshold Tuning)",
+                severity: "MEDIUM",
+                color: C.gold,
+                problem: "Self-tuning thresholds is valuable, but it only adjusts WHERE you draw the line — not HOW the underlying models score. If the Transaction NN or GNN develops drift (legitimate behavioral changes, new laundering techniques), adjusting thresholds doesn't fix fundamental scoring inaccuracy.",
+                solution: "Quarterly model retraining pipeline: collect new analyst-labeled data → retrain scoring models → evaluate on held-out test set → champion/challenger A/B testing → promote if performance improves. MLflow for version control with one-click rollback. Evidently AI for continuous drift detection on feature and prediction distributions.",
+                realWorld: "Systems that only tune thresholds without retraining models gradually degrade — the model's understanding of 'suspicious' becomes stale as laundering techniques evolve, and no amount of threshold adjustment compensates for a model that scores fundamentally differently than current reality.",
+              },
+            ].map((item, i) => (
+              <div key={i} style={{ background: C.card, borderRadius: 12, border: `1px solid ${item.color}20`, overflow: "hidden" }}>
+                <div style={{ padding: "12px 16px", background: item.color + "08", borderBottom: `1px solid ${item.color}15`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontFamily: mono, fontSize: 13, color: item.color, fontWeight: 700 }}>{item.gap}</span>
+                  <span style={{ fontFamily: mono, fontSize: 10, color: item.color, padding: "2px 8px", background: item.color + "15", borderRadius: 4 }}>{item.severity}</span>
+                </div>
+                <div style={{ padding: "14px 16px" }}>
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontFamily: mono, fontSize: 10, color: C.dim, marginBottom: 4 }}>THE PROBLEM</div>
+                    <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.75 }}>{item.problem}</div>
+                  </div>
+                  <div style={{ marginBottom: 10 }}>
+                    <div style={{ fontFamily: mono, fontSize: 10, color: C.accent, marginBottom: 4 }}>PROPOSED SOLUTION</div>
+                    <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.75 }}>{item.solution}</div>
+                  </div>
+                  <div style={{ padding: "10px 12px", background: item.color + "08", borderRadius: 8, border: `1px solid ${item.color}15` }}>
+                    <div style={{ fontFamily: mono, fontSize: 10, color: item.color, marginBottom: 4 }}>REAL-WORLD PRECEDENT</div>
+                    <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.7, fontStyle: "italic" }}>{item.realWorld}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Callout icon="🗺️" title="Implementation Priority" color={C.accent}>
+            <B color={C.text}>Phase 1 (critical, do first):</B> SWIFT Integrity Analyzer + Employee Behavior Analytics — these are completely unmonitored attack vectors right now. <B color={C.text}>Phase 2 (high):</B> Coverage Meta-Monitor + TBML Analyzer. <B color={C.text}>Phase 3 (medium):</B> Real-time feature streaming + model retraining pipeline. Each phase builds on existing infrastructure.
+          </Callout>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
+// MAIN
+// ═══════════════════════════════════════════
+const SECTIONS = [
+  { id: 1, title: "The AML Problem", sub: "Why It's Harder Than Spam", comp: Section1 },
+  { id: 2, title: "Feature Engineering", sub: "Transaction → Numbers", comp: Section2 },
+  { id: 3, title: "Transaction Scoring NN", sub: "Same Architecture, New Data", comp: Section3 },
+  { id: 4, title: "Graph Neural Networks", sub: "Detecting Network Schemes", comp: Section4 },
+  { id: 5, title: "Graph RAG", sub: "Investigation Intelligence", comp: Section5 },
+  { id: 6, title: "Traditional RAG", sub: "Regulatory Context", comp: Section6 },
+  { id: 7, title: "The Ensemble", sub: "Combining All Signals", comp: Section7 },
+  { id: 8, title: "Minimizing False Positives", sub: "The Full Strategy", comp: Section8 },
+  { id: 9, title: "Architecture", sub: "System Design & C4 Diagrams", comp: Section9 },
+  { id: 10, title: "Live Walkthrough", sub: "Transaction → Alert → SAR", comp: Section10 },
+  { id: 11, title: "Advanced Patterns", sub: "Production Hardening & Gaps", comp: Section11 },
+];
+
+function App() {
+  const [active, setActive] = useState(0);
+  const Comp = SECTIONS[active].comp;
+
+  return (
+    <div style={{ minHeight: "100vh", background: C.bg, color: C.text, fontFamily: sans }}>
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      <div style={{ maxWidth: 760, margin: "0 auto", padding: "28px 20px 60px" }}>
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontFamily: mono, fontSize: 10, color: C.accent, textTransform: "uppercase", letterSpacing: 3, marginBottom: 6 }}>System Design Deep Dive</div>
+          <h1 style={{ fontSize: 24, fontWeight: 700, margin: 0, lineHeight: 1.3 }}>AML Detection System: NN + Graph RAG + RAG</h1>
+          <p style={{ color: C.dim, margin: "6px 0 0", fontSize: 14 }}>From transaction features to ensemble scoring with minimal false positives</p>
+        </div>
+
+        <div style={{ display: "flex", gap: 3, marginBottom: 8 }}>
+          {SECTIONS.map((_, i) => (<div key={i} style={{ flex: 1, height: 3, borderRadius: 2, background: i <= active ? C.accent : C.faint, transition: "background 0.3s", cursor: "pointer" }} onClick={() => setActive(i)} />))}
+        </div>
+
+        <div style={{ display: "flex", gap: 4, marginBottom: 24, flexWrap: "wrap" }}>
+          {SECTIONS.map((s, i) => (
+            <button key={s.id} onClick={() => setActive(i)} style={{
+              background: active === i ? C.accent : "transparent",
+              color: active === i ? C.bg : C.dim,
+              border: `1px solid ${active === i ? C.accent : C.border}`,
+              borderRadius: 16, padding: "5px 11px", cursor: "pointer",
+              fontFamily: mono, fontSize: 10, fontWeight: active === i ? 700 : 400,
+              transition: "all 0.15s", whiteSpace: "nowrap",
+            }}>{s.id}. {s.title}</button>
+          ))}
+        </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <h2 style={{ fontSize: 22, fontWeight: 700, margin: 0 }}>{SECTIONS[active].title}</h2>
+          <div style={{ fontFamily: mono, fontSize: 12, color: C.accent, marginTop: 4 }}>{SECTIONS[active].sub}</div>
+        </div>
+
+        <Comp />
+
+        <div style={{ display: "flex", justifyContent: "space-between", marginTop: 32, paddingTop: 20, borderTop: `1px solid ${C.border}` }}>
+          <button onClick={() => setActive(Math.max(0, active - 1))} disabled={active === 0} style={{ background: "transparent", color: active === 0 ? C.faint : C.dim, border: `1px solid ${active === 0 ? C.faint : C.border}`, borderRadius: 8, padding: "10px 20px", cursor: active === 0 ? "default" : "pointer", fontFamily: mono, fontSize: 12 }}>← Previous</button>
+          <span style={{ fontFamily: mono, fontSize: 12, color: C.dim, alignSelf: "center" }}>{active + 1} / {SECTIONS.length}</span>
+          <button onClick={() => setActive(Math.min(SECTIONS.length - 1, active + 1))} disabled={active === SECTIONS.length - 1} style={{ background: active === SECTIONS.length - 1 ? C.faint : C.accent, color: active === SECTIONS.length - 1 ? C.dim : C.bg, border: "none", borderRadius: 8, padding: "10px 20px", cursor: active === SECTIONS.length - 1 ? "default" : "pointer", fontFamily: mono, fontSize: 12, fontWeight: 700 }}>Next →</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(React.createElement(App));
+
+</script>
+</body>
+</html>
