@@ -2957,6 +2957,309 @@ function Section12() {
 }
 
 // ═══════════════════════════════════════════
+// SECTION 13: SMART INVESTIGATION LAYER
+// ═══════════════════════════════════════════
+
+function Section13() {
+  const [tab, setTab] = useState(0);
+
+  return (
+    <div>
+      <Bridge from="Detection" to="Investigation" text="Our system is strong on catching laundering. But once an alert fires, what happens? The investigation side — routing, enrichment, decision support, filing, quality — is where most time and cost actually goes." />
+
+      <Tabs items={["Adverse Media & NLP", "Workforce Intelligence", "AI Disposition & SAR", "QA/QC & De-duplication"]} active={tab} onSelect={setTab} />
+
+      {/* ─── TAB 0: ADVERSE MEDIA & NLP ─── */}
+      {tab === 0 && (
+        <div>
+          <P>Our detection pipeline ingests structured data — transactions, KYC records, sanctions lists. But a massive amount of risk signal lives in <B color={C.accent}>unstructured text</B>: news articles, payment reference fields, corporate filings, court documents. Two capabilities close this gap:</P>
+
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ fontFamily: mono, fontSize: 14, color: C.red, fontWeight: 700, marginBottom: 12 }}>Real-Time Adverse Media Screening</div>
+            <P>A continuous NLP pipeline that monitors global news feeds for risk events linked to the bank's clients:</P>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 3, marginBottom: 16 }}>
+              {[
+                { s: "1. Ingest", d: "Reuters, Dow Jones Factiva, local news in 40+ languages via API feeds — thousands of articles per hour", c: C.blue },
+                { s: "2. Entity Extraction", d: "NER (Named Entity Recognition) identifies people, companies, and locations in each article. Multilingual — matches 'Acme Exports Ltd' in English to 'أكمي للصادرات' in Arabic news coverage", c: C.accent },
+                { s: "3. Entity Resolution", d: "Fuzzy matching links extracted entities to the bank's client database. Handles aliases, transliterations, maiden names, corporate name variations. Uses the same entity resolution engine from our Customer 360 (§12 scenario 3)", c: C.purple },
+                { s: "4. Risk Classification", d: "LLM classifies each article: fraud, sanctions violation, corruption, terrorism financing, regulatory action, arrest, lawsuit. Severity: critical / high / medium / informational", c: C.gold },
+                { s: "5. Alert Correlation", d: "Matched media hits are automatically attached to existing open alerts or trigger new alerts. Example: 'Acme Exports CEO arrested in Panama' → linked to open alert AML-2026-0321-00847 → investigation priority elevated", c: C.red },
+              ].map((item, i) => (
+                <div key={i}>
+                  {i > 0 && <div style={{ textAlign: "center", color: C.faint, fontSize: 14, lineHeight: "18px" }}>↓</div>}
+                  <div style={{ padding: "12px 16px", background: item.c + "08", borderRadius: 8, border: `1px solid ${item.c}20` }}>
+                    <div style={{ fontFamily: mono, fontSize: 12, color: item.c, fontWeight: 700, marginBottom: 4 }}>{item.s}</div>
+                    <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.7 }}>{item.d}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Callout icon="📊" title="Impact" color={C.accent}>
+              Industry benchmarks show AI-driven adverse media screening achieves up to <B color={C.text}>4× improvement in true positive detection</B> over manual screening, with potential savings of ~30 minutes per alert by eliminating manual news searches. The investigator opens the alert and the relevant media hits are already there.
+            </Callout>
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: mono, fontSize: 14, color: C.purple, fontWeight: 700, marginBottom: 12 }}>Payment Reference NLP — Hidden 3rd Party Detection</div>
+            <P>Transaction reference fields contain free-text descriptions that often hide critical information. An LLM fine-tuned on payment messages can extract signals invisible to keyword matching:</P>
+
+            <div style={{ background: "#000", borderRadius: 10, padding: 20, border: `1px solid ${C.border}`, fontFamily: mono, fontSize: 12, lineHeight: 2.2, marginBottom: 16 }}>
+              <span style={{ color: C.dim }}>Payment reference field:</span><br />
+              <span style={{ color: C.text }}>"consultancy fees for project restructuring advisory — Q4 settlement via Meridian Holdings"</span><br /><br />
+              <span style={{ color: C.accent }}>Keyword matcher:</span> <span style={{ color: C.dim }}>No hits. "restructuring" and "settlement" not on watchlist.</span><br /><br />
+              <span style={{ color: C.purple }}>LLM NLP analysis:</span><br />
+              <span style={{ color: C.gold }}>  Hidden 3rd party detected:</span> <span style={{ color: C.text }}>"Meridian Holdings" (not sender or beneficiary)</span><br />
+              <span style={{ color: C.gold }}>  Semantic risk signal:</span> <span style={{ color: C.text }}>"project restructuring advisory" + recently</span><br />
+              <span style={{ color: C.text }}>  incorporated counterparty + round amount + "settlement" in</span><br />
+              <span style={{ color: C.text }}>  non-legal context → TBML cover story pattern (confidence: 0.82)</span><br />
+              <span style={{ color: C.gold }}>  Action:</span> <span style={{ color: C.red }}>Enrich alert with Meridian Holdings entity lookup</span>
+            </div>
+
+            <P>The NLP layer catches what keyword lists miss: the <B>semantic interaction</B> of words in context, hidden intermediary names in free-text fields, and patterns that only emerge from understanding language — not just matching strings.</P>
+          </div>
+        </div>
+      )}
+
+      {/* ─── TAB 1: WORKFORCE INTELLIGENCE ─── */}
+      {tab === 1 && (
+        <div>
+          <P>Our system routes alerts to priority queues (Tier 1/2/3) but treats all investigators as interchangeable. In reality, <B color={C.accent}>the right analyst on the right alert</B> can cut investigation time in half. This module adds intelligence to the human side of the pipeline.</P>
+
+          <div style={{ display: "grid", gap: 12, marginBottom: 20 }}>
+            {[
+              {
+                title: "Skill-Based Routing",
+                color: C.accent,
+                desc: "Each typology (structuring, TBML, sanctions, shell networks) is matched to investigators with demonstrated expertise for that pattern type.",
+                details: "Measured by: SAR conversion rate per typology, average investigation quality score per typology, training certifications. A sanctions-proximity alert routes to the analyst with the highest sanctions investigation accuracy — not just whoever has the shortest queue.",
+              },
+              {
+                title: "Workload Balancing & SLA Management",
+                color: C.blue,
+                desc: "Real-time view of analyst capacity, current queue depth, and SLA countdown timers across the entire investigation team.",
+                details: "Auto-distributes new alerts to underloaded analysts. Escalates alerts approaching SLA breach. Balances between skill-match (send to the best analyst) and capacity (don't overload one person). Adjustable weights per business line and region.",
+              },
+              {
+                title: "Investigator Performance Analytics",
+                color: C.gold,
+                desc: "Tracks per-analyst metrics to identify strengths, weaknesses, and outlier behavior patterns.",
+                details: "Key metrics: Average Handling Time (AHT) per typology, SAR conversion rate (too low = undertriaging, too high = overtriaging), QA rejection rate, first-time-right rate. Flags outliers: an analyst dismissing 99% of alerts may be undertriaging; one filing SARs on everything may be overtriaging.",
+              },
+              {
+                title: "Process Mining",
+                color: C.purple,
+                desc: "Analyzes the actual sequence of actions investigators take when working an alert — which screens they visit, what data they look up, how long they spend on each step.",
+                details: "Identifies bottlenecks: if 60% of investigation time is spent on a single manual lookup, that lookup should be automated. Discovers best practices from top-performing analysts and replicates their workflow patterns across the team. Feeds into UI/UX optimization — surface the data investigators need most, earlier in the workflow.",
+              },
+            ].map((item, i) => (
+              <div key={i} style={{ background: C.card, borderRadius: 12, border: `1px solid ${item.color}20`, overflow: "hidden" }}>
+                <div style={{ padding: "12px 16px", background: item.color + "08", borderBottom: `1px solid ${item.color}15` }}>
+                  <span style={{ fontFamily: mono, fontSize: 13, color: item.color, fontWeight: 700 }}>{item.title}</span>
+                </div>
+                <div style={{ padding: "14px 16px" }}>
+                  <div style={{ fontSize: 14, color: C.dim, lineHeight: 1.8, marginBottom: 8 }}>{item.desc}</div>
+                  <div style={{ fontSize: 13, color: C.dim, lineHeight: 1.75, padding: "10px 12px", background: C.surface, borderRadius: 8 }}>{item.details}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <Callout icon="⏱️" title="Expected Impact" color={C.accent}>
+            Optimized alert assignment typically reduces <B color={C.text}>Average Handling Time by 15–25%</B> and improves SLA adherence significantly. The combination of skill-routing + workload balancing ensures that high-priority alerts reach capable analysts quickly, while process mining continuously identifies and eliminates investigation bottlenecks.
+          </Callout>
+        </div>
+      )}
+
+      {/* ─── TAB 2: AI DISPOSITION & SAR ─── */}
+      {tab === 2 && (
+        <div>
+          <P>Currently, our system provides rich investigation context (Graph RAG briefing, regulatory citations, SAR narrative draft). But the <B color={C.accent}>decision itself</B> — file SAR, escalate, or dismiss — and the <B>regulatory questionnaire</B> are still entirely manual. This module adds AI-assisted decision support while keeping the human in the loop.</P>
+
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontFamily: mono, fontSize: 14, color: C.accent, fontWeight: 700, marginBottom: 12 }}>Multi-Agent Disposition Engine</div>
+            <P>A three-agent architecture where each agent handles a different aspect of the investigation decision:</P>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
+              {[
+                {
+                  agent: "Evidence Agent",
+                  color: C.blue,
+                  role: "Analyzes alert scores, decision drivers, Graph RAG network context, and adverse media hits",
+                  output: "Evidence summary: strength of each signal, corroboration between signals, any exculpatory factors",
+                },
+                {
+                  agent: "Compliance Agent",
+                  color: C.gold,
+                  role: "Checks regulatory requirements for this typology + jurisdiction via Text RAG",
+                  output: "Filing obligations: is a SAR mandatory? What are the reporting deadlines? Which fields are required?",
+                },
+                {
+                  agent: "Precedent Agent",
+                  color: C.purple,
+                  role: "Retrieves similar past cases and their outcomes from the case management database",
+                  output: "Historical context: 'Of 47 similar alerts in the last 12 months, 38 were filed as SARs (81% conversion rate)'",
+                },
+              ].map((item, i) => (
+                <div key={i} style={{ padding: 14, background: C.card, borderRadius: 10, border: `1px solid ${item.color}25` }}>
+                  <div style={{ fontFamily: mono, fontSize: 12, color: item.color, fontWeight: 700, marginBottom: 8 }}>{item.agent}</div>
+                  <div style={{ fontSize: 12, color: C.dim, lineHeight: 1.7, marginBottom: 8 }}>{item.role}</div>
+                  <div style={{ fontSize: 11, color: C.text, fontFamily: mono, padding: "8px 10px", background: C.surface, borderRadius: 6, lineHeight: 1.6 }}>{item.output}</div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ background: "#000", borderRadius: 10, padding: 18, border: `1px solid ${C.border}`, fontFamily: mono, fontSize: 12, lineHeight: 2, marginBottom: 16 }}>
+              <span style={{ color: C.accent }}>Disposition Recommendation:</span><br />
+              <span style={{ color: C.red }}>  → FILE SAR</span> <span style={{ color: C.dim }}>(confidence: 94%)</span><br /><br />
+              <span style={{ color: C.dim }}>Reasoning:</span><br />
+              <span style={{ color: C.text }}>  Evidence: Strong — GNN network score 0.92 + structuring</span><br />
+              <span style={{ color: C.text }}>  pattern + sanctions proximity corroborate each other.</span><br />
+              <span style={{ color: C.text }}>  Compliance: SAR mandatory — BSA §5.4 structuring +</span><br />
+              <span style={{ color: C.text }}>  FinCEN Advisory FIN-2025-A003 (Panama entities).</span><br />
+              <span style={{ color: C.text }}>  Precedent: 38/47 similar cases filed (81% SAR rate).</span><br /><br />
+              <span style={{ color: C.gold }}>⚠ Final decision rests with the investigator.</span>
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontFamily: mono, fontSize: 14, color: C.gold, fontWeight: 700, marginBottom: 12 }}>Risk Mitigation Questionnaire Automation</div>
+            <P>For each alert, investigators must complete a compliance questionnaire — dozens of fields about the entity, the activity, the risk assessment, and the mitigation steps. The AI auto-populates every field it can:</P>
+
+            <div style={{ background: C.surface, borderRadius: 12, border: `1px solid ${C.border}`, overflow: "hidden", marginBottom: 16 }}>
+              {[
+                { field: "Subject Name & Identification", source: "Auto-filled from KYC/Entity data", status: "✓ Auto", color: C.accent },
+                { field: "Suspicious Activity Type", source: "Mapped from detected typologies (structuring, layering, sanctions proximity)", status: "✓ Auto", color: C.accent },
+                { field: "Date Range of Activity", source: "Extracted from alert evaluation window timestamps", status: "✓ Auto", color: C.accent },
+                { field: "Amount Involved", source: "Aggregated from Layer 3 decision drivers (Total_Aggregated_Value)", status: "✓ Auto", color: C.accent },
+                { field: "Description of Suspicious Activity", source: "Graph RAG narrative draft — investigator reviews and adjusts", status: "⟳ Draft", color: C.gold },
+                { field: "Relationship to Financial Institution", source: "KYC: account type, products, relationship start date, risk rating", status: "✓ Auto", color: C.accent },
+                { field: "Law Enforcement Contact", source: "Requires manual input — AI cannot determine", status: "✎ Manual", color: C.dim },
+                { field: "Corrective Action Taken", source: "Requires investigator judgment — AI suggests options based on precedent", status: "⟳ Suggest", color: C.gold },
+              ].map((item, i) => (
+                <div key={i} style={{ display: "flex", gap: 10, padding: "10px 16px", borderBottom: i < 7 ? `1px solid ${C.border}` : "none", alignItems: "center" }}>
+                  <div style={{ fontFamily: mono, fontSize: 10, color: item.color, fontWeight: 600, minWidth: 55, flexShrink: 0 }}>{item.status}</div>
+                  <div style={{ fontSize: 12, color: C.text, minWidth: 180, flexShrink: 0 }}>{item.field}</div>
+                  <div style={{ fontSize: 11, color: C.dim, lineHeight: 1.5 }}>{item.source}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div style={{ fontFamily: mono, fontSize: 14, color: C.purple, fontWeight: 700, marginBottom: 12 }}>SAR Form Auto-Population</div>
+            <P>Beyond the narrative prose (which we already generate in §5–6), the system now auto-fills <B>structured filing fields</B> for the FinCEN BSA E-Filing system:</P>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              {[
+                { section: "Part I — Subject Info", fill: "Name, TIN, DOB, address, ID numbers — all from KYC. Multi-subject support for network alerts (auto-populates all linked entities from the GNN subgraph).", color: C.blue },
+                { section: "Part II — Suspicious Activity", fill: "Activity characterization checkboxes auto-mapped from detected typologies. 'Structuring' → check box 'a'. 'Money Laundering' → check box 'g'. Date range from alert window.", color: C.accent },
+                { section: "Part III — Filing Institution", fill: "Auto-populated from institution config: bank name, EIN, address, BSA ID. Branch info from the transaction source data.", color: C.gold },
+                { section: "Part V — Narrative", fill: "Graph RAG investigation briefing reformatted to FinCEN narrative requirements. Includes: who, what, when, where, why, how — structured from the decision drivers and network analysis.", color: C.purple },
+              ].map((item, i) => (
+                <Card key={i} color={item.color} title={item.section}>{item.fill}</Card>
+              ))}
+            </div>
+          </div>
+
+          <Callout icon="⏱️" title="Time Savings" color={C.accent}>
+            Current average: <B color={C.text}>~120 minutes per alert investigation</B>. With disposition recommendations, questionnaire auto-fill, and SAR form population: estimated <B color={C.accent}>~5–6 minutes saved per alert</B> on decision overhead, plus <B color={C.accent}>~45–60 minutes saved on SAR preparation</B> for confirmed filings. For a bank processing 5,000 alerts/month, that's ~2,500 analyst-hours recovered monthly.
+          </Callout>
+        </div>
+      )}
+
+      {/* ─── TAB 3: QA/QC & DE-DUPLICATION ─── */}
+      {tab === 3 && (
+        <div>
+          <P>The last mile: after an investigator makes a decision and prepares a filing, how do we ensure <B color={C.accent}>quality and consistency</B> before it reaches the regulator? And how do we prevent investigators from working the same underlying activity twice?</P>
+
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ fontFamily: mono, fontSize: 14, color: C.red, fontWeight: 700, marginBottom: 12 }}>Pre-Filing QA Engine</div>
+            <P>An automated quality gate that runs before any SAR is submitted or any alert is closed:</P>
+
+            <div style={{ display: "grid", gap: 8, marginBottom: 16 }}>
+              {[
+                {
+                  check: "Completeness Check",
+                  desc: "All required fields populated? Narrative present? Amount filled? Subject info complete? If a field is missing, the system blocks submission and highlights exactly which field needs attention.",
+                  color: C.blue,
+                },
+                {
+                  check: "Consistency Check",
+                  desc: "Does the narrative match the detected typologies? If the disposition says 'structuring' but the narrative describes 'trade-based laundering,' flag the contradiction. Does the reported amount match the aggregated transaction total from the decision drivers?",
+                  color: C.accent,
+                },
+                {
+                  check: "Regulatory Compliance Check",
+                  desc: "For this jurisdiction, are the correct SAR form sections completed? Is the filing deadline being met? Are all mandatory characterization checkboxes selected for the identified typologies? Text RAG validates against the applicable regulatory requirements.",
+                  color: C.gold,
+                },
+                {
+                  check: "Dismissal Justification Check",
+                  desc: "If the investigator dismisses an alert as false positive, the QA engine evaluates: is the justification consistent with the evidence? A Tier 1 alert with GNN score 0.92 being dismissed with 'no suspicious activity' requires additional explanation or supervisor review.",
+                  color: C.red,
+                },
+                {
+                  check: "Peer Comparison Check",
+                  desc: "Compares this decision against outcomes of similar past alerts. If 90% of alerts with similar scores and typologies were filed as SARs, but this one is being dismissed, flag for supervisory review — not to override, but to ensure the outlier decision is deliberate.",
+                  color: C.purple,
+                },
+              ].map((item, i) => (
+                <Card key={i} color={item.color} title={item.check}>{item.desc}</Card>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ marginBottom: 24 }}>
+            <div style={{ fontFamily: mono, fontSize: 14, color: C.gold, fontWeight: 700, marginBottom: 12 }}>Alert De-duplication Engine</div>
+            <P>When the same underlying activity triggers multiple typologies or spans multiple evaluation windows, investigators can end up working the same case twice. The de-duplication engine prevents this:</P>
+
+            <div style={{ background: "#000", borderRadius: 10, padding: 18, border: `1px solid ${C.border}`, fontFamily: mono, fontSize: 12, lineHeight: 2, marginBottom: 16 }}>
+              <span style={{ color: C.dim }}>Incoming alerts for CLI-88201 on 2026-03-21:</span><br />
+              <span style={{ color: C.red }}>  Alert A:</span> <span style={{ color: C.text }}>Structuring typology — score 0.91</span><br />
+              <span style={{ color: C.orange }}>  Alert B:</span> <span style={{ color: C.text }}>High-Risk Geography — score 0.75</span><br />
+              <span style={{ color: C.purple }}>  Alert C:</span> <span style={{ color: C.text }}>Flow-Through of Funds — score 0.88</span><br /><br />
+              <span style={{ color: C.accent }}>De-duplication analysis:</span><br />
+              <span style={{ color: C.text }}>  Entity overlap:  100% (same client)</span><br />
+              <span style={{ color: C.text }}>  Time overlap:    95% (same evaluation window)</span><br />
+              <span style={{ color: C.text }}>  Txn overlap:     78% (shared underlying transactions)</span><br /><br />
+              <span style={{ color: C.accent }}>Action: MERGE → Single consolidated alert</span><br />
+              <span style={{ color: C.text }}>  Combined typologies: Structuring + HRG + Flow-Through</span><br />
+              <span style={{ color: C.text }}>  Score: max(0.91, 0.75, 0.88) = 0.91</span><br />
+              <span style={{ color: C.text }}>  All decision drivers preserved under respective typology headers</span><br />
+              <span style={{ color: C.dim }}>  → 1 investigation instead of 3 (saves ~240 analyst-minutes)</span>
+            </div>
+
+            <P>De-duplication uses three overlap dimensions: <B color={C.text}>entity overlap</B> (same client or linked entities from Customer 360), <B color={C.text}>temporal overlap</B> (same or overlapping evaluation windows), and <B color={C.text}>transaction overlap</B> (shared underlying transactions between the alerts). When all three exceed configurable thresholds, the alerts merge into a single consolidated investigation.</P>
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ fontFamily: mono, fontSize: 14, color: C.purple, fontWeight: 700, marginBottom: 12 }}>Post-Investigation Analytics</div>
+            <P>The QA layer generates feedback that strengthens the entire system:</P>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+              {[
+                { metric: "QA Rejection Rate", feeds: "Workforce Intelligence — identifies analysts who need additional training on specific typologies or form-filling requirements", color: C.blue },
+                { metric: "Common Error Patterns", feeds: "SAR Auto-Population — if the same field is manually corrected frequently, improve the auto-fill logic for that field", color: C.accent },
+                { metric: "Dismissal Reversal Rate", feeds: "Tuning Matrix — if dismissed alerts are later re-opened (e.g., by law enforcement), the threshold for that population cell may be too high", color: C.gold },
+                { metric: "Time-to-File Distribution", feeds: "Process Mining — identifies bottlenecks in the filing workflow and SLA compliance across teams", color: C.purple },
+              ].map((item, i) => (
+                <Card key={i} color={item.color} title={item.metric}>{item.feeds}</Card>
+              ))}
+            </div>
+          </div>
+
+          <Callout icon="🔗" title="Closing the Full Loop" color={C.accent}>
+            With this module, the system now covers the <B color={C.text}>complete alert lifecycle</B>: detection (§1–8) → architecture (§9) → transaction walkthrough (§10) → advanced scoring (§11) → attack resilience (§12) → and now investigation intelligence — from alert triage through disposition, filing, and quality assurance. Every step feeds data back into the system: analyst decisions tune thresholds, QA metrics improve auto-fill, process mining optimizes workflow, and workforce analytics ensure the right humans are on the right alerts.
+          </Callout>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
 // MAIN
 // ═══════════════════════════════════════════
 const SECTIONS = [
@@ -2972,6 +3275,7 @@ const SECTIONS = [
   { id: 10, title: "Live Walkthrough", sub: "Transaction → Alert → SAR", comp: Section10 },
   { id: 11, title: "Advanced Patterns", sub: "Production Hardening & Gaps", comp: Section11 },
   { id: 12, title: "Attack Scenarios", sub: "10 Real Attacks, Caught", comp: Section12 },
+  { id: 13, title: "Smart Investigation", sub: "Post-Alert Intelligence", comp: Section13 },
 ];
 
 function App() {
