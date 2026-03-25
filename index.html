@@ -115,7 +115,7 @@ function Card({ color, title, children, style: s = {} }) {
 function Section1() {
   return (
     <div>
-      <P>In the previous guide, we built a spam detector: extract features from an email, feed them through a neural network, get "spam or not." <B color={C.accent}>AML detection is the same core idea</B> — but dramatically harder. Let's understand why.</P>
+      <P>The core idea behind any detection system is simple: extract features from raw data, feed them through a neural network, get a classification. <B color={C.accent}>AML detection follows this same principle</B> — but it's dramatically harder. Let's understand why.</P>
 
       <div style={{ background: "#000", borderRadius: 10, padding: 20, border: `1px solid ${C.border}`, fontFamily: mono, fontSize: 12, lineHeight: 2, marginBottom: 20 }}>
         <span style={{ color: C.red }}>ALERT #47291</span> <span style={{ color: C.dim }}>— Flagged by Transaction Monitor</span><br />
@@ -126,11 +126,11 @@ function Section1() {
         <span style={{ color: C.gold }}>Typology:</span> <span style={{ color: C.red }}>Structuring + Layering via shell network</span>
       </div>
 
-      <P>Unlike spam, where you classify one email at a time, money laundering involves <B>networks of entities transacting over time</B>. A single $9,500 transfer looks normal. But 47 of them, split across 14 entities that trace back to the same person, just below the reporting threshold? That's <B color={C.red}>structuring</B> — a classic laundering technique.</P>
+      <P>Money laundering involves <B>networks of entities transacting over time</B>. A single $9,500 transfer looks normal. But 47 of them, split across 14 entities that trace back to the same person, just below the reporting threshold? That's <B color={C.red}>structuring</B> — a classic laundering technique.</P>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 20 }}>
-        <Card color={C.blue} title="Spam Detection">
-          <B color={C.text}>One input, one decision.</B> A single email → spam/not. Features are self-contained. The email has everything you need to decide.
+        <Card color={C.blue} title="Simple Classification">
+          <B color={C.text}>One input, one decision.</B> A single data point with self-contained features. Everything you need to decide is in the input itself.
         </Card>
         <Card color={C.red} title="AML Detection">
           <B color={C.text}>Graph + time + context.</B> A single transaction means nothing alone. You need the network of entities, the history, the regulatory context, and the relationship patterns.
@@ -141,7 +141,7 @@ function Section1() {
 
       <div style={{ display: "grid", gap: 10, marginBottom: 16 }}>
         {[
-          { icon: "🧠", name: "Neural Networks", desc: "Score individual transactions and customer behavior (same idea as spam)", color: C.accent },
+          { icon: "🧠", name: "Neural Networks", desc: "Score individual transactions and customer behavior using learned patterns", color: C.accent },
           { icon: "🕸️", name: "Graph Neural Networks + Graph RAG", desc: "Detect network-level patterns: shell company webs, circular flows, hidden beneficial owners", color: C.purple },
           { icon: "📚", name: "Traditional RAG", desc: "Give investigators instant access to regulations, past SARs, typology libraries, and compliance rulings", color: C.gold },
         ].map((item, i) => (
@@ -210,7 +210,7 @@ function Section2() {
     <div>
       <Bridge from="Problem" to="Data" text="We know what we're detecting. Now: how do we convert raw banking data into features a neural network can process?" />
 
-      <P>Remember the spam detector? We converted an email into numbers like <code style={{ color: C.accent, fontFamily: mono, background: C.accentDim, padding: "2px 6px", borderRadius: 4 }}>[1, 1, 0, 0.7, 5]</code>. For AML, we extract features at <B>three levels</B> — each one captures patterns the others can't. Toggle between them:</P>
+      <P>The first step in any ML pipeline is converting raw data into numbers. For AML, we extract features at <B>three levels</B> — each one captures patterns the others can't. Toggle between them:</P>
 
       <Tabs items={layers.map(l => l.name)} active={layer} onSelect={setLayer} />
 
@@ -236,7 +236,7 @@ function Section2() {
       </Callout>
 
       <Callout icon="⚠️" title="The Feature Engineering Bottleneck" color={C.gold}>
-        In traditional AML systems, analysts hand-craft these features and set manual thresholds ($10K, 30 days, etc.). This is brittle — launderers learn the thresholds. Our neural network will <B color={C.text}>learn the optimal thresholds and feature combinations from data</B>, just like the spam detector learned which words matter.
+        In traditional AML systems, analysts hand-craft these features and set manual thresholds ($10K, 30 days, etc.). This is brittle — launderers learn the thresholds. Our neural network will <B color={C.text}>learn the optimal thresholds and feature combinations from data</B> automatically.
       </Callout>
     </div>
   );
@@ -250,13 +250,13 @@ function Section3() {
 
   return (
     <div>
-      <Bridge from="Features" to="Scoring Model" text="We have a 200+ dimensional feature vector per transaction. Now we feed it into a neural network — same architecture as the spam detector, just bigger." />
+      <Bridge from="Features" to="Scoring Model" text="We have a 200+ dimensional feature vector per transaction. Now we feed it into a neural network to produce a risk score." />
 
       <Tabs items={["Architecture", "Training Data", "Why It Beats Rules"]} active={view} onSelect={setView} />
 
       {view === 0 && (
         <div>
-          <P>The transaction scoring model is a <B>direct extension</B> of our spam network. More inputs, more hidden layers, same principles:</P>
+          <P>The transaction scoring model is a standard <B>multi-layer neural network</B>. It takes the feature vector as input, passes it through progressively narrower hidden layers, and outputs a single risk probability:</P>
 
           <svg viewBox="0 0 600 300" style={{ width: "100%", background: C.surface, borderRadius: 12, border: `1px solid ${C.border}`, marginBottom: 16 }}>
             {/* Input layer */}
@@ -338,8 +338,8 @@ function Section3() {
             ))}
           </div>
 
-          <Callout icon="🔗" title="Same Architecture, Different Features" color={C.accent}>
-            This is <B color={C.text}>exactly</B> the spam network from the previous guide with more inputs and more hidden neurons. The math is identical: weighted sum → activation → next layer. Backprop trains all weights. The only difference is the feature vector.
+          <Callout icon="🔗" title="Same Core Math, Applied to Finance" color={C.accent}>
+            Every neuron does the same thing: <B color={C.text}>weighted sum → activation → next layer</B>. The math is identical across all neural networks. Backprop trains all weights via gradient descent. What changes between domains is the feature vector — here it's financial signals instead of text or images.
           </Callout>
         </div>
       )}
@@ -469,7 +469,7 @@ function Section4() {
               { step: "1. Initialize", desc: "Each node starts with its own feature vector (account age, type, jurisdiction, etc.) — same idea as our transaction features", color: C.blue },
               { step: "2. Message: Gather from neighbors", desc: 'Each node collects feature vectors from all connected nodes. Entity A gathers from B, C, D. Think of it as "asking your neighbors what they know"', color: C.accent },
               { step: "3. Aggregate", desc: "Combine all neighbor messages via sum, mean, or attention-weighted pooling. Now Entity A's representation encodes info about its immediate network", color: C.purple },
-              { step: "4. Update", desc: "Pass the aggregated message through a neural network (same weighted sum + activation from §2 of the NN guide!) to produce the node's new embedding", color: C.gold },
+              { step: "4. Update", desc: "Pass the aggregated message through a neural network (weighted sum + activation) to produce the node's new embedding", color: C.gold },
               { step: "5. Repeat K times", desc: "After K rounds, each node's embedding encodes information from K hops away. With K=3, Entity A 'knows about' entities 3 layers deep in the network", color: C.red },
             ].map((item, i) => (
               <div key={i}>
@@ -489,7 +489,7 @@ function Section4() {
             <span style={{ color: C.text }}>{"  "}aggregated = </span><span style={{ color: C.purple }}>MEAN</span><span style={{ color: C.text }}>(messages)</span><br />
             <span style={{ color: C.text }}>{"  "}v.embedding = </span><span style={{ color: C.gold }}>ReLU</span><span style={{ color: C.text }}>(</span><span style={{ color: C.accent }}>W₂</span><span style={{ color: C.text }}> · [v.embedding ‖ aggregated])</span><br /><br />
             <span style={{ color: C.dim }}>{"// W and W₂ are learned weights — trained via backprop!"}</span><br />
-            <span style={{ color: C.dim }}>{"// Same gradient descent as the spam detector."}</span>
+            <span style={{ color: C.dim }}>{"// Standard gradient descent, same as any neural network."}</span>
           </Code>
         </div>
       )}
@@ -663,7 +663,7 @@ function Section6() {
           </div>
 
           <Callout icon="🔗" title="Connection to Neural Networks" color={C.accent}>
-            The embedding model IS a neural network (usually a Transformer like BERT or E5). It was trained to produce similar vectors for semantically similar text — so "structuring" and "breaking up deposits to avoid reporting" end up close in vector space. Same training principles from our NN guide!
+            The embedding model IS a neural network (usually a Transformer like BERT or E5). It was trained to produce similar vectors for semantically similar text — so "structuring" and "breaking up deposits to avoid reporting" end up close in vector space, enabling semantic retrieval.
           </Callout>
         </div>
       )}
@@ -889,13 +889,13 @@ function Section8() {
           </Callout>
 
           <div style={{ marginTop: 20, padding: 24, background: `linear-gradient(135deg, ${C.accentDim}, ${C.purpleDim})`, borderRadius: 14, border: `1px solid ${C.accent}25` }}>
-            <div style={{ fontSize: 16, color: C.accent, fontFamily: mono, fontWeight: 700, marginBottom: 14 }}>The Complete Thread — NN Guide → AML System</div>
+            <div style={{ fontSize: 16, color: C.accent, fontFamily: mono, fontWeight: 700, marginBottom: 14 }}>The Complete Thread</div>
             <div style={{ fontSize: 14, color: C.dim, lineHeight: 2.2 }}>
               {[
-                { n: "1", t: "Neuron: weighted sum + activation → one classification (spam)", color: C.blue },
+                { n: "1", t: "Neuron: weighted sum + activation → single risk classification", color: C.blue },
                 { n: "2", t: "Layers: multiple neurons → complex pattern detection", color: C.accent },
                 { n: "3", t: "Training: backprop + gradient descent → learned features", color: C.gold },
-                { n: "4", t: "AML transaction NN: same architecture, financial features (§3)", color: C.gold },
+                { n: "4", t: "AML transaction NN: multi-layer scoring on financial features (§3)", color: C.gold },
                 { n: "5", t: "GNN: extend neurons to graphs via message passing (§4)", color: C.purple },
                 { n: "6", t: "Graph RAG: retrieve subgraphs + LLM explanation (§5)", color: C.purple },
                 { n: "7", t: "Text RAG: retrieve regulations + typologies for context (§6)", color: C.gold },
@@ -1559,7 +1559,7 @@ const WALK_STEPS = [
     icon: "🧠",
     color: C.accent,
     latency: "+80 ms",
-    description: "The 200+ feature vector is fed through the 3-layer neural network (128→64→32→1). Each hidden layer applies weighted sum + ReLU activation — the same perceptron math from §2, just scaled up. The output sigmoid gives a probability.",
+    description: "The 200+ feature vector is fed through the 3-layer neural network (128→64→32→1). Each hidden layer applies weighted sum + ReLU activation — standard neural network math, just scaled up. The output sigmoid gives a probability.",
     dataLabel: "NN Inference Trace",
     data: `Transaction NN Inference:
 ─────────────────────────────────────
@@ -1592,7 +1592,7 @@ Output (sigmoid):
 Transaction NN Risk Score: 0.895
 Confidence Interval (MC Dropout): [0.84, 0.93]
 Inference Time: 0.8 ms (batched, GPU)`,
-    insight: "The NN outputs 0.895 — high risk. Notice how Layer 1 detects individual signals (threshold proximity, velocity anomaly, jurisdiction risk), Layer 2 combines them into patterns (structuring, new-account-risk-combo), and the output compresses everything into a single probability. This is exactly the hierarchical feature composition we discussed in the NN guide §6.",
+    insight: "The NN outputs 0.895 — high risk. Notice how Layer 1 detects individual signals (threshold proximity, velocity anomaly, jurisdiction risk), Layer 2 combines them into patterns (structuring, new-account-risk-combo), and the output compresses everything into a single probability. This is hierarchical feature composition — deeper layers build increasingly abstract representations of risk.",
   },
   {
     id: 4,
@@ -2620,9 +2620,9 @@ function Section11() {
 // MAIN
 // ═══════════════════════════════════════════
 const SECTIONS = [
-  { id: 1, title: "The AML Problem", sub: "Why It's Harder Than Spam", comp: Section1 },
+  { id: 1, title: "The AML Problem", sub: "Why AML Is So Hard", comp: Section1 },
   { id: 2, title: "Feature Engineering", sub: "Transaction → Numbers", comp: Section2 },
-  { id: 3, title: "Transaction Scoring NN", sub: "Same Architecture, New Data", comp: Section3 },
+  { id: 3, title: "Transaction Scoring NN", sub: "Multi-Layer Risk Scoring", comp: Section3 },
   { id: 4, title: "Graph Neural Networks", sub: "Detecting Network Schemes", comp: Section4 },
   { id: 5, title: "Graph RAG", sub: "Investigation Intelligence", comp: Section5 },
   { id: 6, title: "Traditional RAG", sub: "Regulatory Context", comp: Section6 },
