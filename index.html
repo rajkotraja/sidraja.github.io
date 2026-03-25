@@ -2617,6 +2617,346 @@ function Section11() {
 }
 
 // ═══════════════════════════════════════════
+// SECTION 12: ATTACK SCENARIOS
+// ═══════════════════════════════════════════
+
+const SCENARIOS = [
+  {
+    id: 0,
+    title: "Shell Company Layering Ring",
+    category: "Network Crime",
+    icon: "🕸️",
+    color: C.purple,
+    attack: `A drug cartel sets up 12 shell companies across Panama, Dubai, and Cyprus. Company A sends $50K to Company B, which sends $48K to Company C, which sends $46K to Company D — through 8 hops until the money lands in a London real estate firm within 72 hours. Each individual transfer looks like normal business. Company B receives $50K and sends $48K — flow-through ratio 0.96, within normal range for a trading company. No single node looks suspicious in isolation.
+
+But when you visualize the graph: a clear 8-hop layering chain where money degrades by 2–4% at each hop (laundering fees), originates from a high-risk jurisdiction, and terminates in real estate.`,
+    naive: "A system evaluating each client independently scores all 12 shells as low risk. Each one has normal-looking flow ratios, reasonable volumes, and no sanctions matches. 12 separate low scores. No alert.",
+    ours: `Our GNN extracts the full subgraph and runs 3 rounds of message passing. After round 1, each node encodes its direct neighbors. After round 3, every node's embedding encodes the entire 8-hop chain. The GNN detects:
+
+• Circular/chain flow pattern (temporal BFS from high-risk origin)
+• 2–4% degradation at each hop (laundering fee signature)
+• 11/12 entities incorporated within 30 days (mass shell creation)
+• All entities share a registered agent (common UBO signal)
+• Terminal node is a real estate firm (high-risk sector for ML)
+
+GNN network risk score: 0.94. Graph RAG generates a narrative tracing the full chain with timestamps, amounts, and beneficial ownership links. Investigator sees the complete picture in seconds.`,
+    component: "GNN (§4) + Graph RAG (§5) + Network Axis (§11)",
+  },
+  {
+    id: 1,
+    title: "Same-Day Structuring Blitz",
+    category: "Timing Attack",
+    icon: "⏱️",
+    color: C.red,
+    attack: `At 9:15 AM, a newly onboarded business account deposits $9,500 in cash at Branch A. At 10:30 AM, $9,200 at Branch B. At 11:45 AM, $9,800 at Branch C. Three deposits in under 3 hours, all below the $10,000 CTR threshold, totaling $28,500. By 1 PM, the funds are wired to a correspondent account in Colombia. By 3 PM, they're withdrawn via ATM.
+
+The entire attack — deposit, transfer, cash-out — completes within 6 hours.`,
+    naive: "A system that computes features in daily batch runs won't see any of this until midnight. By then, the first deposit was 15 hours ago, the money is gone, and the behavioral features (velocity, amount clustering, structuring score) are computed on a closed account. The alert fires the next morning for money that left the country yesterday.",
+    ours: `Our Kafka → Flink real-time pipeline catches the second deposit within 500ms. Here's the timeline:
+
+9:15 AM — Deposit 1 ($9,500): Feature store updated in real-time. Txn axis scores 0.65 (near-threshold, new account, cash).
+
+10:30 AM — Deposit 2 ($9,200): Flink streaming aggregation computes: same-day cumulative cash = $18,700, amount_dispersion = 0.016 (near-identical amounts), velocity = 2 in 75 min. Account axis score jumps to 0.88. Structuring alert fires.
+
+10:31 AM — Account placed on enhanced monitoring. Wire transfer hold applied.
+
+11:45 AM — Deposit 3 ($9,800) attempted: System recognizes cumulative $28,500 in structured deposits. Auto-escalated to Tier 1. Branch notified. Transaction held for review.
+
+The attack is interrupted mid-execution because real-time feature computation detects the pattern as it develops, not 15 hours later.`,
+    component: "Kafka + Flink real-time pipeline + streaming Feature Factory (§9, §11)",
+  },
+  {
+    id: 2,
+    title: "Family Network Round-Trip",
+    category: "Cross-Entity Evasion",
+    icon: "👨‍👩‍👦",
+    color: C.gold,
+    attack: `Mohammad holds a personal account. His wife Fatima holds a joint account at another branch under her maiden name. His company "Al-Rahman Trading LLC" holds a corporate account. His son Ahmed holds a student account. Each entity transacts independently and scores below threshold on every axis.
+
+But collectively: cash deposits flow into the personal account → immediate transfers to the corporate account → wires from the corporate to overseas "suppliers" → the son's account receives "tuition payments" from the same overseas entities. The family moves $2M/month through four accounts with complementary patterns.`,
+    naive: "A system with client-level evaluation treats these as four unrelated clients with four separate profiles. Mohammad's personal account shows normal cash activity. The corporate account shows normal supplier payments. Ahmed's student account shows normal tuition inflows. Each independently scores below threshold. No connection is drawn.",
+    ours: `Our system catches this at multiple levels:
+
+1. Entity Resolution: Deterministic matching (shared surname, shared address on KYC records) + probabilistic matching (overlapping transaction counterparties — the same overseas entities appear in both the corporate wire destinations and the student's inflow sources) links all four into a single Customer 360 profile.
+
+2. GNN Network Axis: Once linked, the graph reveals a circular pattern: personal → corporate → overseas → student → personal (via family transfers). The GNN's message passing propagates risk signals across all four nodes.
+
+3. Graph RAG Investigation: When the alert fires, the investigator sees: "Four entities linked by beneficial ownership and family relationship are collectively moving $2M/month in a pattern consistent with layering. The 'tuition payments' to Ahmed's account originate from the same entities receiving wire transfers from Al-Rahman Trading — suggesting round-trip laundering disguised as education expenses."
+
+Combined score (Network + Client aggregation): 0.91. The family unit is scored as one risk entity, not four clean ones.`,
+    component: "Entity Resolution + GNN (§4) + Customer 360 + Graph RAG (§5)",
+  },
+  {
+    id: 3,
+    title: "Wire Stripping — Sanctions Evasion",
+    category: "Data Integrity Attack",
+    icon: "✂️",
+    color: C.red,
+    attack: `A bank's Geneva office processes a $2M wire from a Sudanese government entity to a supplier. The compliance system would block it — Sudan is under comprehensive sanctions. So the operations team removes "Central Bank of Sudan" from the originator field in the MT103 SWIFT message, replaces it with the bank's own name, and resubmits the payment.
+
+The AML data layer receives a clean-looking wire: "Geneva Branch → Generic Supplier, $2M, trade payment." The sanctioned party name was literally erased before data entered the pipeline.`,
+    naive: "Any system that operates on post-processed transaction data scores this as low risk. The sanctions screening finds no match because the sanctioned name isn't in the data. The feature factory computes features on sanitized inputs. Every layer — scoring, aggregation, escalation — operates on corrupted data and sees nothing.",
+    ours: `Our SWIFT Message Integrity Analyzer (proposed in §11) sits BEFORE the AML data layer:
+
+1. Gateway Comparison: Compares the incoming MT103 at the SWIFT gateway entry point against the version that enters the AML data layer. Detects field modifications — the originator changed from "Central Bank of Sudan" to "Geneva Branch."
+
+2. Resubmission Detection: Maintains a database of previously blocked payments. When the stripped version is resubmitted, it matches the amount, beneficiary, date, and reference against the blocked transaction log. Match found → auto-escalate.
+
+3. Blank Field Detection: Flags any MT103 with empty or generic originator/beneficiary fields — a common stripping indicator.
+
+4. Cover Payment Cross-Reference: Compares MT202COV (cover payments through correspondent banks) against the corresponding MT103. If the cover payment mentions "Sudan" but the customer payment doesn't, the discrepancy triggers an alert.
+
+This catches the attack before it ever reaches the scoring pipeline — the integrity layer acts as a pre-filter on data quality itself.`,
+    component: "SWIFT Message Integrity Analyzer (§11 — proposed new component)",
+  },
+  {
+    id: 4,
+    title: "Insider Collusion at Branch Level",
+    category: "Employee Attack Vector",
+    icon: "🤝",
+    color: C.orange,
+    attack: `A branch teller processes $1.2M in cash deposits from the same individual in a single day — $200K across six visits. The teller files the CTRs as required (technically compliant for each $30K+ deposit) but doesn't file a SAR. Why? The client gives them $250 in gift cards per account opened.
+
+The teller also opens 47 accounts in the last month (branch average: 6), several without the customer present, using forged signatures. 600+ debit cards are issued linked to these accounts. The cards are used for 120,000 ATM withdrawals across Colombia.`,
+    naive: "A transaction monitoring system sees: CTRs filed ✓, cash deposited ✓, wires sent ✓ — all procedurally correct. The transaction axis scores each deposit as within threshold (CTR was filed, so it's 'reported'). The account axis sees normal activity per account. The system monitors what flows through the bank, not who facilitates it.",
+    ours: `Our Employee Behavior Analytics module (proposed in §11) monitors the human layer:
+
+1. Cash Volume Outlier: This teller processes 80% of the branch's total cash volume — 12× the peer average. Auto-flagged as statistical outlier.
+
+2. Account Opening Velocity: 47 accounts opened in 30 days vs. branch average of 6. The system flags the 7.8× deviation and correlates it with: (a) several accounts opened without customer-present verification, (b) accounts immediately receiving large cash deposits.
+
+3. Gift/Benefit Correlation: Cross-referencing the teller's transaction processing with the purchasing patterns shows gift card purchases that correlate with high-value deposit days — a bribery signature.
+
+4. Card Issuance Anomaly: 600+ debit cards linked to accounts opened by the same employee → geographic velocity analysis shows the cards are being used in Colombia within hours of US deposits.
+
+5. Dual-Control Violation: Account openings and large cash processing by the same employee without independent verification triggers a dual-control alert.
+
+The employee is flagged before the transaction monitoring system would ever see a problem — because the attack vector isn't the transaction, it's the compromised employee.`,
+    component: "Employee Behavior Analytics (§11 — proposed new component)",
+  },
+  {
+    id: 5,
+    title: "Evolving Typology — Model Drift",
+    category: "Adaptive Adversary",
+    icon: "🔄",
+    color: C.accent,
+    attack: `Over 12 months, criminals shift from classic wire structuring ($9,500 deposits) to a new technique: they acquire legitimate small businesses and run dirty money through the same accounts alongside real revenue. Transaction patterns look like normal business activity — the velocity, amounts, and counterparty profiles all match the business type.
+
+The Transaction NN was trained on 2024 data where structuring was the dominant pattern. It scores front-business laundering as low risk because the features genuinely look like normal business. The amounts aren't near thresholds. The velocity matches the industry. The counterparties are real businesses.`,
+    naive: "A system with threshold-only feedback notices that the existing structuring thresholds are generating false positives (because real structuring decreased) and loosens them. But it never retrains the underlying model. The model's understanding of 'what suspicious looks like' stays frozen in 2024. It's adjusting the pass mark on an exam that's testing the wrong subject.",
+    ours: `Our system addresses this through three mechanisms:
+
+1. Quarterly Model Retraining: Every quarter, the Transaction NN and GNN are retrained on the latest analyst-labeled data (new TPs + FPs from the past 3 months). The model learns the new front-business pattern from recently filed SARs that describe it.
+
+2. Unsupervised Anomaly Detector: Even before labeled examples exist, the autoencoder detects that front-business accounts show subtle statistical anomalies: (a) revenue-to-cash-deposit ratios that don't match the industry, (b) counterparty overlap with known shell entities in the graph, (c) temporal patterns where legitimate revenue and suspicious deposits alternate in predictable cycles.
+
+3. BTL Active Learning: The Tuning Matrix's Below-The-Line testing periodically samples scores in the 0.55–0.65 range. Analysts reviewing these BTL samples discover the new front-business pattern → they label it → the next quarterly retrain incorporates the new typology.
+
+4. Feature Pipeline Evolution: When new typologies emerge, the Feature Factory can ingest new feature types (P2P-specific signals like device fingerprint, session velocity, app-originated flag) without rebuilding the pipeline.
+
+The system doesn't just adjust thresholds — it evolves its fundamental understanding of risk.`,
+    component: "Quarterly retraining + Anomaly detector + BTL testing + Feature Factory (§5, §7, §11)",
+  },
+  {
+    id: 6,
+    title: "Zero-Day Typology Discovery",
+    category: "Unknown Unknown",
+    icon: "🔮",
+    color: C.purple,
+    attack: `FATF publishes a new typology report describing how criminals exploit digital asset "travel rule" gaps — layering funds through unhosted wallets before converting back to fiat via a compliant exchange. No existing rule in the bank's system covers this pattern. No training data exists for it. The bank is now exposed to a published, known typology with zero detection capability.`,
+    naive: "A traditional system requires a compliance analyst to read the report, a quant to design a new model, an engineer to implement it, and a change management process to deploy it. That's weeks or months of lag time during which the bank is exposed.",
+    ours: `Our system closes this gap through two paths:
+
+1. Text RAG Immediate Awareness: The FATF report is ingested into the compliance document corpus within hours. When any alert fires that involves cryptocurrency or digital assets, the Text RAG system now retrieves this typology as relevant context. Investigators see: "Note: FATF recently published typology describing travel rule gaps in unhosted wallet → fiat conversion chains. This alert's pattern may match."
+
+2. Unsupervised Anomaly Detection: The autoencoder's reconstruction loss naturally spikes for transactions matching the new typology — because the pattern of crypto-to-fiat-via-exchange with specific timing and counterparty signatures is novel relative to the training distribution. The anomaly score elevates even without a specific rule.
+
+3. Rapid Rule Deployment: Once the compliance team identifies the pattern from the FATF report, the Feature Factory's API-driven architecture allows new features (crypto exchange counterparty flag, wallet-to-fiat conversion timing, travel rule compliance status) to be added and served without rebuilding the pipeline. The Tuning Matrix gets a new typology row with initial thresholds inherited from similar cross-border patterns.
+
+Time from FATF publication to partial detection: hours (via RAG context + anomaly detector). Time to full rule coverage: days, not months.`,
+    component: "Text RAG (§6) + Anomaly detector + Feature Factory API (§9, §11)",
+  },
+  {
+    id: 7,
+    title: "Unmonitored Channel Exploitation",
+    category: "Coverage Blind Spot",
+    icon: "📱",
+    color: C.red,
+    attack: `The bank launches a peer-to-peer payment feature (like Zelle) in Q2 2024. The product team goes live. Nobody notifies the AML team. No data feed is added to the ingestion pipeline. For 18 months, millions of P2P transactions flow through the bank completely unmonitored.
+
+A drug network discovers this blind spot and begins using the P2P channel to move $470M in proceeds. The AML dashboard shows all green — zero alerts, zero issues. But that's not because the channel is clean. It's because the system doesn't know the channel exists. "No alerts" and "not monitored" look exactly the same.`,
+    naive: "Any system that monitors only what it receives has this vulnerability. The dashboard shows green. The metrics look fine. There's zero indication of a problem — until law enforcement shows up 18 months later asking why $470M in drug money flowed through unmonitored accounts.",
+    ours: `Our Coverage Meta-Monitor (proposed in §11) prevents this:
+
+1. Channel Registry: Maintains a master list of ALL transaction types, products, and channels the bank offers — synced with the product catalog and core banking system configuration. When a new product launches, it appears in the registry automatically.
+
+2. Ingestion Audit: Continuously compares the channel registry against actual data flowing into the pipeline. If the registry lists "P2P_ZELLE" as an active product but zero transactions from that channel appear in Kafka for 48 hours → Coverage Gap Alert fires immediately.
+
+3. Volume Sanity Check: For channels that ARE in the pipeline, compares expected transaction volume (from business projections) against actual monitored volume. If the bank processes 500K Zelle transactions per day but only 50K flow into AML monitoring → partial coverage alert.
+
+4. Red-Team Simulation: Quarterly, the system injects synthetic test transactions through every channel in the registry and verifies they pass through all pipeline stages (ingestion → features → scoring → alert potential). Any channel that fails the end-to-end test is flagged.
+
+The Zelle gap would be caught within 48 hours of launch — not 18 months later by law enforcement.`,
+    component: "Coverage Meta-Monitor (§11 — proposed new component)",
+  },
+  {
+    id: 8,
+    title: "Trade-Based Money Laundering",
+    category: "Document Fraud",
+    icon: "📦",
+    color: C.gold,
+    attack: `A client submits a letter of credit for importing "industrial paint" — 10,500 one-gallon cans at $1,050 each. Total: $11M. A legitimate gallon of industrial paint costs $30–$80. The shipment is supposedly going from a free trade zone in Dubai to a warehouse address in rural Moldova that, when checked, doesn't exist.
+
+A separate client invoices for 344,820 metric tons of metal pipes in a single shipment. A full shipping container holds about 28 tonnes. This would require 12,315 containers — roughly the capacity of one of the world's largest container ships, entirely for one client's single order.`,
+    naive: "A system that only analyzes transaction data sees: $11M wire, letter of credit, trade finance product. The amount is large but within threshold for corporate trade finance. The counterparty is in Dubai (moderate risk, not sanctioned). No transaction-level or account-level feature catches this because the financial data looks normal — the fraud is in the trade documents, not the payment.",
+    ours: `Our Trade Document Analyzer (proposed in §11) catches both:
+
+1. Commodity Price Database: Compares declared unit price ($1,050/gallon) against market benchmarks for industrial paint ($30–$80/gallon). Price deviation: 13–35×. Auto-escalate.
+
+2. Volume/Weight Sanity Check: 344,820 metric tonnes ÷ 28 tonnes/container = 12,315 containers. Compares against shipping route capacity and client's declared business size. Flags as physically impossible.
+
+3. Address Verification: Cross-references the delivery address against geographic databases. Rural Moldova address doesn't match any known commercial or industrial facility. Flag: phantom shipment.
+
+4. Duplicate Invoice Detection: Identifies when the same goods, route, and counterparty appear in multiple invoices with slight variations — a common TBML technique for inflating trade volumes.
+
+5. NLP on Payment References: An LLM fine-tuned on payment messages recognizes that "consultancy fees for project restructuring advisory — Q4 settlement" combined with a recently incorporated free trade zone counterparty and a round amount is a semantic pattern associated with trade-based laundering cover stories — even when no individual keyword is on a static watchlist.
+
+These document-level and semantic checks create a detection layer that pure transaction monitoring can never replicate.`,
+    component: "Trade Document Analyzer + NLP (§11 — proposed new component)",
+  },
+  {
+    id: 9,
+    title: "Anomaly Detector False Positive Storm",
+    category: "Model Calibration Failure",
+    icon: "🌊",
+    color: C.accent,
+    attack: `The bank onboards a legitimate cryptocurrency exchange. The exchange naturally has: extremely high transaction velocity (thousands per day), large cross-border volumes, many unique counterparties, and unusual timing patterns (24/7 trading). The unsupervised anomaly detector, trained on traditional banking patterns, outputs score: 0.95 with top loss contributors: "crossborder_volume, txn_velocity_spike."
+
+The exchange isn't suspicious — it's just a business type the model has never seen before. But 0.95 puts it in Tier 1.`,
+    naive: "A system that treats the anomaly score as-is floods investigators with false positives for every novel-but-legitimate business type. Investigators quickly learn to ignore anomaly alerts → the entire anomaly detection capability loses credibility → when a genuinely novel threat appears, nobody investigates it.",
+    ours: `Our system handles this through calibrated anomaly scoring:
+
+1. Peer Group Contextualization: The anomaly detector doesn't just compare against the global population. It first identifies the entity's peer group (other crypto exchanges, MSBs, or high-velocity financial intermediaries) and computes anomaly scores relative to that peer group. A crypto exchange with high velocity is normal among crypto exchanges — the anomaly score drops to 0.35.
+
+2. Concept Drift Management: When a new client type appears (no peer group exists yet), the system flags it as "novel profile — requires baseline establishment" rather than "anomalous." It creates a provisional peer group and re-scores after 30 days of behavioral data.
+
+3. Dual-Track Escalation: Track A checks hard compliance rules (sanctions, blacklist jurisdictions) — if the exchange is licensed and compliant, no auto-escalation. Track B's ML consolidator weights the anomaly score at W_unsup = 0.3, so even a high anomaly score alone can't push the consolidated score above threshold without corroborating evidence from the supervised model or rule engine.
+
+4. Supervised Override: The ensemble model has been trained on past cases where high anomaly + low supervised score → false positive. It learns that "novel but clean" and "novel and suspicious" have different feature signatures (the clean ones have proper licensing, known counterparties, and consistent patterns; the suspicious ones have shell indicators, sanctions proximity, and erratic timing).
+
+Net result: the crypto exchange is correctly scored as low risk despite being statistically unusual. Investigator trust in anomaly alerts is preserved for cases that genuinely warrant attention.`,
+    component: "Calibrated anomaly scoring + Peer groups + Dual-track escalation (§7, §11)",
+  },
+];
+
+function Section12() {
+  const [activeScenario, setActiveScenario] = useState(0);
+  const [showOurs, setShowOurs] = useState(false);
+  const sc = SCENARIOS[activeScenario];
+
+  return (
+    <div>
+      <P>Theory is useful, but <B color={C.accent}>real attacks test real systems</B>. This section presents 10 realistic money laundering scenarios — each designed to exploit a specific weakness — and shows exactly how our architecture detects (or prevents) each one.</P>
+
+      {/* Scenario selector */}
+      <div style={{ background: C.surface, borderRadius: 12, padding: "14px 12px", border: `1px solid ${C.border}`, marginBottom: 20 }}>
+        <div style={{ fontFamily: mono, fontSize: 11, color: C.accent, fontWeight: 600, marginBottom: 10 }}>Select Scenario — {activeScenario + 1}/{SCENARIOS.length}</div>
+        <div style={{ display: "flex", gap: 4, flexWrap: "wrap", marginBottom: 10 }}>
+          {SCENARIOS.map((s, i) => (
+            <button key={i} onClick={() => { setActiveScenario(i); setShowOurs(false); }} style={{
+              background: activeScenario === i ? s.color : (i < activeScenario ? s.color + "20" : "transparent"),
+              color: activeScenario === i ? C.bg : (i < activeScenario ? s.color : C.faint),
+              border: `1px solid ${activeScenario === i ? s.color : (i < activeScenario ? s.color + "35" : C.border)}`,
+              borderRadius: 14, padding: "4px 10px", cursor: "pointer",
+              fontFamily: mono, fontSize: 9, fontWeight: activeScenario === i ? 700 : 400,
+              transition: "all 0.15s", whiteSpace: "nowrap", flexShrink: 0,
+            }}>
+              {s.icon} {i + 1}
+            </button>
+          ))}
+        </div>
+        <div style={{ height: 3, background: C.faint, borderRadius: 2, overflow: "hidden" }}>
+          <div style={{ height: "100%", width: `${((activeScenario + 1) / SCENARIOS.length) * 100}%`, background: sc.color, borderRadius: 2, transition: "width 0.3s ease" }} />
+        </div>
+      </div>
+
+      {/* Scenario header */}
+      <div style={{ display: "flex", gap: 14, alignItems: "center", padding: "16px 18px", background: sc.color + "10", borderRadius: 12, border: `1px solid ${sc.color}30`, marginBottom: 16 }}>
+        <div style={{ fontSize: 28, flexShrink: 0 }}>{sc.icon}</div>
+        <div style={{ flex: 1 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", flexWrap: "wrap", gap: 8 }}>
+            <div style={{ fontFamily: mono, fontSize: 15, color: sc.color, fontWeight: 700 }}>
+              {sc.title}
+            </div>
+            <div style={{ fontFamily: mono, fontSize: 10, color: C.dim, padding: "2px 8px", background: C.card, borderRadius: 4 }}>
+              {sc.category}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* The Attack */}
+      <div style={{ background: "#000", borderRadius: 12, border: `1px solid ${sc.color}25`, overflow: "hidden", marginBottom: 16 }}>
+        <div style={{ padding: "10px 16px", background: sc.color + "08", borderBottom: `1px solid ${sc.color}20` }}>
+          <span style={{ fontFamily: mono, fontSize: 11, color: sc.color, fontWeight: 600 }}>🎭 The Attack</span>
+        </div>
+        <div style={{ padding: "14px 16px", fontSize: 14, color: C.dim, lineHeight: 1.85, whiteSpace: "pre-wrap" }}>
+          {sc.attack}
+        </div>
+      </div>
+
+      {/* Naive vs Ours toggle */}
+      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+        <button onClick={() => setShowOurs(false)} style={{
+          flex: 1, padding: "12px 16px", borderRadius: 10, cursor: "pointer", fontFamily: mono, fontSize: 12, fontWeight: !showOurs ? 700 : 400, transition: "all 0.15s",
+          background: !showOurs ? C.red + "15" : "transparent",
+          color: !showOurs ? C.red : C.dim,
+          border: `1px solid ${!showOurs ? C.red + "50" : C.border}`,
+        }}>
+          ✗ Without Our System
+        </button>
+        <button onClick={() => setShowOurs(true)} style={{
+          flex: 1, padding: "12px 16px", borderRadius: 10, cursor: "pointer", fontFamily: mono, fontSize: 12, fontWeight: showOurs ? 700 : 400, transition: "all 0.15s",
+          background: showOurs ? C.accent + "15" : "transparent",
+          color: showOurs ? C.accent : C.dim,
+          border: `1px solid ${showOurs ? C.accent + "50" : C.border}`,
+        }}>
+          ✓ How Our System Catches It
+        </button>
+      </div>
+
+      {/* Content panel */}
+      <div style={{ background: C.card, borderRadius: 12, border: `1px solid ${showOurs ? C.accent : C.red}25`, overflow: "hidden", marginBottom: 16 }}>
+        <div style={{ padding: "10px 16px", background: (showOurs ? C.accent : C.red) + "08", borderBottom: `1px solid ${(showOurs ? C.accent : C.red)}20`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ fontFamily: mono, fontSize: 11, color: showOurs ? C.accent : C.red, fontWeight: 600 }}>
+            {showOurs ? "✓ Detection Mechanism" : "✗ Undetected — Why It Fails"}
+          </span>
+        </div>
+        <div style={{ padding: "14px 16px", fontSize: 14, color: C.dim, lineHeight: 1.85, whiteSpace: "pre-wrap" }}>
+          {showOurs ? sc.ours : sc.naive}
+        </div>
+      </div>
+
+      {/* Component tag */}
+      <div style={{ padding: "10px 14px", background: C.surface, borderRadius: 8, border: `1px solid ${C.border}`, marginBottom: 16, display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ fontFamily: mono, fontSize: 10, color: C.dim }}>Components used:</span>
+        <span style={{ fontFamily: mono, fontSize: 11, color: sc.color, fontWeight: 600 }}>{sc.component}</span>
+      </div>
+
+      {/* Navigation */}
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 8 }}>
+        <button onClick={() => { setActiveScenario(Math.max(0, activeScenario - 1)); setShowOurs(false); }} disabled={activeScenario === 0} style={{ background: "transparent", color: activeScenario === 0 ? C.faint : C.dim, border: `1px solid ${activeScenario === 0 ? C.faint : C.border}`, borderRadius: 8, padding: "8px 16px", cursor: activeScenario === 0 ? "default" : "pointer", fontFamily: mono, fontSize: 11 }}>
+          ← Prev Scenario
+        </button>
+        <button onClick={() => { setActiveScenario(Math.min(SCENARIOS.length - 1, activeScenario + 1)); setShowOurs(false); }} disabled={activeScenario === SCENARIOS.length - 1} style={{ background: activeScenario === SCENARIOS.length - 1 ? C.faint : sc.color, color: activeScenario === SCENARIOS.length - 1 ? C.dim : C.bg, border: "none", borderRadius: 8, padding: "8px 16px", cursor: activeScenario === SCENARIOS.length - 1 ? "default" : "pointer", fontFamily: mono, fontSize: 11, fontWeight: 700 }}>
+          Next Scenario →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════
 // MAIN
 // ═══════════════════════════════════════════
 const SECTIONS = [
@@ -2631,6 +2971,7 @@ const SECTIONS = [
   { id: 9, title: "Architecture", sub: "System Design & C4 Diagrams", comp: Section9 },
   { id: 10, title: "Live Walkthrough", sub: "Transaction → Alert → SAR", comp: Section10 },
   { id: 11, title: "Advanced Patterns", sub: "Production Hardening & Gaps", comp: Section11 },
+  { id: 12, title: "Attack Scenarios", sub: "10 Real Attacks, Caught", comp: Section12 },
 ];
 
 function App() {
