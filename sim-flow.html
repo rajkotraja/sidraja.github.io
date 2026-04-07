@@ -1,0 +1,974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AML Detection Intelligence Platform</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body,#root{height:100%}
+body{background:#06080c}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#06080c}
+::-webkit-scrollbar-thumb{background:#1a1e2e;border-radius:3px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+button{transition:all .15s ease}
+button:hover{filter:brightness(1.1)}
+select{appearance:none}
+input::placeholder{color:#555b75}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo } = React;
+
+const T = {
+  bg:"#06080c",panel:"#0a0d14",card:"#10131c",cardHover:"#151926",
+  border:"#1a1e2e",borderLight:"#252a3d",
+  accent:"#00e4b8",accentDim:"#00e4b815",accentMid:"#00e4b840",
+  gold:"#f5b731",goldDim:"#f5b73115",
+  red:"#ff5252",redDim:"#ff525215",
+  blue:"#4da6ff",blueDim:"#4da6ff15",
+  purple:"#b07aff",purpleDim:"#b07aff15",
+  orange:"#ff8a40",orangeDim:"#ff8a4015",
+  cyan:"#00d4f5",cyanDim:"#00d4f515",
+  teal:"#20c9a0",tealDim:"#20c9a015",
+  pink:"#ff6b9d",pinkDim:"#ff6b9d15",
+  text:"#e8eaf0",sub:"#8b90a8",muted:"#555b75",
+  success:"#00c97a",warn:"#f5b731",danger:"#ff5252",
+};
+const font={mono:"'JetBrains Mono','IBM Plex Mono',monospace",body:"'Outfit','DM Sans',system-ui,sans-serif"};
+
+// ═════════════ BATCH TRANSACTIONS DATA ═════════════
+const BATCH_TRANSACTIONS = [
+  {id:"TXN-001",entity:"Acme Exports Ltd",from:"Acme Exports Ltd",to:"Panama Shell Corp #7",fromCountry:"US",toCountry:"PA",amount:9500,product:"Wire",frequency:"47x/12d",clientAge:"3 weeks",riskProfile:"New Entity",
+   l1:{features:247,hrg:true,taxHaven:true,roundAmt:0.95,pepStatus:false,kycRisk:"High",txnProfile:"Anomalous"},
+   l2:{axis:"Transaction+Network",typologies:[{id:"RT#26",name:"Structuring",score:.88,atl:true,model:"Rule"},{id:"RT#11",name:"HRG",score:.92,atl:true,model:"Rule"},{id:"RT#43",name:"Shared Info",score:.94,atl:true,model:"ML/AI"},{id:"RT#41",name:"Many-to-One",score:.85,atl:true,model:"ML/AI"},{id:"RT#24",name:"Round Amounts",score:.55,atl:false,model:"Rule"}],recurrence:47,recurrenceWindow:"12 days"},
+   l3:{entityResolved:true,linkedAccounts:3,atlScore:.94,anomalyScore:.78,driversConsolidated:true},
+   l4:{track:"B",mlScore:.91,historicalMatch:true,pastOutcome:"TP (87% rate)",decision:"ATL",priority:"CRITICAL"},
+   l5:{alertId:"ALT-47291",template:"Structuring+Network",level:"L1+L2+L3"},
+   axisScores:{transaction:.92,account:.85,client:.90,product:0,network:.94,anomaly:.78},
+   caught:"L2 (Rule Engine + ML/AI Network)",caughtDetail:"Structuring pattern detected by Rule Engine (47x $9,500 below $10K threshold). Shell network detected by ML/AI Engine via Neo4j relationship graph. 14 counterparties sharing registered agent and UBO linked to OFAC SDN.",color:T.red,status:"ATL Alert"},
+
+  {id:"TXN-002",entity:"Meridian Holdings BVI",from:"Meridian Holdings BVI",to:"12 counterparties",fromCountry:"VG",toCountry:"Multi",amount:2800000,product:"Wire",frequency:"Daily",clientAge:"6 months",riskProfile:"Corporate",
+   l1:{features:247,hrg:true,taxHaven:true,roundAmt:0.10,pepStatus:false,kycRisk:"High",txnProfile:"Complex Structure"},
+   l2:{axis:"Network+Client",typologies:[{id:"RT#14",name:"Opaque Structure",score:.89,atl:true,model:"ML/AI"},{id:"RT#43",name:"Shared Info",score:.91,atl:true,model:"ML/AI"},{id:"RT#22",name:"vs Economic Profile",score:.76,atl:true,model:"Hybrid"},{id:"RT#17",name:"Higher Risk Counterparties",score:.82,atl:true,model:"Rule"}],recurrence:28,recurrenceWindow:"30 days"},
+   l3:{entityResolved:true,linkedAccounts:8,atlScore:.91,anomalyScore:.65,driversConsolidated:true},
+   l4:{track:"B",mlScore:.87,historicalMatch:true,pastOutcome:"TP (72% rate)",decision:"ATL",priority:"HIGH"},
+   l5:{alertId:"ALT-47288",template:"Shell Company",level:"L1+L2+L3"},
+   axisScores:{transaction:.45,account:.50,client:.76,product:0,network:.91,anomaly:.65},
+   caught:"L2 (ML/AI Engine — Neo4j graph)",caughtDetail:"Relationship Graph module detected 3-layer ownership depth through BVI trusts. Entity Roll-Up Engine consolidated signals from 8 linked accounts. Network Axis identified circular fund flows between Meridian and 4 of its 12 counterparties.",color:T.orange,status:"ATL Alert"},
+
+  {id:"TXN-003",entity:"Chen Wei Trading Co",from:"Chen Wei Trading Co",to:"Gold Refinery HK",fromCountry:"HK",toCountry:"HK",amount:450000,product:"Cash Deposit",frequency:"3x/week",clientAge:"2 years",riskProfile:"Retail",
+   l1:{features:247,hrg:false,taxHaven:false,roundAmt:0.30,pepStatus:false,kycRisk:"Medium",txnProfile:"Cash Intensive"},
+   l2:{axis:"Account+Transaction",typologies:[{id:"RT#51",name:"Unusual Cash vs History",score:.82,atl:true,model:"Hybrid"},{id:"RT#52",name:"Cash vs Profile",score:.79,atl:true,model:"ML/AI"},{id:"RT#22",name:"vs Economic Profile",score:.71,atl:true,model:"Hybrid"},{id:"RT#57",name:"Unusual Denominations",score:.45,atl:false,model:"Rule"}],recurrence:12,recurrenceWindow:"30 days"},
+   l3:{entityResolved:true,linkedAccounts:2,atlScore:.82,anomalyScore:.70,driversConsolidated:true},
+   l4:{track:"B",mlScore:.78,historicalMatch:false,pastOutcome:"No prior alerts",decision:"ATL",priority:"MEDIUM"},
+   l5:{alertId:"ALT-47285",template:"Cash Activity",level:"L1+L2"},
+   axisScores:{transaction:.30,account:.82,client:.71,product:0,network:.10,anomaly:.70},
+   caught:"L2 (Hybrid Engine — cash pattern)",caughtDetail:"Account Feature Engine flagged monthly turnover 340% above 90-day average. Temporal Sequence module detected deposit-withdrawal chains with <2hr gaps. Entity Feature Engine showed client declared as small retailer but processing $450K cash deposits.",color:T.gold,status:"ATL Alert"},
+
+  {id:"TXN-004",entity:"Nordic Freight AB",from:"Nordic Freight AB",to:"Istanbul Logistics",fromCountry:"SE",toCountry:"TR",amount:890000,product:"Letter of Credit",frequency:"Bi-weekly",clientAge:"5 years",riskProfile:"Corporate",
+   l1:{features:247,hrg:false,taxHaven:false,roundAmt:0.10,pepStatus:false,kycRisk:"Low",txnProfile:"Trade Finance"},
+   l2:{axis:"Product & Services",typologies:[{id:"RT#711",name:"Shipment Risk",score:.74,atl:true,model:"Hybrid"},{id:"RT#712",name:"High Risk Goods",score:.68,atl:true,model:"Hybrid"},{id:"RT#713",name:"Doc Anomalies",score:.71,atl:true,model:"Hybrid"}],recurrence:6,recurrenceWindow:"90 days"},
+   l3:{entityResolved:true,linkedAccounts:1,atlScore:.74,anomalyScore:.55,driversConsolidated:true},
+   l4:{track:"B",mlScore:.71,historicalMatch:false,pastOutcome:"No prior alerts",decision:"ATL",priority:"MEDIUM"},
+   l5:{alertId:"ALT-47280",template:"Trade Finance",level:"L1+L2"},
+   axisScores:{transaction:.15,account:.12,client:.10,product:.74,network:.08,anomaly:.55},
+   caught:"L2 (Hybrid Engine — NLP + trade analysis)",caughtDetail:"NLP Text Engine parsed LC documents: goods described as 'industrial equipment' but shipping weight inconsistent with declared value. Commodity pricing deviation of 280% from market rate. Route includes transshipment through free trade zone not typical for declared goods.",color:T.teal,status:"ATL Alert"},
+
+  {id:"TXN-005",entity:"Al-Rashid Foundation",from:"Multiple donors",to:"Al-Rashid Foundation",fromCountry:"Multi",toCountry:"JO",amount:15000,product:"Wire",frequency:"Sporadic",clientAge:"1 year",riskProfile:"Non-Profit",
+   l1:{features:247,hrg:false,taxHaven:false,roundAmt:0.20,pepStatus:false,kycRisk:"Medium",txnProfile:"Charity"},
+   l2:{axis:"Client+Transaction",typologies:[{id:"RT#81",name:"TF Weak Signal: Radicalization",score:.35,atl:false,model:"Rule"},{id:"RT#13",name:"Non-Profit Entity",score:.40,atl:false,model:"Rule"},{id:"RT#82",name:"TF Keywords",score:.28,atl:false,model:"Hybrid"}],recurrence:3,recurrenceWindow:"60 days"},
+   l3:{entityResolved:true,linkedAccounts:1,atlScore:0,anomalyScore:.62,driversConsolidated:true},
+   l4:{track:"B",mlScore:.68,historicalMatch:false,pastOutcome:"None",decision:"ATL",priority:"LOW"},
+   l5:{alertId:"ALT-47276",template:"TF Indicator",level:"L2+L3"},
+   axisScores:{transaction:.28,account:.15,client:.35,product:0,network:.20,anomaly:.62},
+   caught:"L4 (ML Classifier — holistic combination)",caughtDetail:"Individual L2 scores all BTL. But Track B ML Classifier evaluated the COMBINATION: non-profit entity (RT#13) + TF keyword matches in wire references (RT#82) + donor pattern matching radicalization signals (RT#81) + anomaly score 0.62. Historical context: similar triads escalated 68% of the time. Network Graph ATL/BTL module detected fund flow topology matching known TF patterns.",color:T.pink,status:"ATL Alert (Track B)"},
+
+  {id:"TXN-006",entity:"Microsoft Corp",from:"Microsoft Corp",to:"Azure EU Operations",fromCountry:"US",toCountry:"DE",amount:25000000,product:"Wire",frequency:"Monthly",clientAge:"30 years",riskProfile:"Public Company",
+   l1:{features:247,hrg:false,taxHaven:false,roundAmt:0.05,pepStatus:false,kycRisk:"Low",txnProfile:"Expected"},
+   l2:{axis:"Transaction+Account",typologies:[{id:"RT#11",name:"HRG",score:.02,atl:false,model:"Rule"},{id:"RT#22",name:"vs Economic Profile",score:.03,atl:false,model:"Hybrid"},{id:"RT#21",name:"vs History",score:.01,atl:false,model:"ML/AI"}],recurrence:0,recurrenceWindow:"N/A"},
+   l3:{entityResolved:true,linkedAccounts:45,atlScore:0,anomalyScore:.01,driversConsolidated:true},
+   l4:{track:"N/A",mlScore:.02,historicalMatch:true,pastOutcome:"FP (100%)",decision:"BTL",priority:"NONE"},
+   l5:{alertId:"None",template:"N/A",level:"N/A"},
+   axisScores:{transaction:.02,account:.01,client:.03,product:0,network:.01,anomaly:.01},
+   caught:"Not flagged — correctly cleared",caughtDetail:"All L2 scores near zero. Monthly recurring transfer matching established transaction profile exactly. Public company with 30-year relationship, low KYC risk. Anomaly score 0.01 — behavior perfectly consistent with historical baseline. Score Adjustment Engine dampened further due to 100% FP rate on prior similar signals.",color:T.accent,status:"BTL (Clean)"},
+
+  {id:"TXN-007",entity:"Rodriguez Family Trust",from:"Rodriguez Family Trust",to:"Cayman Investment Fund",fromCountry:"US",toCountry:"KY",amount:175000,product:"Wire",frequency:"First time",clientAge:"8 years",riskProfile:"Trust",
+   l1:{features:247,hrg:true,taxHaven:true,roundAmt:0.70,pepStatus:true,kycRisk:"High",txnProfile:"Deviation"},
+   l2:{axis:"Client+Network",typologies:[{id:"RT#14",name:"Opaque Structure",score:.80,atl:true,model:"ML/AI"},{id:"RT#18",name:"PEP Transaction",score:.85,atl:true,model:"Rule"},{id:"RT#11",name:"HRG",score:.78,atl:true,model:"Rule"},{id:"RT#22",name:"vs Economic Profile",score:.65,atl:true,model:"Hybrid"}],recurrence:1,recurrenceWindow:"N/A"},
+   l3:{entityResolved:true,linkedAccounts:3,atlScore:.85,anomalyScore:.72,driversConsolidated:true},
+   l4:{track:"A",mlScore:"N/A (bypassed)",historicalMatch:false,pastOutcome:"First alert",decision:"ATL",priority:"CRITICAL"},
+   l5:{alertId:"ALT-47299",template:"PEP + Structure",level:"L1+L2+L3"},
+   axisScores:{transaction:.78,account:.30,client:.85,product:0,network:.40,anomaly:.72},
+   caught:"L4 Track A (Auto-Escalation)",caughtDetail:"Escalation Router matched zero-tolerance policy: PEP client (RT#18 score 0.85) with opaque trust structure sending to tax haven jurisdiction. Policy Matcher triggered immediate auto-escalation — bypassed Track B ML Classifier entirely. No probabilistic assessment needed; deterministic compliance requirement.",color:T.red,status:"ATL Alert (Track A)"},
+
+  {id:"TXN-008",entity:"Phantom Entity X",from:"Unknown patterns",to:"Various",fromCountry:"Multi",toCountry:"Multi",amount:67000,product:"Mixed",frequency:"Irregular",clientAge:"4 years",riskProfile:"Corporate",
+   l1:{features:247,hrg:false,taxHaven:false,roundAmt:0.15,pepStatus:false,kycRisk:"Low",txnProfile:"Normal Range"},
+   l2:{axis:"Anomaly",typologies:[],recurrence:0,recurrenceWindow:"N/A"},
+   l3:{entityResolved:true,linkedAccounts:2,atlScore:0,anomalyScore:.88,driversConsolidated:true},
+   l4:{track:"B",mlScore:.75,historicalMatch:false,pastOutcome:"None",decision:"ATL",priority:"MEDIUM"},
+   l5:{alertId:"ALT-47301",template:"Zero-Day Anomaly",level:"L3"},
+   axisScores:{transaction:.05,account:.08,client:.03,product:.02,network:.06,anomaly:.88},
+   caught:"L2 Anomaly Engine (Autoencoder)",caughtDetail:"Zero targeted typologies triggered — all rule-based and ML scores near zero. But the Anomaly Engine (VAE) flagged reconstruction loss of 0.88: the entity's behavioral pattern doesn't match ANY known pattern. Top loss contributors: unusual combination of product types, irregular timing distribution, counterparty geography spread inconsistent with declared business. This is a potential zero-day pattern not in the typology catalogue.",color:T.cyan,status:"ATL Alert (Anomaly)"},
+
+  {id:"TXN-009",entity:"SmallBiz Coffee Shop",from:"SmallBiz Coffee Shop",to:"Coffee Bean Supplier",fromCountry:"US",toCountry:"CO",amount:3200,product:"Wire",frequency:"Weekly",clientAge:"6 years",riskProfile:"Small Business",
+   l1:{features:247,hrg:false,taxHaven:false,roundAmt:0.10,pepStatus:false,kycRisk:"Low",txnProfile:"Expected"},
+   l2:{axis:"Transaction",typologies:[{id:"RT#11",name:"HRG",score:.15,atl:false,model:"Rule"},{id:"RT#22",name:"vs Profile",score:.08,atl:false,model:"Hybrid"}],recurrence:0,recurrenceWindow:"N/A"},
+   l3:{entityResolved:true,linkedAccounts:1,atlScore:0,anomalyScore:.05,driversConsolidated:true},
+   l4:{track:"N/A",mlScore:.06,historicalMatch:true,pastOutcome:"FP",decision:"BTL",priority:"NONE"},
+   l5:{alertId:"None",template:"N/A",level:"N/A"},
+   axisScores:{transaction:.15,account:.05,client:.08,product:0,network:.02,anomaly:.05},
+   caught:"Not flagged — correctly cleared",caughtDetail:"Established small business, 6-year relationship. Weekly coffee bean imports from Colombia consistent with declared business. Amount within expected range. Transaction profile matches peer group (small F&B businesses). All scores well below eligibility criteria.",color:T.accent,status:"BTL (Clean)"},
+
+  {id:"TXN-010",entity:"Dormant Account #8842",from:"Unknown Sender",to:"Dormant Account #8842",fromCountry:"CH",toCountry:"US",amount:520000,product:"Wire",frequency:"First in 3 years",clientAge:"10 years",riskProfile:"Individual",
+   l1:{features:247,hrg:false,taxHaven:true,roundAmt:0.40,pepStatus:false,kycRisk:"Medium",txnProfile:"Dormancy Break"},
+   l2:{axis:"Account",typologies:[{id:"RT#23",name:"Dormancy Reactivation",score:.88,atl:true,model:"Hybrid"},{id:"RT#25",name:"Rapid Movement",score:.72,atl:true,model:"ML/AI"},{id:"RT#21",name:"vs History",score:.84,atl:true,model:"ML/AI"}],recurrence:1,recurrenceWindow:"N/A"},
+   l3:{entityResolved:true,linkedAccounts:1,atlScore:.88,anomalyScore:.80,driversConsolidated:true},
+   l4:{track:"B",mlScore:.85,historicalMatch:false,pastOutcome:"None",decision:"ATL",priority:"HIGH"},
+   l5:{alertId:"ALT-47303",template:"Dormancy",level:"L1+L2"},
+   axisScores:{transaction:.40,account:.88,client:.60,product:0,network:.10,anomaly:.80},
+   caught:"L2 (Hybrid + ML/AI — dormancy pattern)",caughtDetail:"Account Feature Engine detected 0 transactions in 1,095 days followed by a $520K inbound wire. Temporal Sequence module: within 4 hours of deposit, $515K wired out to a different jurisdiction. Dormancy reactivation (RT#23) scored by Hybrid Engine combining rule (dormancy period > threshold) with ML (amount anomaly vs account history).",color:T.orange,status:"ATL Alert"},
+];
+
+const DEMO_ALERTS = BATCH_TRANSACTIONS.filter(t=>t.status.includes("ATL")).map(t=>({
+  id:t.l5.alertId,entity:t.entity,risk:t.l3.atlScore||t.l4.mlScore||0,
+  type:t.l2.typologies[0]?.name||"Anomaly",status:t.id==="TXN-007"?"Escalated":t.id==="TXN-001"?"Open":"Under Review",
+  country:t.toCountry,age:["2h","5h","8h","12h","1d","3h","6h","30m"][BATCH_TRANSACTIONS.indexOf(t)%8],
+  track:t.l4.track,priority:t.l4.priority,
+}));
+
+const TYPOLOGIES = [
+  {id:"RT#11",name:"High-Risk Jurisdictions",group:"High-Risk Characteristics",axis:"Transaction",method:"Rule",risk:"High",desc:"Cross-border transactions to/from jurisdictions classified as high sensitive or tax havens per GFS referential."},
+  {id:"RT#12",name:"Sensitive Sectors",group:"High-Risk Characteristics",axis:"Client",method:"Rule",risk:"High",desc:"Transactions with clients in sectors vulnerable to fraud: oil, gas, arms, precious metals, textiles."},
+  {id:"RT#14",name:"Opaque Legal Structures",group:"High-Risk Characteristics",axis:"Client",method:"ML/AI",risk:"Critical",desc:"Trusts, PIVs, and complex legal structures obscuring beneficial ownership. Evaluated via Relationship Graph module."},
+  {id:"RT#18",name:"PEP Transactions",group:"High-Risk Characteristics",axis:"Client",method:"Rule+ML",risk:"High",desc:"Transactions involving Politically Exposed Persons. Triggers Track A auto-escalation per zero-tolerance policy."},
+  {id:"RT#21",name:"Unusual vs History",group:"Unusual Transactional",axis:"Account",method:"ML/AI",risk:"Medium",desc:"Activity significantly different from the client's historically established behavior over lookback windows."},
+  {id:"RT#22",name:"Unusual vs Economic Profile",group:"Unusual Transactional",axis:"Client",method:"Hybrid",risk:"Medium",desc:"Activity deviating from client's economic profile using peer group comparison and KYC data."},
+  {id:"RT#23",name:"Dormancy Reactivation",group:"Unusual Transactional",axis:"Account",method:"Hybrid",risk:"High",desc:"Accounts reactivating after extended dormancy period with significant transaction activity."},
+  {id:"RT#24",name:"Round Amounts",group:"Unusual Transactional",axis:"Transaction",method:"Rule",risk:"Low",desc:"Series of debit or credit round amount transactions aggregating to a significant value."},
+  {id:"RT#25",name:"Rapid Movement",group:"Unusual Transactional",axis:"Account",method:"Streaming ML",risk:"High",desc:"Accounts with rapid debit and credit within a specified analysis period. Detected via Temporal Sequence module."},
+  {id:"RT#26",name:"Structuring",group:"Unusual Transactional",axis:"Transaction",method:"Rule+ML",risk:"Critical",desc:"Repeated transactions below reporting thresholds. Score based on closeness-to-threshold from Tuning Matrix."},
+  {id:"RT#34",name:"Branch Behavior",group:"Suspicious Behaviour",axis:"Client",method:"Ops Intel",risk:"Medium",desc:"Suspicious individual behaviours observed in branches. Ingested via Ops Intel Feed module."},
+  {id:"RT#41",name:"Many-to-One",group:"Hidden Relationships",axis:"Network",method:"ML/AI",risk:"High",desc:"Multiple counterparties depositing into a single concentration account. Detected by Network Axis graph analysis."},
+  {id:"RT#43",name:"Shared Information",group:"Hidden Relationships",axis:"Network",method:"ML/AI",risk:"Critical",desc:"Multiple entities linked via shared addresses, phones, UBOs. Detected by Relationship Graph module in Neo4j."},
+  {id:"RT#51",name:"Unusual Cash vs History",group:"Cash Activities",axis:"Account",method:"Hybrid",risk:"Medium",desc:"Cash deposits or withdrawals significantly different from historical patterns."},
+  {id:"RT#54",name:"Cash Structuring",group:"Cash Activities",axis:"Transaction",method:"Streaming",risk:"High",desc:"Repeated cash deposits below reporting threshold within a short period."},
+  {id:"RT#65",name:"Safe Deposit Boxes",group:"Cash Activities",axis:"Product & Services",method:"Rule+ML",risk:"Medium",desc:"Unusual access patterns, geographic distance, or multiple individuals accessing boxes."},
+  {id:"RT#81",name:"TF Weak Signals",group:"Terrorism Financing",axis:"Client",method:"Joint Probability",risk:"Critical",desc:"Combination of individually sub-threshold signals. Evaluated holistically by Track B ML Classifier in L4."},
+  {id:"RT#711",name:"Shipment Risk",group:"Trade Finance",axis:"Product & Services",method:"NLP+Hybrid",risk:"High",desc:"High-risk shipment routes, free trade zones, illogical routes. Detected by NLP Text Engine + Hybrid Engine."},
+  {id:"RT#731",name:"Correspondent Banking",group:"Correspondent Banking",axis:"Network",method:"Rule+ML/AI",risk:"High",desc:"Unusual activity by ultimate parties in correspondent banking chains via MT103 multi-party analysis."},
+];
+
+// ═════════════ UI COMPONENTS ═════════════
+const Badge=({text,color=T.accent})=>(
+  <span style={{fontFamily:font.mono,fontSize:10,color,background:color+"18",padding:"3px 10px",borderRadius:20,border:`1px solid ${color}30`,letterSpacing:.3,whiteSpace:"nowrap"}}>{text}</span>
+);
+
+const Metric=({label,value,color=T.accent,sub:subtitle,trend})=>(
+  <div style={{padding:"16px 20px",background:T.card,borderRadius:12,border:`1px solid ${T.border}`,flex:1,minWidth:140}}>
+    <div style={{fontFamily:font.mono,fontSize:10,color:T.muted,letterSpacing:1.5,textTransform:"uppercase",marginBottom:8}}>{label}</div>
+    <div style={{display:"flex",alignItems:"baseline",gap:8}}>
+      <span style={{fontFamily:font.mono,fontSize:28,fontWeight:700,color}}>{value}</span>
+      {trend&&<span style={{fontFamily:font.mono,fontSize:11,color:trend>0?T.red:T.success}}>{trend>0?"+":""}{trend}%</span>}
+    </div>
+    {subtitle&&<div style={{fontFamily:font.mono,fontSize:10,color:T.muted,marginTop:4}}>{subtitle}</div>}
+  </div>
+);
+
+const ScoreGauge=({label,score,color,delay=0})=>{
+  const[anim,setAnim]=useState(0);
+  useEffect(()=>{const t=setTimeout(()=>setAnim(score),200+delay);return()=>clearTimeout(t)},[score,delay]);
+  return(
+    <div style={{textAlign:"center"}}>
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="34" fill="none" stroke={T.border} strokeWidth="4"/>
+        <circle cx="40" cy="40" r="34" fill="none" stroke={color} strokeWidth="4"
+          strokeDasharray={`${anim*213.6} 213.6`} strokeLinecap="round"
+          transform="rotate(-90 40 40)" style={{transition:"stroke-dasharray 1.2s cubic-bezier(.4,0,.2,1)"}}/>
+        <text x="40" y="38" textAnchor="middle" fill={color} fontFamily={font.mono} fontSize="16" fontWeight="700">{Math.round(anim*100)}</text>
+        <text x="40" y="50" textAnchor="middle" fill={T.muted} fontFamily={font.mono} fontSize="7">/100</text>
+      </svg>
+      <div style={{fontFamily:font.mono,fontSize:9,color:T.sub,marginTop:2}}>{label}</div>
+    </div>
+  );
+};
+
+const ProgressBar=({value,color,height=5})=>(
+  <div style={{background:T.border,borderRadius:height,height,overflow:"hidden",flex:1}}>
+    <div style={{width:`${value*100}%`,height:"100%",background:color,borderRadius:height,transition:"width .8s ease"}}/>
+  </div>
+);
+
+const Tab=({items,active,onChange})=>(
+  <div style={{display:"flex",gap:2,background:T.panel,borderRadius:10,padding:3,marginBottom:20}}>
+    {items.map((item,i)=>(
+      <button key={i} onClick={()=>onChange(i)} style={{
+        flex:1,padding:"8px 12px",borderRadius:8,border:"none",cursor:"pointer",
+        background:active===i?T.card:"transparent",
+        color:active===i?T.accent:T.muted,
+        fontFamily:font.mono,fontSize:11,fontWeight:active===i?600:400,
+      }}>{item}</button>
+    ))}
+  </div>
+);
+
+// ═════════════ DASHBOARD ═════════════
+function Dashboard(){
+  return(
+    <div>
+      <div style={{display:"flex",gap:12,marginBottom:20,flexWrap:"wrap"}}>
+        <Metric label="Active Alerts" value="127" color={T.red} sub="23 critical" trend={12}/>
+        <Metric label="Today's Txns" value="84.2K" color={T.blue} sub="$2.1B volume" trend={-3}/>
+        <Metric label="SAR Conversion" value="34%" color={T.gold} sub="vs 5% industry" trend={8}/>
+        <Metric label="Avg Handle Time" value="42m" color={T.accent} sub="was 4.2 hours" trend={-68}/>
+      </div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16,marginBottom:20}}>
+        <div style={{background:T.card,borderRadius:14,border:`1px solid ${T.border}`,overflow:"hidden"}}>
+          <div style={{padding:"14px 18px",borderBottom:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <span style={{fontFamily:font.mono,fontSize:12,color:T.text,fontWeight:600}}>Live Alert Feed</span>
+            <div style={{width:8,height:8,borderRadius:"50%",background:T.red,animation:"pulse 2s infinite"}}/>
+          </div>
+          {DEMO_ALERTS.slice(0,6).map((a,i)=>(
+            <div key={i} style={{padding:"10px 18px",borderBottom:`1px solid ${T.border}08`,display:"flex",alignItems:"center",gap:12,cursor:"pointer"}}
+              onMouseEnter={e=>e.currentTarget.style.background=T.cardHover}
+              onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+              <div style={{width:32,height:32,borderRadius:8,background:(typeof a.risk==="number"&&a.risk>.85)?T.redDim:a.risk>.7?T.orangeDim:T.goldDim,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:font.mono,fontSize:11,fontWeight:700,color:(typeof a.risk==="number"&&a.risk>.85)?T.red:a.risk>.7?T.orange:T.gold,flexShrink:0}}>
+                {typeof a.risk==="number"?Math.round(a.risk*100):"?"}
+              </div>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontFamily:font.body,fontSize:12,color:T.text,fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{a.entity}</div>
+                <div style={{fontFamily:font.mono,fontSize:9,color:T.muted,marginTop:1}}>{a.type} | Track {a.track}</div>
+              </div>
+              <Badge text={a.priority} color={a.priority==="CRITICAL"?T.red:a.priority==="HIGH"?T.orange:T.gold}/>
+            </div>
+          ))}
+        </div>
+        <div style={{background:T.card,borderRadius:14,border:`1px solid ${T.border}`,padding:18}}>
+          <div style={{fontFamily:font.mono,fontSize:12,color:T.text,fontWeight:600,marginBottom:14}}>Pipeline Health</div>
+          {[
+            {label:"L1: Feature Factory",sub:"Delta Lake + FastAPI + Redis",latency:"12ms",color:T.success},
+            {label:"L2: Model Layer",sub:"Rule + Hybrid + ML/AI + Anomaly",latency:"67ms",color:T.success},
+            {label:"L3: Signal Aggregator",sub:"Zingg entity resolution + ATL scoring",latency:"142ms",color:T.warn},
+            {label:"L4: Risk Appetite",sub:"Track A/B + Interactive Learning",latency:"23ms",color:T.success},
+            {label:"L5: Alert Packaging",sub:"Template engine + API gateway",latency:"45ms",color:T.success},
+            {label:"Global Tuning Matrix",sub:"5D: Country×Client×Product×Risk×Profile",latency:"3ms",color:T.success},
+            {label:"Feedback Loop",sub:"Optuna optimizer + MLflow retrainer",latency:"batch",color:T.success},
+            {label:"Simulation Sandbox",sub:"Mirror execution + What-If comparator",latency:"offline",color:T.accent},
+          ].map((s,i)=>(
+            <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:i<7?`1px solid ${T.border}08`:"none"}}>
+              <div style={{width:6,height:6,borderRadius:"50%",background:s.color,flexShrink:0}}/>
+              <div style={{flex:1}}>
+                <span style={{fontFamily:font.mono,fontSize:10,color:T.sub}}>{s.label}</span>
+                <div style={{fontFamily:font.mono,fontSize:8,color:T.muted}}>{s.sub}</div>
+              </div>
+              <span style={{fontFamily:font.mono,fontSize:9,color:T.muted}}>{s.latency}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{background:T.card,borderRadius:14,border:`1px solid ${T.border}`,padding:20}}>
+        <div style={{fontFamily:font.mono,fontSize:12,color:T.text,fontWeight:600,marginBottom:16}}>FP Reduction Through Pipeline</div>
+        <div style={{display:"flex",alignItems:"flex-end",gap:6,height:130,padding:"0 10px"}}>
+          {[
+            {label:"Rule Only",rate:97,color:T.red},
+            {label:"+Hybrid",rate:68,color:T.orange},
+            {label:"+ML/AI",rate:45,color:T.gold},
+            {label:"+Anomaly",rate:38,color:T.purple},
+            {label:"+L3 Agg",rate:30,color:T.blue},
+            {label:"+L4 Track B",rate:22,color:T.accent},
+          ].map((b,i)=>(
+            <div key={i} style={{flex:1,display:"flex",flexDirection:"column",alignItems:"center",gap:4}}>
+              <span style={{fontFamily:font.mono,fontSize:12,fontWeight:700,color:b.color}}>{b.rate}%</span>
+              <div style={{width:"100%",height:`${b.rate*1.1}px`,background:`linear-gradient(180deg,${b.color},${b.color}40)`,borderRadius:"6px 6px 0 0"}}/>
+              <span style={{fontFamily:font.mono,fontSize:7,color:T.muted,textAlign:"center",lineHeight:1.2}}>{b.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═════════════ SCORING SIMULATOR ═════════════
+function ScoringSimulator(){
+  const[mode,setMode]=useState("single");
+  const[scenario,setScenario]=useState(0);
+  const[running,setRunning]=useState(false);
+  const[stage,setStage]=useState(-1);
+  const[batchDone,setBatchDone]=useState(false);
+  const[batchFilter,setBatchFilter]=useState("All");
+
+  const singleTxns=[BATCH_TRANSACTIONS[0],BATCH_TRANSACTIONS[5],BATCH_TRANSACTIONS[9]];
+  const tx=singleTxns[scenario];
+
+  const stages=[
+    {name:"L1: Feature Factory",layer:"L1",color:T.gold,detail:`Ingestion Tier: ${tx.l1.features} features computed. HRG=${tx.l1.hrg}, TaxHaven=${tx.l1.taxHaven}, PEP=${tx.l1.pepStatus}, KYC Risk=${tx.l1.kycRisk}. Validation Gateway: PASS. Stored in Delta Lake Feature Store.`},
+    {name:"L2: Axis Evaluation + Scoring",layer:"L2",color:T.purple,scores:tx.l2.typologies,detail:tx.l2.typologies.length===0?"Anomaly Engine (VAE): reconstruction loss = 0.88. No targeted typology matched. Zero-day pattern detected.":"Axis: "+tx.l2.axis+". Model types: "+[...new Set(tx.l2.typologies.map(t=>t.model))].join(", ")+". Recurrence: "+tx.l2.recurrence+" in "+tx.l2.recurrenceWindow+"."},
+    {name:"L3: Signal Aggregation",layer:"L3",color:T.teal,detail:`Entity Resolution (Zingg): ${tx.l3.entityResolved?"Resolved":"Unresolved"}. Linked accounts: ${tx.l3.linkedAccounts}. ATL-Only Score: ${tx.l3.atlScore}. Anomaly Score: ${tx.l3.anomalyScore}. Lineage tracked to ${tx.l2.typologies.length} occurrences.`},
+    {name:"L4: Risk Appetite",layer:"L4",color:T.red,detail:`Track: ${tx.l4.track}. ${tx.l4.track==="A"?"Policy Matcher: zero-tolerance triggered → Auto-Escalator → immediate ATL.":"ML Classifier score: "+tx.l4.mlScore+". Historical match: "+tx.l4.historicalMatch+". Past outcome: "+tx.l4.pastOutcome+"."} Decision: ${tx.l4.decision}. Priority: ${tx.l4.priority}.`},
+    {name:"L5: Alert Packaging",layer:"L5",color:T.orange,detail:tx.l5.alertId!=="None"?`Alert ${tx.l5.alertId} created. Template: ${tx.l5.template}. Levels: ${tx.l5.level}. Routed to Case Management.`:"No alert generated. BTL classification. Available for sampling pool."},
+  ];
+
+  const runSingle=()=>{setStage(-1);setRunning(true);let i=0;const t=setInterval(()=>{setStage(i);i++;if(i>=stages.length){clearInterval(t);setRunning(false)}},700)};
+  const runBatch=()=>{setBatchDone(false);setRunning(true);setTimeout(()=>{setBatchDone(true);setRunning(false)},2000)};
+
+  const layerColor=l=>l==="L1"?T.gold:l==="L2"?T.purple:l==="L3"?T.teal:l==="L4"?T.red:T.orange;
+
+  const batchFiltered=batchFilter==="All"?BATCH_TRANSACTIONS:batchFilter==="ATL"?BATCH_TRANSACTIONS.filter(t=>t.status.includes("ATL")):BATCH_TRANSACTIONS.filter(t=>t.status.includes("Clean"));
+
+  return(
+    <div>
+      {/* Mode Toggle */}
+      <div style={{display:"flex",gap:8,marginBottom:20}}>
+        <div style={{display:"flex",gap:2,background:T.panel,borderRadius:10,padding:3}}>
+          <button onClick={()=>{setMode("single");setStage(-1);setBatchDone(false)}} style={{padding:"8px 20px",borderRadius:8,border:"none",cursor:"pointer",background:mode==="single"?T.accent+"20":"transparent",color:mode==="single"?T.accent:T.muted,fontFamily:font.mono,fontSize:11,fontWeight:600}}>Single Transaction</button>
+          <button onClick={()=>{setMode("batch");setStage(-1);setBatchDone(false)}} style={{padding:"8px 20px",borderRadius:8,border:"none",cursor:"pointer",background:mode==="batch"?T.accent+"20":"transparent",color:mode==="batch"?T.accent:T.muted,fontFamily:font.mono,fontSize:11,fontWeight:600}}>Batch Run (10 Txns)</button>
+        </div>
+      </div>
+
+      {mode==="single"&&(
+        <div>
+          <div style={{display:"flex",gap:8,marginBottom:16,flexWrap:"wrap"}}>
+            {singleTxns.map((t,i)=>(
+              <button key={i} onClick={()=>{setScenario(i);setStage(-1)}} style={{padding:"8px 16px",borderRadius:8,border:`1px solid ${scenario===i?t.color+"60":T.border}`,background:scenario===i?t.color+"10":"transparent",color:scenario===i?t.color:T.muted,fontFamily:font.mono,fontSize:10,fontWeight:600,cursor:"pointer"}}>{t.entity.split(" ").slice(0,2).join(" ")} ({t.status})</button>
+            ))}
+            <button onClick={runSingle} disabled={running} style={{padding:"8px 24px",borderRadius:8,border:"none",cursor:running?"default":"pointer",background:running?T.muted:T.accent,color:T.bg,fontFamily:font.mono,fontSize:12,fontWeight:700,opacity:running?.5:1,marginLeft:"auto"}}>
+              {running?"Scoring...":"Run Pipeline"}
+            </button>
+          </div>
+
+          {/* Transaction Card */}
+          <div style={{background:T.card,borderRadius:14,border:`1px solid ${T.border}`,padding:18,marginBottom:16}}>
+            <div style={{fontFamily:font.mono,fontSize:9,color:T.muted,letterSpacing:1.5,marginBottom:10}}>INPUT: {tx.id}</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:10}}>
+              {[{l:"Entity",v:tx.entity},{l:"Amount",v:"$"+tx.amount.toLocaleString()},{l:"To",v:tx.to},{l:"Destination",v:tx.toCountry},{l:"Product",v:tx.product},{l:"Frequency",v:tx.frequency},{l:"Client Age",v:tx.clientAge},{l:"Risk Profile",v:tx.riskProfile}].map((f,i)=>(
+                <div key={i}><div style={{fontFamily:font.mono,fontSize:8,color:T.muted,marginBottom:1}}>{f.l}</div><div style={{fontFamily:font.mono,fontSize:11,color:T.text}}>{f.v}</div></div>
+              ))}
+            </div>
+          </div>
+
+          {/* Pipeline Stages */}
+          <div style={{display:"flex",flexDirection:"column",gap:6}}>
+            {stages.map((st,i)=>{
+              const active=i<=stage;const current=i===stage;const lc=layerColor(st.layer);
+              return(
+                <div key={i} style={{background:active?T.card:T.panel,borderRadius:12,border:`1px solid ${current?lc+"60":T.border}`,padding:active?"14px 18px":"10px 18px",transition:"all .4s",opacity:active?1:.4}}>
+                  <div style={{display:"flex",alignItems:"center",gap:10}}>
+                    <div style={{width:26,height:26,borderRadius:8,background:active?lc+"20":T.border,display:"flex",alignItems:"center",justifyContent:"center",fontFamily:font.mono,fontSize:10,fontWeight:700,color:active?lc:T.muted,flexShrink:0}}>{i+1}</div>
+                    <div style={{flex:1}}>
+                      <div style={{display:"flex",alignItems:"center",gap:8}}>
+                        <span style={{fontFamily:font.mono,fontSize:12,color:active?T.text:T.muted,fontWeight:600}}>{st.name}</span>
+                        <Badge text={st.layer} color={lc}/>
+                      </div>
+                    </div>
+                    {active&&<div style={{width:8,height:8,borderRadius:"50%",background:current?lc:T.success}}/>}
+                  </div>
+                  {active&&st.scores&&st.scores.length>0&&(
+                    <div style={{display:"flex",gap:6,marginTop:10,flexWrap:"wrap"}}>
+                      {st.scores.map((sc,j)=>(
+                        <div key={j} style={{padding:"5px 10px",background:sc.atl?sc.score>.8?T.red+"12":T.gold+"12":T.border+"40",borderRadius:8,border:`1px solid ${sc.atl?sc.score>.8?T.red:T.gold:T.muted}20`,display:"flex",alignItems:"center",gap:6}}>
+                          <span style={{fontFamily:font.mono,fontSize:9,color:T.sub}}>{sc.id} {sc.name}</span>
+                          <span style={{fontFamily:font.mono,fontSize:12,fontWeight:700,color:sc.atl?sc.score>.8?T.red:T.gold:T.muted}}>{sc.score.toFixed(2)}</span>
+                          <Badge text={sc.atl?"ATL":"BTL"} color={sc.atl?T.red:T.muted}/>
+                          <span style={{fontFamily:font.mono,fontSize:8,color:T.muted}}>{sc.model}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {active&&st.detail&&(
+                    <div style={{marginTop:8,padding:"8px 12px",background:T.panel,borderRadius:8,fontFamily:font.mono,fontSize:10,color:T.sub,lineHeight:1.7}}>{st.detail}</div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {stage>=stages.length-1&&(
+            <div style={{marginTop:16}}>
+              {/* Score Gauges */}
+              <div style={{padding:20,background:T.card,borderRadius:14,border:`1px solid ${T.border}`,marginBottom:12}}>
+                <div style={{fontFamily:font.mono,fontSize:10,color:T.muted,letterSpacing:1.5,textAlign:"center",marginBottom:14}}>AXIS SCORE BREAKDOWN</div>
+                <div style={{display:"flex",justifyContent:"center",gap:16,flexWrap:"wrap"}}>
+                  {tx.axisScores&&[
+                    {label:"Transaction",score:tx.axisScores.transaction,color:T.blue},
+                    {label:"Account",score:tx.axisScores.account,color:T.teal},
+                    {label:"Client",score:tx.axisScores.client,color:T.gold},
+                    {label:"Product",score:tx.axisScores.product,color:T.orange},
+                    {label:"Network",score:tx.axisScores.network,color:T.purple},
+                    {label:"Anomaly",score:tx.axisScores.anomaly,color:T.cyan},
+                  ].filter(a=>a.score>0).map((a,i)=>(
+                    <ScoreGauge key={i} label={a.label} score={a.score} color={a.color} delay={i*150}/>
+                  ))}
+                  <ScoreGauge label="FINAL" score={tx.l3.atlScore||tx.l3.anomalyScore} color={tx.status.includes("ATL")?T.red:T.accent} delay={800}/>
+                </div>
+              </div>
+              {/* Result Banner */}
+              <div style={{padding:18,background:tx.status.includes("ATL")?T.redDim:T.accentDim,borderRadius:14,border:`1px solid ${tx.status.includes("ATL")?T.red:T.accent}30`}}>
+                <div style={{textAlign:"center",fontFamily:font.mono,fontSize:14,fontWeight:700,color:tx.status.includes("ATL")?T.red:T.accent,marginBottom:8}}>
+                  {tx.status.includes("ATL")?"ALERT GENERATED — "+tx.l4.priority:"NO ALERT — Transaction Cleared"}
+                </div>
+                {tx.status.includes("ATL")&&<div style={{textAlign:"center",fontFamily:font.mono,fontSize:10,color:T.sub,marginBottom:10}}>Track {tx.l4.track} | {tx.l5.alertId} | Template: {tx.l5.template}</div>}
+                <div style={{fontFamily:font.mono,fontSize:10,color:T.sub,marginBottom:8,textAlign:"center"}}>Detected by: {tx.caught}</div>
+                <div style={{padding:12,background:T.card,borderRadius:10,fontFamily:font.body,fontSize:12,color:T.sub,lineHeight:1.7}}>{tx.caughtDetail}</div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {mode==="batch"&&(
+        <div>
+          <div style={{display:"flex",gap:8,marginBottom:16,alignItems:"center"}}>
+            <button onClick={runBatch} disabled={running} style={{padding:"8px 24px",borderRadius:8,border:"none",cursor:running?"default":"pointer",background:running?T.muted:T.accent,color:T.bg,fontFamily:font.mono,fontSize:12,fontWeight:700,opacity:running?.5:1}}>
+              {running?"Processing 10 transactions...":"Run Batch (10 Transactions)"}
+            </button>
+            {batchDone&&(
+              <div style={{display:"flex",gap:4,marginLeft:"auto"}}>
+                {["All","ATL","Clean"].map(f=>(
+                  <button key={f} onClick={()=>setBatchFilter(f)} style={{padding:"6px 14px",borderRadius:6,border:`1px solid ${batchFilter===f?T.accent:T.border}`,background:batchFilter===f?T.accent+"15":"transparent",color:batchFilter===f?T.accent:T.muted,fontFamily:font.mono,fontSize:10,cursor:"pointer"}}>{f} ({f==="All"?10:f==="ATL"?BATCH_TRANSACTIONS.filter(t=>t.status.includes("ATL")).length:BATCH_TRANSACTIONS.filter(t=>t.status.includes("Clean")).length})</button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {running&&(
+            <div style={{padding:40,textAlign:"center"}}>
+              <div style={{fontFamily:font.mono,fontSize:14,color:T.accent,marginBottom:8}}>Processing batch through L1 → L2 → L3 → L4 → L5...</div>
+              <div style={{width:"100%",height:4,background:T.border,borderRadius:2,overflow:"hidden"}}>
+                <div style={{width:"100%",height:"100%",background:T.accent,borderRadius:2,animation:"pulse 1s infinite"}}/>
+              </div>
+            </div>
+          )}
+
+          {batchDone&&(
+            <div>
+              {/* Summary Stats */}
+              <div style={{display:"flex",gap:12,marginBottom:16,flexWrap:"wrap"}}>
+                <Metric label="Total Processed" value="10" color={T.blue} sub="in 2.1 seconds"/>
+                <Metric label="ATL Alerts" value="8" color={T.red} sub="80% escalation rate"/>
+                <Metric label="BTL (Clean)" value="2" color={T.accent} sub="Correctly cleared"/>
+                <Metric label="Track A" value="1" color={T.orange} sub="Auto-escalated (PEP)"/>
+              </div>
+
+              {/* Batch Results Table */}
+              <div style={{background:T.card,borderRadius:14,border:`1px solid ${T.border}`,overflow:"hidden"}}>
+                <div style={{display:"grid",gridTemplateColumns:"90px 1fr 80px 120px 80px 100px 140px",padding:"10px 16px",background:T.panel,borderBottom:`1px solid ${T.border}`,gap:8}}>
+                  {["TXN ID","Entity","Amount","Caught By","Score","Track","Status"].map(h=>(
+                    <span key={h} style={{fontFamily:font.mono,fontSize:9,color:T.muted,fontWeight:600,letterSpacing:.5}}>{h}</span>
+                  ))}
+                </div>
+                {batchFiltered.map((tx,i)=>(
+                  <BatchRow key={i} tx={tx}/>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function BatchRow({tx}){
+  const[expanded,setExpanded]=useState(false);
+  const isClean=tx.status.includes("Clean");
+  return(
+    <div>
+      <div onClick={()=>setExpanded(!expanded)} style={{display:"grid",gridTemplateColumns:"90px 1fr 80px 120px 80px 100px 140px",padding:"10px 16px",borderBottom:`1px solid ${T.border}08`,gap:8,cursor:"pointer",alignItems:"center"}}
+        onMouseEnter={e=>e.currentTarget.style.background=T.cardHover}
+        onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
+        <span style={{fontFamily:font.mono,fontSize:10,color:T.muted}}>{tx.id}</span>
+        <span style={{fontFamily:font.body,fontSize:12,color:T.text,fontWeight:500,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{tx.entity}</span>
+        <span style={{fontFamily:font.mono,fontSize:11,color:T.text}}>${(tx.amount/1000).toFixed(0)}K</span>
+        <span style={{fontFamily:font.mono,fontSize:9,color:isClean?T.accent:tx.color}}>{tx.caught.split("(")[0].trim()}</span>
+        <span style={{fontFamily:font.mono,fontSize:12,fontWeight:700,color:isClean?T.accent:tx.l3.atlScore>.8?T.red:T.gold}}>{(tx.l3.atlScore||tx.l3.anomalyScore).toFixed(2)}</span>
+        <Badge text={tx.l4.track==="N/A"?"—":"Track "+tx.l4.track} color={tx.l4.track==="A"?T.red:tx.l4.track==="B"?T.blue:T.muted}/>
+        <Badge text={tx.status} color={isClean?T.accent:tx.l4.priority==="CRITICAL"?T.red:tx.l4.priority==="HIGH"?T.orange:T.gold}/>
+      </div>
+      {expanded&&(
+        <div style={{padding:"12px 16px 16px",background:T.panel,borderBottom:`1px solid ${T.border}`}}>
+          {/* Axis Score Gauges */}
+          {tx.axisScores&&<div style={{display:"flex",gap:10,justifyContent:"center",marginBottom:14,flexWrap:"wrap"}}>
+            {[{l:"Txn",s:tx.axisScores.transaction,c:T.blue},{l:"Acct",s:tx.axisScores.account,c:T.teal},{l:"Client",s:tx.axisScores.client,c:T.gold},{l:"Product",s:tx.axisScores.product,c:T.orange},{l:"Network",s:tx.axisScores.network,c:T.purple},{l:"Anomaly",s:tx.axisScores.anomaly,c:T.cyan}].filter(a=>a.s>0).map((a,i)=>(
+              <ScoreGauge key={i} label={a.l} score={a.s} color={a.c} delay={i*80}/>
+            ))}
+            <ScoreGauge label="FINAL" score={tx.l3.atlScore||tx.l3.anomalyScore} color={tx.status.includes("ATL")?T.red:T.accent} delay={600}/>
+          </div>}
+          {/* 5-Layer Detail Grid */}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,marginBottom:12}}>
+            <div style={{padding:10,background:T.gold+"06",borderRadius:8,border:`1px solid ${T.gold}12`,borderLeft:`3px solid ${T.gold}`}}>
+              <div style={{fontFamily:font.mono,fontSize:9,color:T.gold,fontWeight:600,marginBottom:6}}>L1: Feature Factory</div>
+              <div style={{fontFamily:font.mono,fontSize:8,color:T.sub,lineHeight:1.8}}>
+                Ingestion: {tx.product} from {tx.fromCountry}<br/>
+                Validation: PASS — schema, completeness, freshness OK<br/>
+                Txn Features: HRG={tx.l1.hrg?"true":"false"}, TaxHaven={tx.l1.taxHaven?"true":"false"}, RoundAmt={tx.l1.roundAmt}<br/>
+                Entity Features: PEP={tx.l1.pepStatus?"true":"false"}, KYC Risk={tx.l1.kycRisk}<br/>
+                Account Features: Profile={tx.l1.txnProfile}<br/>
+                Storage: Delta Lake (immutable) + Redis cache
+              </div>
+            </div>
+            <div style={{padding:10,background:T.purple+"06",borderRadius:8,border:`1px solid ${T.purple}12`,borderLeft:`3px solid ${T.purple}`}}>
+              <div style={{fontFamily:font.mono,fontSize:9,color:T.purple,fontWeight:600,marginBottom:6}}>L2: Model Layer</div>
+              <div style={{fontFamily:font.mono,fontSize:8,color:T.sub,lineHeight:1.8}}>
+                Axis Router → {tx.l2.axis}<br/>
+                Tuning Matrix: params fetched for {tx.fromCountry}×{tx.riskProfile}×{tx.product}<br/>
+                Models fired: {[...new Set(tx.l2.typologies.map(t=>t.model))].join(", ")||"Anomaly (VAE)"}<br/>
+                Occurrences: {tx.l2.typologies.length} typologies, {tx.l2.typologies.filter(t=>t.atl).length} ATL / {tx.l2.typologies.filter(t=>!t.atl).length} BTL<br/>
+                Recurrence: {tx.l2.recurrence} in {tx.l2.recurrenceWindow}<br/>
+                SHAP explainability: mapped per occurrence
+              </div>
+            </div>
+            <div style={{padding:10,background:T.teal+"06",borderRadius:8,border:`1px solid ${T.teal}12`,borderLeft:`3px solid ${T.teal}`}}>
+              <div style={{fontFamily:font.mono,fontSize:9,color:T.teal,fontWeight:600,marginBottom:6}}>L3: Signal Aggregator</div>
+              <div style={{fontFamily:font.mono,fontSize:8,color:T.sub,lineHeight:1.8}}>
+                Entity Resolution (Zingg): {tx.l3.entityResolved?"Resolved":"Pending"}<br/>
+                Linked Accounts: {tx.l3.linkedAccounts}<br/>
+                Hierarchy: Country→Client normalized<br/>
+                ATL-Only Score: {tx.l3.atlScore} | Anomaly: {tx.l3.anomalyScore}<br/>
+                BTL Vault: full payload persisted<br/>
+                Lineage: signal→occurrence→txn IDs tracked
+              </div>
+            </div>
+            <div style={{padding:10,background:T.red+"06",borderRadius:8,border:`1px solid ${T.red}12`,borderLeft:`3px solid ${T.red}`}}>
+              <div style={{fontFamily:font.mono,fontSize:9,color:T.red,fontWeight:600,marginBottom:6}}>L4: Risk Appetite → L5: Packaging</div>
+              <div style={{fontFamily:font.mono,fontSize:8,color:T.sub,lineHeight:1.8}}>
+                Escalation Router → Track {tx.l4.track}<br/>
+                {tx.l4.track==="A"?"Policy Matcher: zero-tolerance hit → Auto-Escalator":"ML Classifier (XGBoost): "+tx.l4.mlScore}<br/>
+                Historical Context: {tx.l4.pastOutcome}<br/>
+                Decision: {tx.l4.decision} | Priority: {tx.l4.priority}<br/>
+                {tx.l5.alertId!=="None"?"Alert: "+tx.l5.alertId+" | Template: "+tx.l5.template:"BTL → Sampling Pool"}<br/>
+                {tx.l5.alertId!=="None"?"Levels: "+tx.l5.level+" | Routed to Case Mgmt":"Available for smart sampling ranking"}
+              </div>
+            </div>
+          </div>
+          {/* Typology Chips */}
+          {tx.l2.typologies.length>0&&(
+            <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:10}}>
+              {tx.l2.typologies.map((typ,j)=>(
+                <div key={j} style={{padding:"4px 8px",background:typ.atl?T.red+"10":T.border+"30",borderRadius:6,display:"flex",alignItems:"center",gap:4}}>
+                  <span style={{fontFamily:font.mono,fontSize:8,color:typ.atl?T.red:T.muted}}>{typ.id} {typ.name}</span>
+                  <span style={{fontFamily:font.mono,fontSize:10,fontWeight:700,color:typ.atl?T.red:T.muted}}>{typ.score.toFixed(2)}</span>
+                  <span style={{fontFamily:font.mono,fontSize:7,color:T.muted,background:T.border,padding:"1px 4px",borderRadius:3}}>{typ.model}</span>
+                  <span style={{fontFamily:font.mono,fontSize:7,color:typ.atl?T.red:T.muted}}>{typ.atl?"ATL":"BTL"}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {/* Detection Narrative */}
+          <div style={{padding:10,background:T.card,borderRadius:8,fontFamily:font.body,fontSize:11,color:T.sub,lineHeight:1.7}}>
+            <strong style={{color:T.text}}>Detection narrative: </strong>{tx.caughtDetail}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═════════════ ARCHITECTURE ═════════════
+function Architecture(){
+  const[activeLayer,setActiveLayer]=useState(null);
+  const layers=[
+    {id:"L1",name:"Feature Factory",color:T.gold,
+      tiers:["Ingestion Tier: Txn Feed Adapter (Kafka, SWIFT MT103) | KYC Data Adapter (Debezium CDC) | TP Profile Adapter (REST) | List/Ref Adapter (Sanctions, PEP, VASP)","Validation: Data Quality & Validation Gateway — completeness, format, freshness, referential integrity","Computation Tier: Txn Feature Engine (immutable) | Entity Feature Engine (latest-state) | Account Feature Engine (rolling aggregations)","Storage: Feature Store (Delta Lake JSON, ACID + time-travel) | Feature API Service (FastAPI + Redis hot cache) | Dual-Mode Scheduler (batch daily + streaming on-demand)"],
+      desc:"Stateless data preparation engine. Ingests from AML Data Layer, TP App, List Management. Computes features at txn/entity/account level. Delta Lake for ACID storage with time-travel. FastAPI + Redis for sub-ms feature serving."},
+    {id:"L2",name:"Model Layer",color:T.purple,
+      tiers:["Input Routing: Feature Fetch Broker (API to L1) | Tuning Matrix Client (5D param lookup) | Axis Router","5 Axis Engines: Transaction | Account | Client | Product & Services | Network","Derived Features: NLP Text Engine (spaCy+HuggingFace, MT103 fields 70/72) | Temporal Sequence (deposit-wire chains) | Relationship Graph (Neo4j, UBO links) | Ops Intel Feed (branch observations)","4 Model Types: Rule Engine (closeness-to-threshold) | Hybrid Engine (rules+ML+NLP) | ML/AI Engine (graph analytics, micro-networks) | Anomaly Engine (AE/VAE, reconstruction loss)","Occurrence Qualification: Threshold Evaluator (ATL/BTL via Tuning Matrix) | Occurrence Scorer (normalized 0-1)","Signal Consolidation: Recurrence Validator (sliding window) | Entity Roll-Up Engine (Txn→Acct/Client/Product)","Output: Signal Payload Builder (full lineage JSON) | Explainability Mapper (SHAP + rule traces)"],
+      desc:"Most complex layer — features become risk signals. 5 evaluation axes, 4 model types, derived feature engines (NLP, temporal, graph, ops intel). Scores based on closeness-to-threshold from Global Tuning Matrix."},
+    {id:"L3",name:"Signal Aggregator",color:T.teal,
+      tiers:["Signal Ingestion: Targeted Signal Receiver (ATL+BTL from L2) | Anomaly Score Receiver (AE/VAE outputs) | BTL Vault Writer","Entity Mapping: Entity Resolution Engine (Zingg/Splink probabilistic matching) | Hierarchy Mapper (Country→Client normalization)","Aggregation: Signal Inventory Manager (per-entity typology store) | ATL-Only Score Engine | Anomaly Integrator (dual-view: targeted + unknown)","Lineage: Driver Consolidator | ATL/BTL Data Vault (full payload persistence) | Lineage Tracker (signal→occurrence→txn golden thread)","Output: Entity Risk Matrix (entity key + targeted risk array + ATL score + anomaly score + traceability object)"],
+      desc:"Bridges individual signals to entity-level risk profile. Entity Resolution (Zingg/Splink) links signals across accounts. ATL-Only scoring keeps BTL from diluting primary scores. Complete golden thread lineage."},
+    {id:"L4",name:"Risk Appetite",color:T.red,
+      tiers:["Input: Entity Risk Matrix (from L3) + Risk Appetite Matrix (zero-tolerance policies)","Escalation Router: routes to Track A or Track B based on signal classification","Track A — Deterministic: Policy Matcher (zero-tolerance catalogue) → Auto-Escalator → immediate ATL Alert","Track B — Probabilistic: ML Classifier (XGBoost, historical outcomes) → Threshold Gate → Network Graph ATL/BTL (fund flow topology)","Interactive Learning: Historical Context Engine (client-counterparty-typology triad lookup) | Score Adjustment Engine (FP dampening + TP boosting)","Final Classification: ATL Alert→L5 | BTL→Sampling Pool | Decision Payload Builder (disposition + track + priority + golden thread)"],
+      desc:"Final decisioning. Track A: deterministic auto-escalation for zero-tolerance hits (sanctions, TF). Track B: holistic ML evaluation of full signal portfolio. Interactive learning adjusts scores based on historical investigation outcomes."},
+    {id:"L5",name:"Alerts + Feedback + Sandbox",color:T.orange,
+      tiers:["Alerts Packaging: Alert Template Engine (typology-specific) | Alert Object Builder (3-level: exec summary, typology detail, zero-day anomaly) | API Distribution Gateway (Kong/Envoy + Celery)","Distribution: Case Mgmt (ATL) | Sampling Pool (BTL) | Simulation UI | Analyst UI | Smart Sampling Ranking","Feedback Loop: Ground Truth Ingestor (Kafka CDC) | Feature Analyzer (SHAP) | Threshold Optimizer (Bayesian/Optuna) | BTL Sample Reviewer | ML Retrainer (MLflow+Airflow) | Recommendation Engine","Simulation Sandbox: Config Override Manager | Mirror Execution Engine (L1→L5 on prod data, isolated Spark) | Shadow Alert Store (Delta Lake) | What-If Comparator"],
+      desc:"Outbound distribution, closed-loop optimization, and testing. 3-level alert hierarchy. Smart BTL sampling by threshold proximity. Bayesian threshold optimization. Full mirror execution sandbox for what-if analysis."},
+    {id:"GTM",name:"Global Tuning Matrix",color:T.gold,
+      tiers:["5 Core Dimensions: Country/Jurisdiction | Client Type | Product Type | Risk Level | Transaction Profile (extensible)","Parameter Injection: local thresholds, expected amounts, currency limits, recurrence counts — plugged into model formulas at runtime","Logic Calibration: global model code + localized sensitivity. Same algorithm everywhere, matrix returns jurisdiction-specific values","Runtime Flow: Model requests params (dimensional query) → Matrix resolves (lookup + fallback) → Params injected → localized scoring","Consumers: L2 models (primary) | L4 risk appetite (escalation thresholds) | Feedback loop (writes back optimized params)"],
+      desc:"Cross-layer configuration engine making the framework jurisdiction-agnostic. 5D parameter store. Models query at runtime for localized thresholds. New jurisdictions onboarded by populating matrix rows — zero code changes."},
+  ];
+  const active=activeLayer!==null?layers[activeLayer]:null;
+  return(
+    <div>
+      <div style={{display:"flex",gap:4,marginBottom:16,flexWrap:"wrap"}}>
+        {layers.map((l,i)=>(
+          <button key={i} onClick={()=>setActiveLayer(activeLayer===i?null:i)} style={{
+            flex:1,minWidth:100,padding:"12px 8px",borderRadius:10,
+            border:`1px solid ${activeLayer===i?l.color+"60":T.border}`,
+            background:activeLayer===i?l.color+"10":T.card,cursor:"pointer",
+          }}>
+            <div style={{fontFamily:font.mono,fontSize:10,color:l.color,fontWeight:700}}>{l.id}</div>
+            <div style={{fontFamily:font.body,fontSize:10,color:activeLayer===i?T.text:T.sub,fontWeight:500,marginTop:2}}>{l.name}</div>
+          </button>
+        ))}
+      </div>
+      <div style={{display:"flex",alignItems:"center",gap:3,padding:"8px 0",marginBottom:16}}>
+        {layers.slice(0,5).map((l,i)=>(
+          <React.Fragment key={i}>
+            <div style={{flex:1,height:3,borderRadius:2,background:activeLayer!==null&&activeLayer>=i?l.color:T.border,transition:"background .3s"}}/>
+            {i<4&&<div style={{color:T.muted,fontSize:8}}>›</div>}
+          </React.Fragment>
+        ))}
+      </div>
+      {active&&(
+        <div style={{background:T.card,borderRadius:14,border:`1px solid ${active.color}25`,overflow:"hidden"}}>
+          <div style={{padding:"16px 20px",background:active.color+"08",borderBottom:`1px solid ${active.color}15`}}>
+            <div style={{fontFamily:font.mono,fontSize:16,fontWeight:700,color:active.color}}>{active.id}: {active.name}</div>
+            <div style={{fontFamily:font.body,fontSize:12,color:T.sub,lineHeight:1.7,marginTop:6}}>{active.desc}</div>
+          </div>
+          <div style={{padding:"16px 20px"}}>
+            {active.tiers.map((tier,i)=>{
+              const[label,...rest]=tier.split(":");
+              return(
+                <div key={i} style={{padding:"10px 14px",marginBottom:6,background:T.panel,borderRadius:8,borderLeft:`3px solid ${active.color}40`}}>
+                  <span style={{fontFamily:font.mono,fontSize:10,color:active.color,fontWeight:600}}>{label}:</span>
+                  <span style={{fontFamily:font.mono,fontSize:10,color:T.sub,marginLeft:4}}>{rest.join(":")}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {!active&&<div style={{textAlign:"center",padding:40,color:T.muted,fontFamily:font.body,fontSize:14}}>Click a layer above to explore its components (based on C4 Level 3 diagrams D3-D8)</div>}
+    </div>
+  );
+}
+
+// ═════════════ TYPOLOGY CATALOGUE ═════════════
+function TypologyCatalogue(){
+  const[search,setSearch]=useState("");
+  const[groupFilter,setGroupFilter]=useState("All");
+  const[axisFilter,setAxisFilter]=useState("All");
+  const[selected,setSelected]=useState(null);
+  const groups=["All",...new Set(TYPOLOGIES.map(t=>t.group))];
+  const axes=["All","Transaction","Account","Client","Network","Product & Services"];
+  const axisColor=a=>a==="Transaction"?T.blue:a==="Account"?T.teal:a==="Client"?T.gold:a==="Network"?T.purple:a==="Product & Services"?T.orange:T.sub;
+  const riskColor=r=>r==="Critical"?T.red:r==="High"?T.orange:r==="Medium"?T.gold:T.accent;
+  const filtered=TYPOLOGIES.filter(t=>(groupFilter==="All"||t.group===groupFilter)&&(axisFilter==="All"||t.axis===axisFilter)&&(search===""||t.name.toLowerCase().includes(search.toLowerCase())||t.id.toLowerCase().includes(search.toLowerCase())));
+  return(
+    <div>
+      <div style={{display:"flex",gap:10,marginBottom:16,flexWrap:"wrap"}}>
+        <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search typologies..." style={{flex:1,minWidth:200,padding:"10px 16px",borderRadius:10,border:`1px solid ${T.border}`,background:T.panel,color:T.text,fontFamily:font.mono,fontSize:12,outline:"none"}}/>
+        <select value={groupFilter} onChange={e=>setGroupFilter(e.target.value)} style={{padding:"10px 12px",borderRadius:10,border:`1px solid ${T.border}`,background:T.panel,color:T.text,fontFamily:font.mono,fontSize:11}}>{groups.map(g=><option key={g}>{g}</option>)}</select>
+        <select value={axisFilter} onChange={e=>setAxisFilter(e.target.value)} style={{padding:"10px 12px",borderRadius:10,border:`1px solid ${T.border}`,background:T.panel,color:T.text,fontFamily:font.mono,fontSize:11}}>{axes.map(a=><option key={a}>{a}</option>)}</select>
+      </div>
+      <div style={{fontFamily:font.mono,fontSize:11,color:T.muted,marginBottom:12}}>{filtered.length} typologies</div>
+      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
+        {filtered.map((t,i)=>(
+          <div key={i} onClick={()=>setSelected(selected===i?null:i)} style={{padding:14,background:selected===i?T.cardHover:T.card,borderRadius:12,border:`1px solid ${selected===i?axisColor(t.axis)+"40":T.border}`,cursor:"pointer",transition:"all .2s"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:6}}>
+              <div><span style={{fontFamily:font.mono,fontSize:10,color:axisColor(t.axis),fontWeight:700}}>{t.id}</span><div style={{fontFamily:font.body,fontSize:13,color:T.text,fontWeight:500,marginTop:1}}>{t.name}</div></div>
+              <Badge text={t.risk} color={riskColor(t.risk)}/>
+            </div>
+            <div style={{display:"flex",gap:4,flexWrap:"wrap"}}><Badge text={t.axis} color={axisColor(t.axis)}/><Badge text={t.method} color={T.muted}/></div>
+            {selected===i&&<div style={{marginTop:8,padding:"8px 12px",background:T.panel,borderRadius:8,fontFamily:font.body,fontSize:11,color:T.sub,lineHeight:1.7}}>{t.desc}</div>}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ═════════════ INVESTIGATION ═════════════
+function Investigation(){
+  const[tab,setTab]=useState(0);
+  const[alertIdx,setAlertIdx]=useState(0);
+  const atlTxns=BATCH_TRANSACTIONS.filter(t=>t.status.includes("ATL"));
+  const alert=atlTxns[alertIdx];
+  return(
+    <div>
+      <div style={{background:T.red+"08",borderRadius:14,border:`1px solid ${T.red}25`,padding:18,marginBottom:18}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:8}}>
+          <div>
+            <div style={{fontFamily:font.mono,fontSize:10,color:alert.color||T.red,letterSpacing:1}}>{alert.l5.alertId} | {alert.l4.priority} | Track {alert.l4.track}</div>
+            <div style={{fontFamily:font.body,fontSize:20,color:T.text,fontWeight:700,marginTop:4}}>{alert.entity}</div>
+            <div style={{fontFamily:font.mono,fontSize:11,color:T.sub,marginTop:4}}>{alert.l2.typologies.map(t=>t.name).join(" + ")} | {alert.toCountry} | {alert.product}</div>
+          </div>
+          <div style={{display:"flex",gap:6}}>
+            <button style={{padding:"8px 18px",borderRadius:8,border:"none",background:T.red,color:"white",fontFamily:font.mono,fontSize:10,fontWeight:600,cursor:"pointer"}}>Escalate to SAR</button>
+            <button style={{padding:"8px 18px",borderRadius:8,border:`1px solid ${T.accent}40`,background:"transparent",color:T.accent,fontFamily:font.mono,fontSize:10,fontWeight:600,cursor:"pointer"}}>Dismiss</button>
+          </div>
+        </div>
+      </div>
+      {/* Alert Selector */}
+      <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:14}}>
+        {atlTxns.map((t,i)=>(
+          <button key={i} onClick={()=>{setAlertIdx(i);setTab(0)}} style={{padding:"6px 12px",borderRadius:8,border:`1px solid ${alertIdx===i?t.color+"60":T.border}`,background:alertIdx===i?t.color+"10":"transparent",color:alertIdx===i?t.color:T.muted,fontFamily:font.mono,fontSize:9,cursor:"pointer",fontWeight:alertIdx===i?600:400}}>
+            {t.l5.alertId}: {t.entity.split(" ").slice(0,2).join(" ")}
+          </button>
+        ))}
+      </div>
+      <Tab items={["Alert Detail","Graph RAG","AI Disposition","SAR Draft"]} active={tab} onChange={setTab}/>
+      {tab===0&&(
+        <div>
+          {/* Axis Score Gauges */}
+          {alert.axisScores&&<div style={{display:"flex",gap:12,justifyContent:"center",marginBottom:16,flexWrap:"wrap"}}>
+            {[{l:"Transaction",s:alert.axisScores.transaction,c:T.blue},{l:"Account",s:alert.axisScores.account,c:T.teal},{l:"Client",s:alert.axisScores.client,c:T.gold},{l:"Product",s:alert.axisScores.product,c:T.orange},{l:"Network",s:alert.axisScores.network,c:T.purple},{l:"Anomaly",s:alert.axisScores.anomaly,c:T.cyan}].filter(a=>a.s>0).map((a,i)=>(
+              <ScoreGauge key={i} label={a.l} score={a.s} color={a.c} delay={i*100}/>
+            ))}
+            <ScoreGauge label="FINAL" score={alert.l3.atlScore||alert.l3.anomalyScore} color={T.red} delay={700}/>
+          </div>}
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}}>
+            {/* Left: Typology Scores + Pipeline Detail */}
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              <div style={{background:T.card,borderRadius:14,border:`1px solid ${T.border}`,padding:16}}>
+                <div style={{fontFamily:font.mono,fontSize:11,color:T.text,fontWeight:600,marginBottom:12}}>L2 Signal Payload — Typology Scores</div>
+                {alert.l2.typologies.length>0?alert.l2.typologies.map((s,i)=>(
+                  <div key={i} style={{display:"flex",alignItems:"center",gap:8,padding:"5px 0"}}>
+                    <span style={{fontFamily:font.mono,fontSize:9,color:T.sub,width:170,flexShrink:0}}>{s.id} {s.name}</span>
+                    <ProgressBar value={s.score} color={s.score>.8?T.red:s.score>.6?T.gold:T.accent}/>
+                    <span style={{fontFamily:font.mono,fontSize:11,fontWeight:700,color:s.score>.8?T.red:s.score>.5?T.gold:T.muted,width:30,textAlign:"right"}}>{Math.round(s.score*100)}</span>
+                    <Badge text={s.atl?"ATL":"BTL"} color={s.atl?T.red:T.muted}/>
+                    <span style={{fontFamily:font.mono,fontSize:8,color:T.muted}}>{s.model}</span>
+                  </div>
+                )):<div style={{fontFamily:font.mono,fontSize:10,color:T.cyan}}>Zero-day anomaly — no targeted typologies matched. VAE reconstruction loss: {alert.l3.anomalyScore}</div>}
+              </div>
+              {/* L3 + L4 Details */}
+              <div style={{background:T.card,borderRadius:14,border:`1px solid ${T.border}`,padding:16}}>
+                <div style={{fontFamily:font.mono,fontSize:11,color:T.text,fontWeight:600,marginBottom:10}}>Pipeline Decision Chain</div>
+                {[
+                  {layer:"L1",color:T.gold,detail:`Features: ${alert.l1.features} | HRG=${alert.l1.hrg} | KYC=${alert.l1.kycRisk} | Profile=${alert.l1.txnProfile}`},
+                  {layer:"L2",color:T.purple,detail:`Axis: ${alert.l2.axis} | Models: ${[...new Set(alert.l2.typologies.map(t=>t.model))].join(",")||"VAE"} | Recurrence: ${alert.l2.recurrence}/${alert.l2.recurrenceWindow}`},
+                  {layer:"L3",color:T.teal,detail:`Entity Resolved: ${alert.l3.entityResolved?"Yes":"No"} | Accounts: ${alert.l3.linkedAccounts} | ATL Score: ${alert.l3.atlScore} | Anomaly: ${alert.l3.anomalyScore}`},
+                  {layer:"L4",color:T.red,detail:`Track ${alert.l4.track} | ${alert.l4.track==="A"?"Auto-Escalated (zero-tolerance)":"ML Score: "+alert.l4.mlScore} | History: ${alert.l4.pastOutcome}`},
+                  {layer:"L5",color:T.orange,detail:`Alert: ${alert.l5.alertId} | Template: ${alert.l5.template} | Levels: ${alert.l5.level}`},
+                ].map((step,i)=>(
+                  <div key={i} style={{display:"flex",gap:8,alignItems:"flex-start",padding:"6px 0",borderBottom:i<4?`1px solid ${T.border}08`:"none"}}>
+                    <Badge text={step.layer} color={step.color}/>
+                    <span style={{fontFamily:font.mono,fontSize:9,color:T.sub,lineHeight:1.6}}>{step.detail}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Right: Entity Context + Detection Narrative */}
+            <div style={{display:"flex",flexDirection:"column",gap:10}}>
+              <div style={{background:T.card,borderRadius:14,border:`1px solid ${T.border}`,padding:16}}>
+                <div style={{fontFamily:font.mono,fontSize:11,color:T.text,fontWeight:600,marginBottom:10}}>Entity Context (L1 Feature Store)</div>
+                {[{k:"Entity",v:alert.entity},{k:"From",v:alert.from+" ("+alert.fromCountry+")"},{k:"To",v:alert.to+" ("+alert.toCountry+")"},{k:"Amount",v:"$"+alert.amount.toLocaleString()},{k:"Product",v:alert.product},{k:"Frequency",v:alert.frequency},{k:"Client Age",v:alert.clientAge},{k:"Risk Profile",v:alert.riskProfile},{k:"KYC Risk",v:alert.l1.kycRisk},{k:"Txn Profile",v:alert.l1.txnProfile}].map((r,i)=>(
+                  <div key={i} style={{display:"flex",padding:"3px 0",borderBottom:`1px solid ${T.border}06`}}>
+                    <span style={{fontFamily:font.mono,fontSize:9,color:T.muted,width:100,flexShrink:0}}>{r.k}</span>
+                    <span style={{fontFamily:font.mono,fontSize:10,color:T.text}}>{r.v}</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{background:alert.color+"08",borderRadius:14,border:`1px solid ${alert.color}20`,padding:16}}>
+                <div style={{fontFamily:font.mono,fontSize:11,color:alert.color,fontWeight:600,marginBottom:8}}>Detection Narrative</div>
+                <div style={{fontFamily:font.body,fontSize:12,color:T.sub,lineHeight:1.8}}>{alert.caughtDetail}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {tab===1&&(()=>{
+        const graphs={
+          "TXN-001":{nodes:[{x:300,y:50,l:"Acme Exports",r:22,c:T.red},{x:120,y:110,l:"Shell #1",r:14,c:T.orange},{x:200,y:155,l:"Shell #2",r:14,c:T.orange},{x:400,y:110,l:"Shell #3",r:14,c:T.orange},{x:480,y:155,l:"Shell #4",r:14,c:T.orange},{x:80,y:200,l:"Agent SA",r:16,c:T.purple},{x:520,y:200,l:"Viktor R.",r:18,c:T.red},{x:300,y:230,l:"OFAC SDN",r:16,c:T.red}],edges:[{f:0,t:1},{f:0,t:2},{f:0,t:3},{f:0,t:4},{f:5,t:1,c:T.purple},{f:5,t:2,c:T.purple},{f:5,t:3,c:T.purple},{f:5,t:4,c:T.purple},{f:6,t:7,c:T.red,dash:true}],cypher:'MATCH (a)-[:SENDS_TO|UBO*1..3]-(b) WHERE a.name="Acme Exports Ltd"',stats:"14 entities, 23 relationships, 3 clusters"},
+          "TXN-002":{nodes:[{x:300,y:50,l:"Meridian BVI",r:22,c:T.orange},{x:120,y:120,l:"Layer 2 Trust",r:16,c:T.gold},{x:480,y:120,l:"Layer 2 Corp",r:16,c:T.gold},{x:80,y:200,l:"Layer 3 Fund",r:14,c:T.purple},{x:200,y:200,l:"Nominee Dir",r:14,c:T.purple},{x:400,y:200,l:"Circular Flow",r:14,c:T.red},{x:520,y:200,l:"End Beneficiary",r:16,c:T.red},{x:300,y:230,l:"Hidden UBO",r:14,c:T.red}],edges:[{f:0,t:1},{f:0,t:2},{f:1,t:3},{f:1,t:4,c:T.purple},{f:2,t:5,c:T.red},{f:2,t:6},{f:5,t:0,c:T.red,dash:true},{f:6,t:7,c:T.red}],cypher:'MATCH (a)-[:OWNS|CONTROLS*1..4]-(b) WHERE a.name="Meridian Holdings BVI"',stats:"8 entities, 15 relationships, circular flow detected"},
+          "TXN-003":{nodes:[{x:300,y:50,l:"Chen Wei",r:22,c:T.gold},{x:150,y:130,l:"Gold Refinery",r:16,c:T.orange},{x:450,y:130,l:"Cash Depot",r:16,c:T.orange},{x:100,y:210,l:"Supplier A",r:12,c:T.muted},{x:250,y:210,l:"Supplier B",r:12,c:T.muted},{x:350,y:210,l:"Exporter",r:14,c:T.gold},{x:500,y:210,l:"Jewelry Shop",r:14,c:T.gold}],edges:[{f:0,t:1},{f:0,t:2},{f:1,t:3},{f:1,t:4},{f:2,t:5,c:T.gold},{f:2,t:6,c:T.gold}],cypher:'MATCH (a)-[:TRANSACTS_WITH*1..2]-(b) WHERE a.name="Chen Wei Trading Co"',stats:"7 entities, 9 relationships, cash-intensive cluster"},
+          "TXN-004":{nodes:[{x:300,y:40,l:"Nordic Freight",r:22,c:T.teal},{x:140,y:110,l:"Istanbul Log.",r:16,c:T.orange},{x:460,y:110,l:"LC Issuer",r:16,c:T.blue},{x:80,y:190,l:"FTZ Dubai",r:14,c:T.red},{x:220,y:190,l:"Transshipment",r:14,c:T.orange},{x:380,y:190,l:"End Buyer",r:16,c:T.gold},{x:520,y:190,l:"Insurer",r:14,c:T.muted},{x:300,y:230,l:"Commodity DB",r:14,c:T.purple}],edges:[{f:0,t:1},{f:0,t:2},{f:1,t:3,c:T.red},{f:1,t:4,c:T.orange},{f:4,t:5},{f:2,t:6},{f:5,t:7,c:T.purple,dash:true}],cypher:'MATCH (a)-[:SHIPS_TO|LC_BENEFICIARY*1..3]-(b) WHERE a.name="Nordic Freight AB"',stats:"8 entities, 11 relationships, FTZ transshipment flagged"},
+          "TXN-005":{nodes:[{x:300,y:50,l:"Al-Rashid Fdn",r:22,c:T.pink},{x:120,y:120,l:"Donor A",r:14,c:T.muted},{x:220,y:150,l:"Donor B",r:14,c:T.muted},{x:380,y:120,l:"Donor C",r:14,c:T.gold},{x:480,y:150,l:"Linked Org",r:14,c:T.pink},{x:200,y:220,l:"Beneficiary X",r:14,c:T.orange},{x:400,y:220,l:"Beneficiary Y",r:14,c:T.orange},{x:300,y:230,l:"TF Watchlist",r:14,c:T.red}],edges:[{f:1,t:0},{f:2,t:0},{f:3,t:0,c:T.gold},{f:4,t:0,c:T.pink},{f:0,t:5},{f:0,t:6},{f:6,t:7,c:T.red,dash:true}],cypher:'MATCH (a)<-[:DONATES_TO]-(b) WHERE a.name="Al-Rashid Foundation"',stats:"8 entities, 7 relationships, TF pattern match"},
+          "TXN-007":{nodes:[{x:300,y:50,l:"Rodriguez Trust",r:22,c:T.red},{x:150,y:120,l:"Trust Acct #1",r:14,c:T.gold},{x:300,y:130,l:"Trust Acct #2",r:14,c:T.gold},{x:450,y:120,l:"Cayman Fund",r:16,c:T.red},{x:150,y:210,l:"PEP: Rodriguez",r:18,c:T.red},{x:450,y:210,l:"Offshore Mgr",r:14,c:T.orange},{x:300,y:230,l:"PEP Registry",r:14,c:T.red}],edges:[{f:0,t:1},{f:0,t:2},{f:0,t:3,c:T.red},{f:4,t:0,c:T.red},{f:3,t:5},{f:4,t:6,c:T.red,dash:true}],cypher:'MATCH (a)-[:UBO|PEP_LINK*1..2]-(b) WHERE a.name="Rodriguez Family Trust"',stats:"7 entities, 6 relationships, PEP chain confirmed"},
+          "TXN-008":{nodes:[{x:300,y:50,l:"Phantom X",r:22,c:T.cyan},{x:120,y:120,l:"Counterparty A",r:14,c:T.muted},{x:240,y:150,l:"Counterparty B",r:14,c:T.muted},{x:360,y:150,l:"Counterparty C",r:14,c:T.muted},{x:480,y:120,l:"Counterparty D",r:14,c:T.muted},{x:180,y:220,l:"Unknown Link",r:14,c:T.cyan},{x:420,y:220,l:"Anomaly Zone",r:18,c:T.cyan}],edges:[{f:0,t:1},{f:0,t:2},{f:0,t:3},{f:0,t:4},{f:1,t:5,c:T.cyan,dash:true},{f:4,t:6,c:T.cyan,dash:true},{f:5,t:6,c:T.cyan,dash:true}],cypher:'MATCH (a)-[*1..3]-(b) WHERE a.name="Phantom Entity X"',stats:"7 entities, 7 relationships, unknown pattern — zero-day"},
+          "TXN-010":{nodes:[{x:300,y:50,l:"Dormant #8842",r:22,c:T.orange},{x:140,y:130,l:"Sender (CH)",r:16,c:T.gold},{x:460,y:130,l:"Outbound Dest",r:16,c:T.red},{x:300,y:200,l:"3yr Dormancy",r:18,c:T.orange},{x:140,y:220,l:"$520K In",r:14,c:T.gold},{x:460,y:220,l:"$515K Out",r:14,c:T.red}],edges:[{f:1,t:0,c:T.gold},{f:0,t:2,c:T.red},{f:0,t:3,c:T.orange,dash:true},{f:4,t:0,c:T.gold},{f:0,t:5,c:T.red}],cypher:'MATCH (a)-[:RECEIVES|SENDS*1..2]-(b) WHERE a.id="ACCT-8842"',stats:"6 entities, 5 relationships, dormancy reactivation"},
+        };
+        const g=graphs[alert.id]||graphs["TXN-001"];
+        return(
+        <div style={{background:T.card,borderRadius:14,border:`1px solid ${T.border}`,overflow:"hidden"}}>
+          <div style={{padding:"12px 16px",borderBottom:`1px solid ${T.border}`,display:"flex",gap:8}}>
+            <input key={alert.id} defaultValue={`Show all entities connected to ${alert.entity} via shared identifiers within 3 hops`} style={{flex:1,padding:"10px 14px",borderRadius:8,border:`1px solid ${T.border}`,background:T.panel,color:T.text,fontFamily:font.mono,fontSize:11,outline:"none"}}/>
+            <button style={{padding:"10px 18px",borderRadius:8,border:"none",background:T.purple,color:"white",fontFamily:font.mono,fontSize:10,fontWeight:600,cursor:"pointer"}}>Query Graph</button>
+          </div>
+          <div style={{padding:18}}>
+            <div style={{fontFamily:font.mono,fontSize:10,color:T.purple,marginBottom:4}}>Cypher: {g.cypher} RETURN *</div>
+            <div style={{fontFamily:font.mono,fontSize:9,color:T.muted,marginBottom:12}}>Subgraph: {g.stats}</div>
+            <svg width="100%" viewBox="0 0 600 250" key={alert.id}>
+              {g.edges.map((e,i)=>{const from=g.nodes[e.f];const to=g.nodes[e.t];return <line key={"e"+i} x1={from.x} y1={from.y} x2={to.x} y2={to.y} stroke={(e.c||T.muted)+(e.dash?"60":"30")} strokeWidth={e.dash?2:1} strokeDasharray={e.dash?"5,4":"none"}/>})}
+              {g.nodes.map((n,i)=>(
+                <g key={"n"+i}><circle cx={n.x} cy={n.y} r={n.r} fill={n.c+"20"} stroke={n.c} strokeWidth="1.5"/><text x={n.x} y={n.y+3} textAnchor="middle" fill={n.c} fontFamily={font.mono} fontSize="7" fontWeight="600">{n.l}</text></g>
+              ))}
+            </svg>
+            <div style={{padding:14,background:T.panel,borderRadius:8,fontFamily:font.body,fontSize:12,color:T.sub,lineHeight:1.8,marginTop:12}}>
+              <strong style={{color:T.text}}>Graph RAG Summary:</strong> {alert.caughtDetail} Entity risk profile: ATL score {alert.l3.atlScore}, anomaly score {alert.l3.anomalyScore}. {alert.l3.linkedAccounts} linked account(s) identified via Zingg entity resolution. Detection pathway: {alert.caught}.
+            </div>
+          </div>
+        </div>
+        );
+      })()}
+      {tab===2&&(
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10}}>
+          {[{agent:"Evidence Agent",confidence:Math.min(.99,alert.l3.atlScore+.05)||.75,color:T.red,rec:alert.l4.decision==="ATL"?"ESCALATE":"REVIEW",text:alert.l2.typologies.length+" typologies fired across "+alert.l2.axis+". "+alert.caughtDetail.split(".").slice(0,2).join(".")+"."},
+            {agent:"Compliance Agent",confidence:Math.min(.95,alert.l3.atlScore)||.70,color:T.gold,rec:alert.l4.decision==="ATL"?"ESCALATE":"REVIEW",text:"Applicable typologies: "+alert.l2.typologies.map(t=>t.id+" "+t.name).join(", ")+". Tuning Matrix params: Country="+alert.fromCountry+", ClientType="+alert.riskProfile+", Product="+alert.product+", KYCRisk="+alert.l1.kycRisk+". Track "+alert.l4.track+" evaluation."},
+            {agent:"Precedent Agent",confidence:alert.l4.historicalMatch?.85:.55,color:T.purple,rec:alert.l4.historicalMatch?"ESCALATE":"INSUFFICIENT DATA",text:alert.l4.historicalMatch?"Historical Context Engine found matches. Past outcome for similar triads: "+alert.l4.pastOutcome+". Score Adjustment Engine applied based on historical conversion rate.":"No historical precedent found for this client-counterparty-typology triad. First-time alert for this entity. Recommend manual investigation to establish baseline disposition."},
+          ].map((a,i)=>(
+            <div key={i} style={{background:T.card,borderRadius:14,border:`1px solid ${a.color}20`,padding:16}}>
+              <div style={{fontFamily:font.mono,fontSize:11,color:a.color,fontWeight:600,marginBottom:4}}>{a.agent}</div>
+              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:10}}><Badge text={a.rec} color={a.color}/><span style={{fontFamily:font.mono,fontSize:10,color:T.muted}}>{Math.round(a.confidence*100)}%</span></div>
+              <div style={{fontFamily:font.body,fontSize:11,color:T.sub,lineHeight:1.7}}>{a.text}</div>
+            </div>
+          ))}
+        </div>
+      )}
+      {tab===3&&(
+        <div style={{background:T.card,borderRadius:14,border:`1px solid ${T.border}`,padding:18}}>
+          <div style={{fontFamily:font.mono,fontSize:11,color:T.gold,fontWeight:600,marginBottom:14}}>FinCEN BSA E-Filing — SAR Auto-Population</div>
+          {[{part:"Part I",title:"Subject Information",status:"Auto-filled",fields:"Name: "+alert.entity+" | Country: "+alert.fromCountry+" | Risk: "+alert.l1.kycRisk+" | Profile: "+alert.riskProfile,color:T.success},
+            {part:"Part II",title:"Suspicious Activity",status:"Auto-filled",fields:"Amount: $"+alert.amount.toLocaleString()+" | Instrument: "+alert.product+" | Frequency: "+alert.frequency+" | Typologies: "+alert.l2.typologies.map(t=>t.id).join(", "),color:T.success},
+            {part:"Part III",title:"Financial Institution",status:"Auto-filled",fields:"Global Bank Corp | RSSD: XXXXXX | Branch: New York | Contact: AML Operations",color:T.success},
+            {part:"Part IV",title:"Filing Contact",status:"Pre-filled",fields:"BSA Officer from institutional profile",color:T.accent},
+            {part:"Part V",title:"Narrative",status:"AI Draft",fields:"",color:T.gold},
+          ].map((p,i)=>(
+            <div key={i} style={{padding:"10px 14px",borderBottom:`1px solid ${T.border}06`,display:"flex",gap:10,alignItems:"flex-start"}}>
+              <span style={{fontFamily:font.mono,fontSize:10,color:T.text,fontWeight:600,width:50,flexShrink:0}}>{p.part}</span>
+              <div style={{flex:1}}><div style={{fontFamily:font.body,fontSize:12,color:T.text}}>{p.title}</div>{p.fields&&<div style={{fontFamily:font.mono,fontSize:9,color:T.muted,marginTop:2}}>{p.fields}</div>}</div>
+              <Badge text={p.status} color={p.color}/>
+            </div>
+          ))}
+          <div style={{marginTop:14,padding:14,background:T.panel,borderRadius:8,border:`1px solid ${T.gold}15`}}>
+            <div style={{fontFamily:font.mono,fontSize:9,color:T.gold,marginBottom:6}}>PART V — AI NARRATIVE (Golden Thread Lineage)</div>
+            <div style={{fontFamily:font.body,fontSize:11,color:T.sub,lineHeight:1.8}}>{alert.caughtDetail} L2 Signal Payload: {alert.l2.typologies.map(t=>t.id+" ("+t.model+", score "+t.score.toFixed(2)+")").join("; ")||"Anomaly Engine (VAE, loss "+alert.l3.anomalyScore+")"}. L3: Entity Resolution linked {alert.l3.linkedAccounts} account(s). ATL Score: {alert.l3.atlScore}. Anomaly Score: {alert.l3.anomalyScore}. L4: Track {alert.l4.track}, {alert.l4.track==="A"?"deterministic auto-escalation":"ML Classifier score "+alert.l4.mlScore}. Priority: {alert.l4.priority}.</div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ═════════════ EDGE CASES ═════════════
+function EdgeCases(){
+  const[selected,setSelected]=useState(0);
+  const cases=[
+    {name:"TF Weak Signal Combination",color:T.pink,example:"TXN-005: Al-Rashid Foundation",
+      problem:"RT#81/82 individually score 0.28-0.40 — all classified BTL by L2 Threshold Evaluator. L3 ATL-Only Score Engine receives zero ATL signals for this entity. No targeted alert generated.",
+      howCaught:"Track B ML Classifier in L4 evaluates the FULL signal portfolio — including BTL signals. The XGBoost model, trained on historical TF cases, recognizes that the combination of non-profit entity + TF keywords + donor pattern + anomaly score = suspicious. Network Graph ATL/BTL module confirms fund flow topology matching known TF patterns. L4 overrides the BTL classification and escalates.",
+      layer:"L4 Track B (ML Classifier + Network Graph)"},
+    {name:"Shell Company Network via Graph",color:T.purple,example:"TXN-002: Meridian Holdings BVI",
+      problem:"Each individual transaction between Meridian and its 12 counterparties looks normal. Transaction Axis and Account Axis scores are moderate (0.40-0.60). Standard rule-based detection would miss this entirely.",
+      howCaught:"L2 Network Axis: Relationship Graph module (Neo4j) computed ownership depth = 3 layers, detected circular ownership patterns, identified nominee directors across entities. ML/AI Engine generated micro-networks from current transactions. Entity Roll-Up consolidated 8 linked accounts. L3 Entity Resolution (Zingg) linked additional accounts via probabilistic matching.",
+      layer:"L2 Network Axis (ML/AI Engine + Neo4j)"},
+    {name:"Trade-Based ML via NLP",color:T.teal,example:"TXN-004: Nordic Freight AB",
+      problem:"Nordic Freight is a 5-year client with low KYC risk. Standard transaction and account axis models score near zero. But the Letter of Credit documents contain anomalies invisible to numerical models.",
+      howCaught:"L2 Derived Features: NLP Text Engine (spaCy + HuggingFace) parsed LC free-text fields. Detected: goods description inconsistent with shipping weight, commodity pricing 280% above market rate, transshipment through free trade zone atypical for declared goods. Hybrid Engine combined NLP output with rule-based geographic checks. Product & Services Axis evaluation specific to trade finance.",
+      layer:"L2 Product & Services Axis (Hybrid Engine + NLP)"},
+    {name:"Dormancy Reactivation Pattern",color:T.orange,example:"TXN-010: Dormant Account #8842",
+      problem:"Account dormant for 3 years (1,095 days). Single large inbound wire followed by rapid outbound wire within 4 hours. Standard daily batch processing might miss the rapid movement component.",
+      howCaught:"L1 Account Feature Engine detected dormancy break via rolling aggregation baseline (0 txns for 1,095 days). L2 Temporal Sequence module detected deposit-wire chain with 4-hour gap. Hybrid Engine combined rule (dormancy period > matrix threshold) with ML (amount anomaly vs account history). Three typologies converged: RT#23 (dormancy), RT#25 (rapid movement), RT#21 (vs history).",
+      layer:"L2 Account Axis (Hybrid + ML/AI + Temporal Sequence)"},
+    {name:"Zero-Day Anomaly Detection",color:T.cyan,example:"TXN-008: Phantom Entity X",
+      problem:"No rule, no ML model, and no typology matches this entity's behavior. All targeted scores are near zero. Standard detection systems would completely miss this.",
+      howCaught:"L2 Anomaly Engine (VAE): the autoencoder attempted to reconstruct the entity's behavioral pattern and failed — reconstruction loss of 0.88. Top loss contributors: unusual product-type combination, irregular timing distribution, counterparty geography spread inconsistent with declared business. This represents a potential zero-day pattern not in the typology catalogue. L3 Anomaly Integrator placed this alongside zero targeted scores, creating a dual-view that L4 Track B ML Classifier evaluated holistically.",
+      layer:"L2 Anomaly Engine (AE/VAE) → L4 Track B"},
+    {name:"PEP Auto-Escalation (Track A)",color:T.red,example:"TXN-007: Rodriguez Family Trust",
+      problem:"PEP client with opaque trust structure sending to tax haven jurisdiction. Even if ML models assess low probability, regulatory zero-tolerance policy requires immediate escalation.",
+      howCaught:"L4 Escalation Router detected zero-tolerance match: RT#18 (PEP Transaction) + opaque structure. Policy Matcher checked against Risk Appetite Matrix zero-tolerance catalogue. Auto-Escalator bypassed Track B ML Classifier entirely — no probabilistic assessment needed. Deterministic compliance requirement ensures this ALWAYS escalates regardless of model opinion.",
+      layer:"L4 Track A (Deterministic Auto-Escalation)"},
+    {name:"Cross-Account Structuring",color:T.gold,example:"TXN-001: Acme Exports Ltd",
+      problem:"47 transactions of $9,500 each across 3 accounts. Individually each looks like a legitimate payment. The structuring pattern only emerges when viewed across all accounts.",
+      howCaught:"L2 Rule Engine: closeness-to-threshold scoring on each transaction ($9,500 vs $10,000 = 0.95 proximity). Recurrence Validator: 47 occurrences in 12-day sliding window exceeds matrix threshold. Entity Roll-Up Engine aggregated from Txn→Account→Client level. L3 Entity Resolution linked all 3 accounts to the same entity. L3 Signal Inventory Manager: 5 typologies detected, 4 ATL. ATL-Only Score Engine: consolidated 0.94.",
+      layer:"L2 Rule Engine + Recurrence → L3 Entity Resolution"},
+  ];
+  const c=cases[selected];
+  return(
+    <div>
+      <div style={{display:"flex",gap:4,flexWrap:"wrap",marginBottom:16}}>
+        {cases.map((ec,i)=>(
+          <button key={i} onClick={()=>setSelected(i)} style={{padding:"7px 12px",borderRadius:8,border:`1px solid ${selected===i?ec.color+"60":T.border}`,background:selected===i?ec.color+"10":"transparent",color:selected===i?ec.color:T.muted,fontFamily:font.mono,fontSize:9,fontWeight:selected===i?600:400,cursor:"pointer"}}>{i+1}. {ec.name}</button>
+        ))}
+      </div>
+      <div style={{background:T.card,borderRadius:14,border:`1px solid ${c.color}25`,overflow:"hidden"}}>
+        <div style={{padding:"14px 18px",background:c.color+"08",borderBottom:`1px solid ${c.color}15`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div style={{fontFamily:font.mono,fontSize:14,fontWeight:700,color:c.color}}>#{selected+1}: {c.name}</div>
+          <Badge text={c.example} color={c.color}/>
+        </div>
+        <div style={{padding:18}}>
+          <div style={{marginBottom:14}}>
+            <div style={{fontFamily:font.mono,fontSize:9,color:T.red,letterSpacing:1,marginBottom:4}}>THE CHALLENGE</div>
+            <div style={{fontFamily:font.body,fontSize:13,color:T.sub,lineHeight:1.8}}>{c.problem}</div>
+          </div>
+          <div style={{marginBottom:14}}>
+            <div style={{fontFamily:font.mono,fontSize:9,color:T.accent,letterSpacing:1,marginBottom:4}}>HOW THE SYSTEM CATCHES IT</div>
+            <div style={{fontFamily:font.body,fontSize:13,color:T.sub,lineHeight:1.8}}>{c.howCaught}</div>
+          </div>
+          <div style={{padding:12,background:c.color+"08",borderRadius:10,border:`1px solid ${c.color}20`,textAlign:"center"}}>
+            <div style={{fontFamily:font.mono,fontSize:9,color:T.muted,marginBottom:4}}>DETECTION LAYER</div>
+            <div style={{fontFamily:font.mono,fontSize:13,fontWeight:700,color:c.color}}>{c.layer}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ═════════════ MAIN APP ═════════════
+const NAV=[
+  {id:"dashboard",label:"Dashboard",icon:"\u25C9"},
+  {id:"scoring",label:"Scoring Sim",icon:"\u26A1"},
+  {id:"architecture",label:"Architecture",icon:"\u25EB"},
+  {id:"typologies",label:"Typologies",icon:"\u25C8"},
+  {id:"investigation",label:"Investigation",icon:"\u25CE"},
+  {id:"edgecases",label:"Detection Stories",icon:"\u25B3"},
+];
+
+function App(){
+  const[page,setPage]=useState("dashboard");
+  const[sidebarHover,setSidebarHover]=useState(null);
+  const titles={dashboard:"Operations Dashboard",scoring:"Live Scoring Simulator",architecture:"Architecture Explorer",typologies:"Typology Catalogue",investigation:"Investigation Intelligence",edgecases:"Detection Stories"};
+  const subtitles={dashboard:"Real-time pipeline health, alerts, and performance metrics",scoring:"Score single transactions or run a full batch through L1\u2192L2\u2192L3\u2192L4\u2192L5",architecture:"Interactive 5-layer pipeline + Global Tuning Matrix + Feedback Loop (per C4 diagrams D2-D8)",typologies:"Complete ML-TF Risk Typology catalogue \u2014 19 typologies across 8 groups, 5 axes, 4 model types",investigation:"Alert detail with golden thread lineage, Graph RAG, AI disposition, SAR auto-population",edgecases:"7 real examples showing what gets caught, where, and how \u2014 from shell networks to zero-day anomalies"};
+  return(
+    <div style={{display:"flex",minHeight:"100vh",background:T.bg,fontFamily:font.body}}>
+      <div style={{width:210,background:T.panel,borderRight:`1px solid ${T.border}`,padding:"20px 0",flexShrink:0,display:"flex",flexDirection:"column"}}>
+        <div style={{padding:"0 18px 18px",borderBottom:`1px solid ${T.border}`}}>
+          <div style={{fontFamily:font.mono,fontSize:9,color:T.accent,letterSpacing:2,marginBottom:4}}>SENTINEL</div>
+          <div style={{fontFamily:font.body,fontSize:14,fontWeight:700,color:T.text}}>AML Detection</div>
+          <div style={{fontFamily:font.mono,fontSize:9,color:T.muted}}>Intelligence Platform</div>
+        </div>
+        <div style={{padding:"10px 8px",flex:1}}>
+          {NAV.map((n,i)=>(
+            <button key={n.id} onClick={()=>setPage(n.id)} onMouseEnter={()=>setSidebarHover(i)} onMouseLeave={()=>setSidebarHover(null)}
+              style={{width:"100%",display:"flex",alignItems:"center",gap:8,padding:"9px 10px",marginBottom:2,borderRadius:8,border:"none",cursor:"pointer",background:page===n.id?T.accent+"12":sidebarHover===i?T.card:"transparent"}}>
+              <span style={{fontSize:13,width:18,textAlign:"center",color:page===n.id?T.accent:T.muted}}>{n.icon}</span>
+              <span style={{fontFamily:font.mono,fontSize:10,color:page===n.id?T.accent:T.sub,fontWeight:page===n.id?600:400}}>{n.label}</span>
+            </button>
+          ))}
+        </div>
+        <div style={{padding:"10px 18px",borderTop:`1px solid ${T.border}`}}>
+          <div style={{fontFamily:font.mono,fontSize:8,color:T.muted}}>Architecture: D2-D8</div>
+          <div style={{fontFamily:font.mono,fontSize:8,color:T.muted}}>5 Layers + GTM + Feedback</div>
+        </div>
+      </div>
+      <div style={{flex:1,overflow:"auto"}}>
+        <div style={{padding:"20px 28px",borderBottom:`1px solid ${T.border}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+          <div>
+            <div style={{fontFamily:font.body,fontSize:18,fontWeight:700,color:T.text}}>{titles[page]}</div>
+            <div style={{fontFamily:font.mono,fontSize:10,color:T.muted,marginTop:2}}>{subtitles[page]}</div>
+          </div>
+          <div style={{display:"flex",gap:6,alignItems:"center"}}>
+            <div style={{width:7,height:7,borderRadius:"50%",background:T.success}}/>
+            <span style={{fontFamily:font.mono,fontSize:9,color:T.success}}>System Online</span>
+          </div>
+        </div>
+        <div style={{padding:"20px 28px"}}>
+          {page==="dashboard"&&<Dashboard/>}
+          {page==="scoring"&&<ScoringSimulator/>}
+          {page==="architecture"&&<Architecture/>}
+          {page==="typologies"&&<TypologyCatalogue/>}
+          {page==="investigation"&&<Investigation/>}
+          {page==="edgecases"&&<EdgeCases/>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
