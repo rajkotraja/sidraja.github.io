@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AML Feature Factory — Layer 1 Demo</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.2/babel.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body, #root { height: 100%; width: 100%; overflow: hidden; }
+  body { background: #0a0e1a; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel" data-type="module">
+const { useState, useEffect, useCallback, useRef, useMemo } = React;
+
+// ─── MOCK DATA ─────────────────────────────────────────────────────────
+const MOCK_TRANSACTIONS = Array.from({ length: 80 }, (_, i) => ({
+  transaction_id: `TXN-${String(10001 + i).padStart(5, "0")}`,
+  transaction_date: new Date(2025, Math.floor(Math.random() * 12), Math.floor(Math.random() * 28) + 1).toISOString().split("T")[0],
+  account_id: `ACC-${String(1001 + (i % 25)).padStart(5, "0")}`,
+  client_id: `CLI-${String(201 + (i % 15)).padStart(5, "0")}`,
+  transaction_type: ["WIRE_IN","WIRE_OUT","CASH_DEPOSIT","CASH_WITHDRAWAL","CHECK_DEPOSIT","CARD_PAYMENT","INTERNAL_TRANSFER"][i % 7],
+  amount: [9800, 9500, 49999, 100000, 250, 15000, 9900, 75000, 10000, 5000][i % 10] + Math.random() * 100,
+  currency: ["USD","EUR","GBP","CHF","AED","CNY"][i % 6],
+  originator_country: ["US","GB","FR","DE","AE","IR","KP","CH","SG","JP"][i % 10],
+  beneficiary_country: ["US","GB","CH","KY","PA","IR","SY","DE","HK","SG"][i % 10],
+  is_cross_border: i % 3 !== 0,
+  channel: ["BRANCH","ONLINE","MOBILE","ATM","SWIFT"][i % 5],
+  narrative: ["Trade payment","Salary transfer","Investment return","Consulting fee","Gift","Loan repayment","Equipment purchase","Dividend"][i % 8],
+}));
+
+const MOCK_CLIENTS = Array.from({ length: 15 }, (_, i) => ({
+  client_id: `CLI-${String(201 + i).padStart(5, "0")}`,
+  client_name: ["Apex Global Ltd","Maria Chen","BlueStar Holdings","Ahmed Al-Rashid","Nordström Capital","Sakura Trading Co","James Wellington III","Greenfield Trust","Omega Ventures","Li Wei Corp","Pacific Shell Inc","Elena Petrova","Desert Rose Investments","Khan Industries","Bright Future NGO"][i],
+  client_type: ["CORPORATE","INDIVIDUAL","CORPORATE","INDIVIDUAL","CORPORATE","CORPORATE","INDIVIDUAL","TRUST","CORPORATE","CORPORATE","PIV","INDIVIDUAL","CORPORATE","CORPORATE","NON_PROFIT"][i],
+  country_of_residence: ["US","SG","KY","AE","CH","JP","GB","PA","VG","CN","BVI","RU","AE","PK","CH"][i],
+  kyc_risk_rating: ["MEDIUM","LOW","HIGH","HIGH","MEDIUM","LOW","VERY_HIGH","HIGH","VERY_HIGH","MEDIUM","HIGH","MEDIUM","HIGH","MEDIUM","LOW"][i],
+  pep_status: i === 3 || i === 6 || i === 11,
+  sector_code: ["TECHNOLOGY","BANKING","REAL_ESTATE","OIL_GAS","BANKING","RETAIL","PRECIOUS_METALS","CONSTRUCTION","CRYPTO","TECHNOLOGY","GAMING","BANKING","OIL_GAS","ARMS","NON_PROFIT"][i],
+  annual_expected_turnover: [5000000,120000,25000000,8000000,50000000,3000000,2000000,15000000,75000000,10000000,1000000,90000,30000000,20000000,500000][i],
+}));
+
+const MOCK_ACCOUNTS = Array.from({ length: 25 }, (_, i) => ({
+  account_id: `ACC-${String(1001 + i).padStart(5, "0")}`,
+  client_id: `CLI-${String(201 + (i % 15)).padStart(5, "0")}`,
+  account_type: ["CURRENT","SAVINGS","INVESTMENT","LOAN","TRADE_FINANCE","CORRESPONDENT"][i % 6],
+  account_currency: ["USD","EUR","GBP","CHF","AED"][i % 5],
+  account_status: i === 5 || i === 18 ? "DORMANT" : i === 22 ? "FROZEN" : "ACTIVE",
+  opening_date: new Date(2020 + (i % 5), i % 12, (i % 28) + 1).toISOString().split("T")[0],
+  product_type: ["RETAIL","CORPORATE","PRIVATE_BANKING","WEALTH_MANAGEMENT","CIB"][i % 5],
+  average_monthly_balance: Math.round(Math.random() * 5000000),
+  expected_monthly_turnover: Math.round(Math.random() * 2000000),
+}));
+
+const DATASETS_META = [
+  { id: "ds-txn", name: "transactions", rows: 5000, cols: 18, size: "4.2 MB", loaded: true },
+  { id: "ds-cli", name: "clients", rows: 200, cols: 16, size: "0.3 MB", loaded: true },
+  { id: "ds-acc", name: "accounts", rows: 500, cols: 10, size: "0.5 MB", loaded: true },
+];
+
+const FEATURE_BLOCKS = [
+  { id: "fb-1", name: "High-Risk Geography Flag", desc: "Flags transactions to/from high-risk jurisdictions per FATF/sanctions lists", category: "TRANSACTION", axis: "TRANSACTION", rt: "RT#11", status: "ACTIVE", outputs: ["f_txn_high_risk_geo_flag","f_txn_originator_risk_country","f_txn_beneficiary_risk_country","f_txn_geo_risk_score"], createdBy: "SYSTEM", lastExecMs: 142, version: 1, code: `"""
+Feature Block: High-Risk Geography Flag
+Axis: TRANSACTION | RT#11
+"""
+import pandas as pd
+import numpy as np
+
+def compute_features(datasets):
+    txn = datasets.get('transactions')
+    HIGH_RISK = {'IR','KP','SY','AF','MM','YE','SO','SD','LY','IQ'}
+    TAX_HAVENS = {'KY','PA','VG','BVI','BM','JE','GG','IM','LI','MC'}
+    
+    result = txn[['transaction_id']].copy()
+    result['f_txn_originator_risk_country'] = txn['originator_country'].isin(HIGH_RISK).astype(int)
+    result['f_txn_beneficiary_risk_country'] = txn['beneficiary_country'].isin(HIGH_RISK).astype(int)
+    result['f_txn_high_risk_geo_flag'] = (
+        result['f_txn_originator_risk_country'] | result['f_txn_beneficiary_risk_country']
+    ).astype(int)
+    
+    tax_haven = (txn['originator_country'].isin(TAX_HAVENS) | 
+                 txn['beneficiary_country'].isin(TAX_HAVENS)).astype(float) * 0.3
+    result['f_txn_geo_risk_score'] = np.clip(
+        result['f_txn_high_risk_geo_flag'] * 0.7 + tax_haven, 0, 1
+    ).round(3)
+    return result` },
+  { id: "fb-2", name: "Round Amount Detection", desc: "Detects transactions that are exact multiples of common round amounts", category: "TRANSACTION", axis: "TRANSACTION", rt: "RT#24", status: "ACTIVE", outputs: ["f_txn_round_amount_flag","f_txn_round_amount_type","f_txn_near_threshold_flag"], createdBy: "SYSTEM", lastExecMs: 87, version: 1, code: `"""
+Feature Block: Round Amount Detection
+Axis: TRANSACTION | RT#24
+"""
+import pandas as pd
+import numpy as np
+
+def compute_features(datasets):
+    txn = datasets.get('transactions')
+    result = txn[['transaction_id']].copy()
+    amt = txn['amount']
+    
+    result['f_txn_round_amount_flag'] = (
+        (amt % 10000 == 0) | (amt % 5000 == 0) | (amt % 1000 == 0)
+    ).astype(int)
+    
+    conditions = [amt % 100000 == 0, amt % 50000 == 0, amt % 10000 == 0, amt % 5000 == 0, amt % 1000 == 0]
+    choices = ['100K','50K','10K','5K','1K']
+    result['f_txn_round_amount_type'] = np.select(conditions, choices, default='NONE')
+    result['f_txn_near_threshold_flag'] = ((amt >= 9000) & (amt < 10000)).astype(int)
+    return result` },
+  { id: "fb-3", name: "Structuring Detection", desc: "Detects patterns of transactions just below reporting thresholds within rolling windows", category: "ACCOUNT", axis: "ACCOUNT", rt: "RT#26", status: "ACTIVE", outputs: ["f_acc_structuring_score","f_acc_below_threshold_count_7d","f_acc_below_threshold_total_7d","f_acc_structuring_flag"], createdBy: "SYSTEM", lastExecMs: 234, version: 1, code: "# Structuring detection logic - RT#26\n# Analyzes sub-threshold transaction patterns per account" },
+  { id: "fb-4", name: "Rapid Fund Movement", desc: "Detects accounts with deposits followed by rapid withdrawals within 24-48 hours", category: "ACCOUNT", axis: "ACCOUNT", rt: "RT#25", status: "ACTIVE", outputs: ["f_acc_rapid_movement_flag","f_acc_rapid_movement_score","f_acc_avg_time_between_in_out_hours","f_acc_flow_through_ratio"], createdBy: "SYSTEM", lastExecMs: 198, version: 1, code: "# Rapid fund movement detection - RT#25" },
+  { id: "fb-5", name: "Client Risk Profile", desc: "Composite risk score combining PEP status, KYC rating, sector risk, and onboarding recency", category: "CLIENT", axis: "CLIENT", rt: "RT#15", status: "ACTIVE", outputs: ["f_cli_composite_risk_score","f_cli_pep_risk_weight","f_cli_sector_risk_weight","f_cli_kyc_risk_weight","f_cli_onboarding_recency_weight"], createdBy: "SYSTEM", lastExecMs: 156, version: 1, code: "# Client composite risk scoring - RT#15 + RT#18" },
+  { id: "fb-6", name: "Transaction Velocity Anomaly", desc: "Rolling 30-day velocity compared against 90-day average to flag anomalies", category: "ACCOUNT", axis: "ACCOUNT", rt: "RT#21", status: "ACTIVE", outputs: ["f_acc_txn_count_30d","f_acc_txn_value_30d","f_acc_txn_count_90d_avg","f_acc_txn_value_90d_avg","f_acc_velocity_anomaly_score"], createdBy: "SYSTEM", lastExecMs: 312, version: 1, code: "# Transaction velocity anomaly - RT#21" },
+  { id: "fb-7", name: "Counterparty Network Analysis", desc: "Analyzes unique counterparties, detects many-to-one and one-to-many patterns", category: "CLIENT", axis: "CLIENT", rt: "RT#41", status: "ACTIVE", outputs: ["f_cli_unique_counterparties_30d","f_cli_many_to_one_score","f_cli_one_to_many_score","f_cli_counterparty_concentration_ratio"], createdBy: "AI_GENERATED", lastExecMs: 267, version: 1, code: "# Counterparty network analysis - RT#41 + RT#42" },
+  { id: "fb-8", name: "Dormant Account Reactivation", desc: "Detects accounts dormant 90+ days that suddenly became active", category: "ACCOUNT", axis: "ACCOUNT", rt: "RT#23", status: "ACTIVE", outputs: ["f_acc_dormancy_days","f_acc_reactivation_flag","f_acc_post_reactivation_volume","f_acc_reactivation_velocity"], createdBy: "AI_GENERATED", lastExecMs: 178, version: 2, code: "# Dormant account reactivation - RT#23" },
+];
+
+const MOCK_FEATURE_STORE_JSON = {
+  "CLI-00201": { entity_key: "CLI-00201", entity_type: "CLIENT", features_computed_at: "2026-04-08T14:30:00Z", transaction_features: { f_txn_high_risk_geo_flag: 0, f_txn_round_amount_flag: 1, f_txn_near_threshold_flag: 0, f_txn_geo_risk_score: 0.0 }, account_features: { f_acc_structuring_score: 0.12, f_acc_rapid_movement_score: 0.05, f_acc_velocity_anomaly_score: 0.08, f_acc_dormancy_days: 0 }, client_features: { f_cli_composite_risk_score: 0.35, f_cli_pep_risk_weight: 0.0, f_cli_sector_risk_weight: 0.2, f_cli_counterparty_concentration_ratio: 0.45 } },
+  "CLI-00204": { entity_key: "CLI-00204", entity_type: "CLIENT", features_computed_at: "2026-04-08T14:30:00Z", transaction_features: { f_txn_high_risk_geo_flag: 1, f_txn_round_amount_flag: 1, f_txn_near_threshold_flag: 1, f_txn_geo_risk_score: 0.85 }, account_features: { f_acc_structuring_score: 0.78, f_acc_rapid_movement_score: 0.91, f_acc_velocity_anomaly_score: 0.72, f_acc_dormancy_days: 0 }, client_features: { f_cli_composite_risk_score: 0.92, f_cli_pep_risk_weight: 0.9, f_cli_sector_risk_weight: 0.7, f_cli_counterparty_concentration_ratio: 0.88 } },
+  "CLI-00207": { entity_key: "CLI-00207", entity_type: "CLIENT", features_computed_at: "2026-04-08T14:30:00Z", transaction_features: { f_txn_high_risk_geo_flag: 0, f_txn_round_amount_flag: 0, f_txn_near_threshold_flag: 1, f_txn_geo_risk_score: 0.15 }, account_features: { f_acc_structuring_score: 0.65, f_acc_rapid_movement_score: 0.3, f_acc_velocity_anomaly_score: 0.55, f_acc_dormancy_days: 45 }, client_features: { f_cli_composite_risk_score: 0.88, f_cli_pep_risk_weight: 0.85, f_cli_sector_risk_weight: 0.9, f_cli_counterparty_concentration_ratio: 0.22 } },
+};
+
+const RT_OPTIONS = ["RT#11","RT#12","RT#13","RT#14","RT#15","RT#16","RT#17","RT#18","RT#19","RT#21","RT#22","RT#23","RT#24","RT#25","RT#26","RT#27","RT#31","RT#33","RT#34","RT#41","RT#42","RT#43","RT#45","RT#46","RT#51","RT#52","RT#54","RT#55","RT#57","RT#61","RT#62","RT#63","RT#64","RT#65","RT#81","RT#82"];
+
+const CATEGORY_COLORS = { TRANSACTION: { bg: "#1e3a5f", border: "#3b82f6", text: "#93c5fd", dot: "#3b82f6" }, ACCOUNT: { bg: "#14412a", border: "#10b981", text: "#6ee7b7", dot: "#10b981" }, CLIENT: { bg: "#2e1f5e", border: "#8b5cf6", text: "#c4b5fd", dot: "#8b5cf6" }, DERIVED: { bg: "#4a2c17", border: "#f97316", text: "#fdba74", dot: "#f97316" } };
+const STATUS_STYLES = { ACTIVE: { bg: "#064e3b", text: "#6ee7b7", label: "Active" }, DRAFT: { bg: "#374151", text: "#9ca3af", label: "Draft" }, ERROR: { bg: "#7f1d1d", text: "#fca5a5", label: "Error" }, VALIDATED: { bg: "#713f12", text: "#fde68a", label: "Validated" }, DISABLED: { bg: "#1f2937", text: "#6b7280", label: "Disabled" } };
+
+// ─── ICONS (inline SVG components) ──────────────────────────────────────
+const Icon = ({ name, size = 18 }) => {
+  const icons = {
+    home: <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1" />,
+    database: <path d="M4 7v10c0 2 3.6 3 8 3s8-1 8-3V7M4 7c0 2 3.6 3 8 3s8-1 8-3M4 7c0-2 3.6-3 8-3s8 1 8 3m0 5c0 2-3.6 3-8 3s-8-1-8-3" />,
+    factory: <><path d="M19.5 14.5v-2.5l-5 3v-3l-5 3V7.5l-5 3V21h20V14.5h-5z" /><path d="M2 21h20" /></>,
+    play: <path d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />,
+    box: <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />,
+    list: <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />,
+    plus: <path d="M12 4v16m8-8H4" />,
+    search: <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />,
+    code: <path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />,
+    sparkle: <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />,
+    check: <path d="M5 13l4 4L19 7" />,
+    x: <path d="M6 18L18 6M6 6l12 12" />,
+    chevDown: <path d="M19 9l-7 7-7-7" />,
+    clock: <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />,
+    download: <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />,
+    refresh: <path d="M4 4v5h5M20 20v-5h-5M4 9a9 9 0 0115.4-4.4M20 15a9 9 0 01-15.4 4.4" />,
+    eye: <><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></>,
+    edit: <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />,
+    trash: <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />,
+    copy: <path d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />,
+    menu: <path d="M4 6h16M4 12h16M4 18h16" />,
+    arrow: <path d="M13 7l5 5m0 0l-5 5m5-5H6" />,
+    zap: <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />,
+    alert: <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4.5c-.77-.833-2.694-.833-3.464 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z" />,
+  };
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} strokeLinecap="round" strokeLinejoin="round">{icons[name]}</svg>;
+};
+
+// ─── MAIN APP ──────────────────────────────────────────────────────────
+function App() {
+  const [page, setPage] = useState("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [dataLoaded, setDataLoaded] = useState(false);
+  const [blocks, setBlocks] = useState(FEATURE_BLOCKS);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedBlock, setSelectedBlock] = useState(null);
+  const [executionState, setExecutionState] = useState(null);
+  const [filterCategory, setFilterCategory] = useState("ALL");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dataTab, setDataTab] = useState("transactions");
+  const [storeView, setStoreView] = useState("table");
+  const [jsonEntityId, setJsonEntityId] = useState("CLI-00204");
+  const [toast, setToast] = useState(null);
+  const [loadingData, setLoadingData] = useState(false);
+
+  const showToast = useCallback((msg, type = "success") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
+  }, []);
+
+  const loadSampleData = useCallback(() => {
+    setLoadingData(true);
+    setTimeout(() => {
+      setDataLoaded(true);
+      setLoadingData(false);
+      showToast("Sample AML data loaded — 3 datasets, 5,700 records");
+    }, 1800);
+  }, [showToast]);
+
+  const executeAll = useCallback(() => {
+    setExecutionState({ running: true, current: 0, total: blocks.filter(b => b.status === "ACTIVE").length, log: [] });
+    const activeBlocks = blocks.filter(b => b.status === "ACTIVE");
+    let idx = 0;
+    const interval = setInterval(() => {
+      if (idx >= activeBlocks.length) {
+        clearInterval(interval);
+        setExecutionState(prev => ({ ...prev, running: false, log: [...prev.log, { ts: new Date().toISOString(), msg: `✅ Pipeline complete — ${activeBlocks.length} blocks, ${activeBlocks.reduce((s, b) => s + b.outputs.length, 0)} features computed`, type: "success" }] }));
+        showToast(`Pipeline executed — ${activeBlocks.length} blocks, all passed`);
+        return;
+      }
+      const b = activeBlocks[idx];
+      setExecutionState(prev => ({
+        ...prev,
+        current: idx + 1,
+        log: [...prev.log, { ts: new Date().toISOString(), msg: `▶ Executing: ${b.name} (${b.axis}) — ${b.outputs.length} features — ${b.lastExecMs}ms`, type: "info" }]
+      }));
+      idx++;
+    }, 600);
+  }, [blocks, showToast]);
+
+  const navItems = [
+    { id: "dashboard", icon: "home", label: "Dashboard" },
+    { id: "data", icon: "database", label: "Data Ingestion" },
+    { id: "factory", icon: "factory", label: "Feature Factory" },
+    { id: "execute", icon: "play", label: "Execute Pipeline" },
+    { id: "store", icon: "box", label: "Feature Store" },
+    { id: "registry", icon: "list", label: "Feature Registry" },
+  ];
+
+  return (
+    <div style={{ display: "flex", height: "100vh", background: "#0a0e1a", color: "#e2e8f0", fontFamily: "'DM Sans', 'Segoe UI', sans-serif", overflow: "hidden" }}>
+      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+      {/* ── SIDEBAR ── */}
+      <aside style={{ width: sidebarOpen ? 250 : 64, background: "#0f1629", borderRight: "1px solid #1e293b", display: "flex", flexDirection: "column", transition: "width 0.25s ease", flexShrink: 0, overflow: "hidden" }}>
+        <div style={{ padding: "20px 16px", borderBottom: "1px solid #1e293b", display: "flex", alignItems: "center", gap: 12, minHeight: 72 }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg, #3b82f6, #8b5cf6)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 16, fontWeight: 700 }}>FF</div>
+          {sidebarOpen && <div><div style={{ fontSize: 15, fontWeight: 700, color: "#f1f5f9", letterSpacing: "-0.02em" }}>AML Feature Factory</div><div style={{ fontSize: 11, color: "#64748b", marginTop: 1 }}>Layer 1 — Detection Framework</div></div>}
+        </div>
+        <nav style={{ flex: 1, padding: "12px 8px" }}>
+          {navItems.map(item => (
+            <button key={item.id} onClick={() => setPage(item.id)} style={{ display: "flex", alignItems: "center", gap: 12, width: "100%", padding: sidebarOpen ? "10px 12px" : "10px 0", borderRadius: 8, border: "none", cursor: "pointer", marginBottom: 2, background: page === item.id ? "#1e293b" : "transparent", color: page === item.id ? "#f1f5f9" : "#94a3b8", fontSize: 13.5, fontWeight: page === item.id ? 600 : 400, transition: "all 0.15s", justifyContent: sidebarOpen ? "flex-start" : "center", fontFamily: "inherit" }}>
+              <Icon name={item.icon} size={18} />{sidebarOpen && item.label}
+            </button>
+          ))}
+        </nav>
+        <button onClick={() => setSidebarOpen(!sidebarOpen)} style={{ margin: "8px", padding: 8, background: "none", border: "1px solid #1e293b", borderRadius: 8, color: "#64748b", cursor: "pointer", display: "flex", justifyContent: "center" }}>
+          <Icon name="menu" size={16} />
+        </button>
+      </aside>
+
+      {/* ── MAIN CONTENT ── */}
+      <main style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+        {/* Header */}
+        <header style={{ padding: "14px 28px", borderBottom: "1px solid #1e293b", display: "flex", alignItems: "center", justifyContent: "space-between", background: "#0f1629", flexShrink: 0 }}>
+          <div>
+            <h1 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: "#f1f5f9", letterSpacing: "-0.02em" }}>
+              {navItems.find(n => n.id === page)?.label || ""}
+            </h1>
+            <p style={{ margin: 0, fontSize: 12, color: "#64748b", marginTop: 2 }}>
+              {page === "dashboard" && "Overview of your AML feature engineering pipeline"}
+              {page === "data" && "Ingest and explore transaction, client, and account data"}
+              {page === "factory" && `${blocks.filter(b=>b.status==="ACTIVE").length} active feature blocks across ${new Set(blocks.map(b=>b.axis)).size} axes`}
+              {page === "execute" && "Run the feature computation pipeline"}
+              {page === "store" && "Browse computed features in table or JSON format"}
+              {page === "registry" && "Complete registry of all feature definitions"}
+            </p>
+          </div>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            {dataLoaded && <div style={{ display: "flex", gap: 6 }}>
+              {[{n:"3",l:"Datasets"},{n:String(blocks.length),l:"Blocks"},{n:String(blocks.reduce((s,b)=>s+b.outputs.length,0)),l:"Features"}].map(s => (
+                <div key={s.l} style={{ background: "#1e293b", borderRadius: 8, padding: "6px 12px", textAlign: "center" }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: "#f1f5f9" }}>{s.n}</div>
+                  <div style={{ fontSize: 10, color: "#64748b" }}>{s.l}</div>
+                </div>
+              ))}
+            </div>}
+            {!dataLoaded && <button onClick={loadSampleData} disabled={loadingData} style={{ padding: "8px 16px", background: "linear-gradient(135deg, #3b82f6, #2563eb)", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit", opacity: loadingData ? 0.6 : 1, display: "flex", alignItems: "center", gap: 6 }}>
+              {loadingData ? <span className="spin" style={{ width: 14, height: 14, border: "2px solid #fff4", borderTop: "2px solid #fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} /> : <Icon name="download" size={14} />}
+              {loadingData ? "Loading..." : "Load Sample Data"}
+            </button>}
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <div style={{ flex: 1, overflow: "auto", padding: 28 }}>
+
+          {/* ── DASHBOARD ── */}
+          {page === "dashboard" && (
+            <div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 28 }}>
+                {[
+                  { label: "Datasets Loaded", value: dataLoaded ? "3" : "0", sub: dataLoaded ? "5,700 records" : "None loaded", color: "#3b82f6", icon: "database" },
+                  { label: "Feature Blocks", value: String(blocks.length), sub: `${blocks.filter(b=>b.status==="ACTIVE").length} active`, color: "#10b981", icon: "code" },
+                  { label: "Total Features", value: String(blocks.reduce((s,b)=>s+b.outputs.length,0)), sub: "Across all blocks", color: "#8b5cf6", icon: "zap" },
+                  { label: "Last Execution", value: dataLoaded ? "1.57s" : "—", sub: dataLoaded ? "All blocks passed" : "Not yet run", color: "#f59e0b", icon: "clock" },
+                ].map(card => (
+                  <div key={card.label} style={{ background: "#111827", border: "1px solid #1e293b", borderRadius: 12, padding: 20 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start" }}>
+                      <div>
+                        <div style={{ fontSize: 12, color: "#64748b", marginBottom: 8, fontWeight: 500 }}>{card.label}</div>
+                        <div style={{ fontSize: 28, fontWeight: 700, color: "#f1f5f9", letterSpacing: "-0.03em" }}>{card.value}</div>
+                        <div style={{ fontSize: 12, color: "#64748b", marginTop: 4 }}>{card.sub}</div>
+                      </div>
+                      <div style={{ width: 40, height: 40, borderRadius: 10, background: card.color + "18", display: "flex", alignItems: "center", justifyContent: "center", color: card.color }}><Icon name={card.icon} size={20} /></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Quick Start */}
+              <div style={{ background: "linear-gradient(135deg, #1e293b 0%, #0f172a 100%)", border: "1px solid #334155", borderRadius: 14, padding: 28, marginBottom: 24 }}>
+                <h3 style={{ margin: 0, fontSize: 17, fontWeight: 700, marginBottom: 6, color: "#f1f5f9" }}>Quick Start Guide</h3>
+                <p style={{ color: "#94a3b8", fontSize: 13, margin: "0 0 20px", lineHeight: 1.6 }}>Get your AML feature pipeline running in 4 steps:</p>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }}>
+                  {[
+                    { step: "1", title: "Load Data", desc: "Upload or load sample AML transaction data", done: dataLoaded },
+                    { step: "2", title: "Create Features", desc: "Add feature blocks via code or AI prompts", done: blocks.length > 0 },
+                    { step: "3", title: "Execute Pipeline", desc: "Run all active feature blocks", done: false },
+                    { step: "4", title: "View Feature Store", desc: "Browse computed features as JSON", done: false },
+                  ].map(s => (
+                    <div key={s.step} style={{ background: "#0f172a", borderRadius: 10, padding: 16, border: `1px solid ${s.done ? "#10b981" : "#334155"}`, position: "relative" }}>
+                      <div style={{ width: 28, height: 28, borderRadius: "50%", background: s.done ? "#10b981" : "#334155", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, fontWeight: 700, marginBottom: 10, color: s.done ? "#fff" : "#94a3b8" }}>{s.done ? "✓" : s.step}</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, color: "#f1f5f9", marginBottom: 4 }}>{s.title}</div>
+                      <div style={{ fontSize: 12, color: "#64748b", lineHeight: 1.5 }}>{s.desc}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Architecture */}
+              <div style={{ background: "#111827", border: "1px solid #1e293b", borderRadius: 12, padding: 24 }}>
+                <h3 style={{ margin: "0 0 16px", fontSize: 15, fontWeight: 600 }}>Architecture — AML Detection Framework</h3>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+                  {["Data Sources","→","L1: Feature Factory","→","L2: Model Layer","→","L3: Signal Aggregator","→","L4: Risk Appetite","→","L5: Alert Packaging"].map((s, i) => 
+                    s === "→" ? <span key={i} style={{ color: "#475569", fontSize: 20 }}>→</span> :
+                    <div key={i} style={{ padding: "10px 16px", borderRadius: 8, background: i === 2 ? "linear-gradient(135deg, #3b82f6, #8b5cf6)" : "#1e293b", border: i === 2 ? "none" : "1px solid #334155", fontSize: 12, fontWeight: i === 2 ? 700 : 500, color: i === 2 ? "#fff" : "#94a3b8", whiteSpace: "nowrap" }}>{s}</div>
+                  )}
+                </div>
+                <p style={{ textAlign: "center", fontSize: 11, color: "#475569", marginTop: 12 }}>You are here — Layer 1: Feature Factory</p>
+              </div>
+            </div>
+          )}
+
+          {/* ── DATA INGESTION ── */}
+          {page === "data" && (
+            <div>
+              {!dataLoaded ? (
+                <div style={{ textAlign: "center", padding: "80px 0" }}>
+                  <div style={{ width: 80, height: 80, borderRadius: 20, background: "#1e293b", display: "inline-flex", alignItems: "center", justifyContent: "center", marginBottom: 20, color: "#3b82f6" }}><Icon name="database" size={36} /></div>
+                  <h2 style={{ fontSize: 22, fontWeight: 700, margin: "0 0 8px", color: "#f1f5f9" }}>No Data Loaded</h2>
+                  <p style={{ color: "#64748b", fontSize: 14, margin: "0 0 24px" }}>Load sample AML data to get started with feature engineering</p>
+                  <button onClick={loadSampleData} disabled={loadingData} style={{ padding: "12px 28px", background: "linear-gradient(135deg, #3b82f6, #2563eb)", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer", fontSize: 15, fontWeight: 600, fontFamily: "inherit" }}>
+                    {loadingData ? "Loading..." : "Load Sample AML Data"}
+                  </button>
+                  <div style={{ marginTop: 40, border: "2px dashed #334155", borderRadius: 14, padding: "40px 20px", maxWidth: 500, margin: "40px auto 0", color: "#475569" }}>
+                    <Icon name="download" size={24} /><div style={{ marginTop: 8, fontSize: 14 }}>Or drag & drop CSV / JSON files here</div>
+                    <div style={{ fontSize: 12, marginTop: 4 }}>Supports transactions, clients, accounts datasets</div>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  {/* Dataset Cards */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
+                    {DATASETS_META.map(ds => (
+                      <div key={ds.id} onClick={() => setDataTab(ds.name)} style={{ background: dataTab === ds.name ? "#1e293b" : "#111827", border: `1px solid ${dataTab === ds.name ? "#3b82f6" : "#1e293b"}`, borderRadius: 12, padding: 18, cursor: "pointer", transition: "all 0.15s" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                          <span style={{ fontSize: 14, fontWeight: 600, color: "#f1f5f9" }}>{ds.name}</span>
+                          <span style={{ background: "#10b981", color: "#fff", fontSize: 10, padding: "2px 8px", borderRadius: 10, fontWeight: 600 }}>Loaded</span>
+                        </div>
+                        <div style={{ display: "flex", gap: 16, fontSize: 12, color: "#64748b" }}>
+                          <span>{ds.rows.toLocaleString()} rows</span><span>{ds.cols} cols</span><span>{ds.size}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Data Table */}
+                  <div style={{ background: "#111827", border: "1px solid #1e293b", borderRadius: 12, overflow: "hidden" }}>
+                    <div style={{ padding: "14px 18px", borderBottom: "1px solid #1e293b", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <span style={{ fontSize: 14, fontWeight: 600 }}>Preview — {dataTab}</span>
+                      <span style={{ fontSize: 12, color: "#64748b" }}>Showing first 20 rows</span>
+                    </div>
+                    <div style={{ overflow: "auto", maxHeight: 480 }}>
+                      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                        <thead>
+                          <tr>
+                            {Object.keys((dataTab === "transactions" ? MOCK_TRANSACTIONS : dataTab === "clients" ? MOCK_CLIENTS : MOCK_ACCOUNTS)[0]).map(col => (
+                              <th key={col} style={{ padding: "10px 14px", borderBottom: "1px solid #1e293b", textAlign: "left", color: "#94a3b8", fontWeight: 600, whiteSpace: "nowrap", position: "sticky", top: 0, background: "#0f1629", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em" }}>{col}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(dataTab === "transactions" ? MOCK_TRANSACTIONS : dataTab === "clients" ? MOCK_CLIENTS : MOCK_ACCOUNTS).slice(0, 20).map((row, ri) => (
+                            <tr key={ri} style={{ borderBottom: "1px solid #1e293b10" }}>
+                              {Object.values(row).map((val, ci) => (
+                                <td key={ci} style={{ padding: "8px 14px", whiteSpace: "nowrap", color: "#cbd5e1", fontFamily: typeof val === "number" ? "'JetBrains Mono', monospace" : "inherit", fontSize: typeof val === "number" ? 11 : 12 }}>
+                                  {typeof val === "boolean" ? (val ? <span style={{color:"#10b981"}}>true</span> : <span style={{color:"#64748b"}}>false</span>) :
+                                   typeof val === "number" ? val.toLocaleString(undefined, {maximumFractionDigits: 2}) :
+                                   String(val)}
+                                </td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Schema / Profile */}
+                  <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                    <div style={{ background: "#111827", border: "1px solid #1e293b", borderRadius: 12, padding: 18 }}>
+                      <h4 style={{ margin: "0 0 12px", fontSize: 13, fontWeight: 600 }}>Schema — {dataTab}</h4>
+                      {Object.entries((dataTab === "transactions" ? MOCK_TRANSACTIONS : dataTab === "clients" ? MOCK_CLIENTS : MOCK_ACCOUNTS)[0]).map(([k, v]) => (
+                        <div key={k} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "5px 0", borderBottom: "1px solid #1e293b30", fontSize: 12 }}>
+                          <span style={{ color: "#e2e8f0", fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>{k}</span>
+                          <span style={{ background: typeof v === "number" ? "#1e3a5f" : typeof v === "boolean" ? "#1a3320" : "#2e1f3e", color: typeof v === "number" ? "#93c5fd" : typeof v === "boolean" ? "#6ee7b7" : "#c4b5fd", padding: "1px 8px", borderRadius: 4, fontSize: 10, fontWeight: 600 }}>
+                            {typeof v === "number" ? "float" : typeof v === "boolean" ? "bool" : "string"}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ background: "#111827", border: "1px solid #1e293b", borderRadius: 12, padding: 18 }}>
+                      <h4 style={{ margin: "0 0 12px", fontSize: 13, fontWeight: 600 }}>Data Quality Summary</h4>
+                      {[
+                        { label: "Null Rate", value: "0.3%", color: "#10b981" },
+                        { label: "Duplicate Rows", value: "0", color: "#10b981" },
+                        { label: "High-Risk Jurisdictions Found", value: "IR, KP, SY", color: "#f59e0b" },
+                        { label: "PEP Clients", value: "3 (15%)", color: "#f59e0b" },
+                        { label: "Dormant Accounts", value: "2 (8%)", color: "#64748b" },
+                        { label: "Cross-Border Transactions", value: "67%", color: "#3b82f6" },
+                        { label: "Avg Transaction Amount", value: "$34,215", color: "#8b5cf6" },
+                        { label: "Date Range", value: "Jan 2025 — Dec 2025", color: "#64748b" },
+                      ].map(r => (
+                        <div key={r.label} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: "1px solid #1e293b30", fontSize: 12 }}>
+                          <span style={{ color: "#94a3b8" }}>{r.label}</span>
+                          <span style={{ color: r.color, fontWeight: 600, fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>{r.value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── FEATURE FACTORY ── */}
+          {page === "factory" && (
+            <div>
+              {/* Toolbar */}
+              <div style={{ display: "flex", gap: 10, marginBottom: 20, alignItems: "center", flexWrap: "wrap" }}>
+                <div style={{ position: "relative", flex: "0 0 260px" }}>
+                  <span style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "#64748b" }}><Icon name="search" size={15} /></span>
+                  <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search feature blocks..." style={{ width: "100%", padding: "8px 12px 8px 34px", background: "#111827", border: "1px solid #1e293b", borderRadius: 8, color: "#e2e8f0", fontSize: 13, fontFamily: "inherit", outline: "none" }} />
+                </div>
+                {["ALL","TRANSACTION","ACCOUNT","CLIENT"].map(c => (
+                  <button key={c} onClick={() => setFilterCategory(c)} style={{ padding: "7px 14px", borderRadius: 8, border: "1px solid", borderColor: filterCategory === c ? (c === "ALL" ? "#3b82f6" : CATEGORY_COLORS[c]?.border || "#3b82f6") : "#1e293b", background: filterCategory === c ? (c === "ALL" ? "#1e3a5f" : CATEGORY_COLORS[c]?.bg || "#1e3a5f") : "transparent", color: filterCategory === c ? "#f1f5f9" : "#64748b", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>{c === "ALL" ? "All" : c.charAt(0) + c.slice(1).toLowerCase()}</button>
+                ))}
+                <div style={{ flex: 1 }} />
+                <button onClick={executeAll} disabled={!dataLoaded} style={{ padding: "8px 18px", background: "#10b981", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6, opacity: dataLoaded ? 1 : 0.4 }}>
+                  <Icon name="play" size={14} />Execute All
+                </button>
+                <button onClick={() => setShowAddModal(true)} style={{ padding: "8px 18px", background: "linear-gradient(135deg, #3b82f6, #8b5cf6)", color: "#fff", border: "none", borderRadius: 8, cursor: "pointer", fontSize: 13, fontWeight: 600, fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}>
+                  <Icon name="plus" size={14} />Add Feature
+                </button>
+              </div>
+
+              {/* Feature Block Grid */}
+              {["TRANSACTION","ACCOUNT","CLIENT","DERIVED"].filter(cat => filterCategory === "ALL" || filterCategory === cat).map(cat => {
+                const catBlocks = blocks.filter(b => b.category === cat && (searchQuery === "" || b.name.toLowerCase().includes(searchQuery.toLowerCase())));
+                if (catBlocks.length === 0) return null;
+                const colors = CATEGORY_COLORS[cat];
+                return (
+                  <div key={cat} style={{ marginBottom: 28 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <div style={{ width: 8, height: 8, borderRadius: "50%", background: colors.dot }} />
+                      <span style={{ fontSize: 13, fontWeight: 600, color: colors.text, textTransform: "uppercase", letterSpacing: "0.08em" }}>{cat} Features</span>
+                      <span style={{ fontSize: 11, color: "#475569" }}>({catBlocks.length})</span>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: 14 }}>
+                      {catBlocks.map(block => {
+                        const st = STATUS_STYLES[block.status];
+                        return (
+                          <div key={block.id} onClick={() => setSelectedBlock(block)} style={{ background: "#111827", border: `1px solid ${colors.border}30`, borderRadius: 12, padding: 18, cursor: "pointer", transition: "all 0.2s", position: "relative" }}
+                            onMouseEnter={e => { e.currentTarget.style.borderColor = colors.border; e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = `0 8px 25px ${colors.border}15`; }}
+                            onMouseLeave={e => { e.currentTarget.style.borderColor = colors.border + "30"; e.currentTarget.style.transform = "none"; e.currentTarget.style.boxShadow = "none"; }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start", marginBottom: 10 }}>
+                              <div style={{ flex: 1, marginRight: 8 }}>
+                                <div style={{ fontSize: 14, fontWeight: 600, color: "#f1f5f9", marginBottom: 3, lineHeight: 1.3 }}>{block.name}</div>
+                                <div style={{ fontSize: 12, color: "#64748b", lineHeight: 1.4 }}>{block.desc}</div>
+                              </div>
+                              <span style={{ background: st.bg, color: st.text, padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 600, whiteSpace: "nowrap" }}>{st.label}</span>
+                            </div>
+                            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 10 }}>
+                              <span style={{ background: colors.bg, color: colors.text, padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 600 }}>{block.axis}</span>
+                              <span style={{ background: "#1e293b", color: "#94a3b8", padding: "2px 8px", borderRadius: 4, fontSize: 10 }}>{block.rt}</span>
+                              {block.createdBy === "AI_GENERATED" && <span style={{ background: "#4a1d96", color: "#c4b5fd", padding: "2px 8px", borderRadius: 4, fontSize: 10, display: "flex", alignItems: "center", gap: 3 }}><Icon name="sparkle" size={9} />AI</span>}
+                            </div>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 10, borderTop: "1px solid #1e293b" }}>
+                              <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                                {block.outputs.slice(0, 3).map(o => <span key={o} style={{ background: "#0f172a", color: "#64748b", padding: "1px 6px", borderRadius: 3, fontSize: 9, fontFamily: "'JetBrains Mono', monospace" }}>{o.replace("f_txn_","").replace("f_acc_","").replace("f_cli_","")}</span>)}
+                                {block.outputs.length > 3 && <span style={{ color: "#475569", fontSize: 10 }}>+{block.outputs.length - 3}</span>}
+                              </div>
+                              <span style={{ fontSize: 10, color: "#475569", fontFamily: "'JetBrains Mono', monospace" }}>{block.lastExecMs}ms</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ── EXECUTE PIPELINE ── */}
+          {page === "execute" && (
+            <div>
+              <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
+                <button onClick={executeAll} disabled={!dataLoaded || executionState?.running} style={{ padding: "12px 28px", background: executionState?.running ? "#475569" : "linear-gradient(135deg, #10b981, #059669)", color: "#fff", border: "none", borderRadius: 10, cursor: "pointer", fontSize: 15, fontWeight: 600, fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8, opacity: dataLoaded ? 1 : 0.4 }}>
+                  {executionState?.running ? <><span style={{ width: 16, height: 16, border: "2px solid #fff4", borderTop: "2px solid #fff", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />Running...</> : <><Icon name="play" size={18} />Execute Full Pipeline</>}
+                </button>
+              </div>
+
+              {/* Pipeline Progress */}
+              {executionState && (
+                <div style={{ background: "#111827", border: "1px solid #1e293b", borderRadius: 12, padding: 20, marginBottom: 20 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12, alignItems: "center" }}>
+                    <span style={{ fontSize: 14, fontWeight: 600 }}>{executionState.running ? "Executing..." : "Execution Complete"}</span>
+                    <span style={{ fontSize: 12, color: "#64748b" }}>{executionState.current}/{executionState.total} blocks</span>
+                  </div>
+                  <div style={{ height: 8, background: "#1e293b", borderRadius: 4, overflow: "hidden", marginBottom: 16 }}>
+                    <div style={{ height: "100%", background: executionState.running ? "#3b82f6" : "#10b981", borderRadius: 4, width: `${(executionState.current / executionState.total) * 100}%`, transition: "width 0.4s ease" }} />
+                  </div>
+                </div>
+              )}
+
+              {/* Execution Log */}
+              <div style={{ background: "#0a0e1a", border: "1px solid #1e293b", borderRadius: 12, overflow: "hidden" }}>
+                <div style={{ padding: "12px 18px", borderBottom: "1px solid #1e293b", fontSize: 13, fontWeight: 600 }}>Execution Log</div>
+                <div style={{ padding: 18, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, maxHeight: 400, overflow: "auto", lineHeight: 2 }}>
+                  {executionState?.log?.length > 0 ? executionState.log.map((l, i) => (
+                    <div key={i} style={{ color: l.type === "success" ? "#10b981" : l.type === "error" ? "#ef4444" : "#94a3b8" }}>
+                      <span style={{ color: "#475569" }}>[{new Date(l.ts).toLocaleTimeString()}]</span> {l.msg}
+                    </div>
+                  )) : (
+                    <div style={{ color: "#475569", textAlign: "center", padding: 40 }}>Click "Execute Full Pipeline" to start the feature computation</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Block Status Summary */}
+              <div style={{ marginTop: 20, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: 12 }}>
+                {blocks.filter(b => b.status === "ACTIVE").map(b => {
+                  const c = CATEGORY_COLORS[b.category];
+                  return (
+                    <div key={b.id} style={{ background: "#111827", border: "1px solid #1e293b", borderRadius: 10, padding: 14, display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{ width: 32, height: 32, borderRadius: 8, background: c.bg, display: "flex", alignItems: "center", justifyContent: "center", color: c.text, flexShrink: 0 }}><Icon name="check" size={16} /></div>
+                      <div>
+                        <div style={{ fontSize: 12, fontWeight: 600, color: "#e2e8f0" }}>{b.name}</div>
+                        <div style={{ fontSize: 10, color: "#64748b" }}>{b.outputs.length} features • {b.lastExecMs}ms</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── FEATURE STORE ── */}
+          {page === "store" && (
+            <div>
+              <div style={{ display: "flex", gap: 10, marginBottom: 20, alignItems: "center" }}>
+                {["table","json"].map(v => (
+                  <button key={v} onClick={() => setStoreView(v)} style={{ padding: "7px 16px", borderRadius: 8, border: `1px solid ${storeView === v ? "#3b82f6" : "#1e293b"}`, background: storeView === v ? "#1e3a5f" : "transparent", color: storeView === v ? "#93c5fd" : "#64748b", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit", textTransform: "capitalize" }}>{v === "json" ? "JSON View" : "Table View"}</button>
+                ))}
+                <div style={{ flex: 1 }} />
+                <button style={{ padding: "7px 14px", background: "#1e293b", color: "#94a3b8", border: "1px solid #334155", borderRadius: 8, fontSize: 12, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}><Icon name="download" size={13} />Export CSV</button>
+              </div>
+
+              {storeView === "table" ? (
+                <div style={{ background: "#111827", border: "1px solid #1e293b", borderRadius: 12, overflow: "hidden" }}>
+                  <div style={{ overflow: "auto", maxHeight: 550 }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11 }}>
+                      <thead>
+                        <tr>
+                          {["entity_key","f_txn_high_risk_geo_flag","f_txn_round_amount_flag","f_txn_geo_risk_score","f_acc_structuring_score","f_acc_rapid_movement_score","f_acc_velocity_anomaly_score","f_cli_composite_risk_score","f_cli_pep_risk_weight","f_cli_counterparty_ratio"].map(h => (
+                            <th key={h} style={{ padding: "10px 12px", borderBottom: "1px solid #1e293b", textAlign: "left", color: "#94a3b8", fontWeight: 600, whiteSpace: "nowrap", position: "sticky", top: 0, background: "#0f1629", fontSize: 10, fontFamily: "'JetBrains Mono', monospace" }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {Object.entries(MOCK_FEATURE_STORE_JSON).map(([k, v]) => (
+                          <tr key={k} style={{ borderBottom: "1px solid #1e293b15" }}>
+                            <td style={{ padding: "8px 12px", fontWeight: 600, color: "#3b82f6", fontFamily: "'JetBrains Mono', monospace", fontSize: 11 }}>{k}</td>
+                            {[v.transaction_features.f_txn_high_risk_geo_flag, v.transaction_features.f_txn_round_amount_flag, v.transaction_features.f_txn_geo_risk_score, v.account_features.f_acc_structuring_score, v.account_features.f_acc_rapid_movement_score, v.account_features.f_acc_velocity_anomaly_score, v.client_features.f_cli_composite_risk_score, v.client_features.f_cli_pep_risk_weight, v.client_features.f_cli_counterparty_concentration_ratio].map((val, i) => (
+                              <td key={i} style={{ padding: "8px 12px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: typeof val === "number" && val > 0.7 ? "#ef4444" : typeof val === "number" && val > 0.4 ? "#f59e0b" : "#94a3b8" }}>{val}</td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+                    <span style={{ color: "#64748b", fontSize: 13, lineHeight: "36px" }}>Entity ID:</span>
+                    <select value={jsonEntityId} onChange={e => setJsonEntityId(e.target.value)} style={{ padding: "8px 12px", background: "#111827", border: "1px solid #1e293b", borderRadius: 8, color: "#e2e8f0", fontSize: 13, fontFamily: "'JetBrains Mono', monospace", outline: "none" }}>
+                      {Object.keys(MOCK_FEATURE_STORE_JSON).map(k => <option key={k} value={k}>{k}</option>)}
+                    </select>
+                  </div>
+                  <div style={{ background: "#0a0e1a", border: "1px solid #1e293b", borderRadius: 12, padding: 20, fontFamily: "'JetBrains Mono', monospace", fontSize: 12, lineHeight: 1.8, whiteSpace: "pre-wrap", overflow: "auto", maxHeight: 500 }}>
+                    <JsonTreeView data={MOCK_FEATURE_STORE_JSON[jsonEntityId]} />
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── FEATURE REGISTRY ── */}
+          {page === "registry" && (
+            <div>
+              <div style={{ background: "#111827", border: "1px solid #1e293b", borderRadius: 12, overflow: "hidden" }}>
+                <div style={{ padding: "14px 18px", borderBottom: "1px solid #1e293b", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: 14, fontWeight: 600 }}>Feature Block Registry — {blocks.length} blocks, {blocks.reduce((s,b) => s + b.outputs.length, 0)} features</span>
+                  <button style={{ padding: "6px 12px", background: "#1e293b", color: "#94a3b8", border: "1px solid #334155", borderRadius: 6, fontSize: 11, cursor: "pointer", fontFamily: "inherit" }}>Export Registry</button>
+                </div>
+                <div style={{ overflow: "auto" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                    <thead>
+                      <tr>{["Name","Category","Axis","Risk Typology","Status","Output Features","Created By","Exec Time","Ver."].map(h => (
+                        <th key={h} style={{ padding: "10px 14px", borderBottom: "1px solid #1e293b", textAlign: "left", color: "#94a3b8", fontWeight: 600, whiteSpace: "nowrap", position: "sticky", top: 0, background: "#0f1629", fontSize: 11 }}>{h}</th>
+                      ))}</tr>
+                    </thead>
+                    <tbody>
+                      {blocks.map(b => {
+                        const c = CATEGORY_COLORS[b.category]; const st = STATUS_STYLES[b.status];
+                        return (
+                          <tr key={b.id} style={{ borderBottom: "1px solid #1e293b15", cursor: "pointer" }} onClick={() => setSelectedBlock(b)}>
+                            <td style={{ padding: "10px 14px", fontWeight: 600, color: "#f1f5f9" }}>{b.name}</td>
+                            <td style={{ padding: "10px 14px" }}><span style={{ background: c.bg, color: c.text, padding: "2px 8px", borderRadius: 4, fontSize: 10, fontWeight: 600 }}>{b.category}</span></td>
+                            <td style={{ padding: "10px 14px", color: "#94a3b8" }}>{b.axis}</td>
+                            <td style={{ padding: "10px 14px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#94a3b8" }}>{b.rt}</td>
+                            <td style={{ padding: "10px 14px" }}><span style={{ background: st.bg, color: st.text, padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 600 }}>{st.label}</span></td>
+                            <td style={{ padding: "10px 14px", color: "#64748b", fontSize: 11 }}>{b.outputs.length} features</td>
+                            <td style={{ padding: "10px 14px" }}>{b.createdBy === "AI_GENERATED" ? <span style={{ color: "#c4b5fd", fontSize: 11, display: "flex", alignItems: "center", gap: 3 }}><Icon name="sparkle" size={11} />AI Generated</span> : <span style={{ color: "#64748b", fontSize: 11 }}>Manual</span>}</td>
+                            <td style={{ padding: "10px 14px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#64748b" }}>{b.lastExecMs}ms</td>
+                            <td style={{ padding: "10px 14px", fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: "#64748b" }}>v{b.version}</td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
+
+      {/* ── ADD FEATURE MODAL ── */}
+      {showAddModal && <AddFeatureModal onClose={() => setShowAddModal(false)} onSave={(block) => { setBlocks([...blocks, block]); setShowAddModal(false); showToast(`Feature block "${block.name}" created`); }} />}
+
+      {/* ── BLOCK DETAIL MODAL ── */}
+      {selectedBlock && <BlockDetailModal block={selectedBlock} onClose={() => setSelectedBlock(null)} />}
+
+      {/* ── TOAST ── */}
+      {toast && (
+        <div style={{ position: "fixed", bottom: 24, right: 24, padding: "12px 20px", background: toast.type === "success" ? "#064e3b" : "#7f1d1d", border: `1px solid ${toast.type === "success" ? "#10b981" : "#ef4444"}`, borderRadius: 10, color: toast.type === "success" ? "#6ee7b7" : "#fca5a5", fontSize: 13, fontWeight: 500, fontFamily: "'DM Sans', sans-serif", zIndex: 1000, display: "flex", alignItems: "center", gap: 8, animation: "slideIn 0.3s ease" }}>
+          <Icon name={toast.type === "success" ? "check" : "alert"} size={16} />{toast.msg}
+        </div>
+      )}
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes slideIn { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        @keyframes blink { 50% { opacity: 0; } }
+        * { box-sizing: border-box; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::selection { background: #3b82f640; }
+        input::placeholder { color: #475569; }
+        select option { background: #111827; color: #e2e8f0; }
+      `}</style>
+    </div>
+  );
+}
+
+// ─── JSON TREE VIEW ────────────────────────────────────────────────────
+function JsonTreeView({ data, depth = 0 }) {
+  const [collapsed, setCollapsed] = useState({});
+  const toggle = (key) => setCollapsed(p => ({ ...p, [key]: !p[key] }));
+
+  if (typeof data !== "object" || data === null) {
+    const color = typeof data === "number" ? (data > 0.7 ? "#ef4444" : data > 0.4 ? "#f59e0b" : "#93c5fd") : typeof data === "string" ? "#a5d6ff" : "#c4b5fd";
+    return <span style={{ color }}>{typeof data === "string" ? `"${data}"` : String(data)}</span>;
+  }
+  const entries = Object.entries(data);
+  const indent = depth * 20;
+  return (
+    <span>
+      {"{\n"}
+      {entries.map(([key, val], i) => (
+        <span key={key}>
+          <span style={{ paddingLeft: indent + 20, display: "inline-block" }}>
+            {typeof val === "object" && val !== null ? (
+              <span onClick={() => toggle(key)} style={{ cursor: "pointer" }}>
+                <span style={{ color: "#f1f5f9" }}>"{key}"</span>
+                <span style={{ color: "#64748b" }}>: </span>
+                {collapsed[key] ? <span style={{ color: "#475569" }}>{"{ ... }"}</span> : <JsonTreeView data={val} depth={depth + 1} />}
+              </span>
+            ) : (
+              <span><span style={{ color: "#f1f5f9" }}>"{key}"</span><span style={{ color: "#64748b" }}>: </span><JsonTreeView data={val} depth={depth + 1} /></span>
+            )}
+            {i < entries.length - 1 && <span style={{ color: "#475569" }}>,</span>}
+          </span>
+          {"\n"}
+        </span>
+      ))}
+      <span style={{ paddingLeft: indent, display: "inline-block" }}>{"}"}</span>
+    </span>
+  );
+}
+
+// ─── AI CODE TEMPLATES (prompt-specific) ───────────────────────────────
+const AI_CODE_TEMPLATES = {
+  "Detect structuring — transactions just below 10,000 threshold": `"""
+Feature Block: Structuring Detection
+Description: Detects patterns of transactions just below the
+  10,000 reporting threshold within rolling windows per account.
+Axis: ACCOUNT | Risk Typology: RT#26
+Output: f_acc_structuring_count_7d, f_acc_structuring_total_7d,
+        f_acc_structuring_score, f_acc_structuring_flag
+"""
+import pandas as pd
+import numpy as np
+
+def compute_features(datasets):
+    txn = datasets.get('transactions')
+    accounts = datasets.get('accounts')
+    
+    THRESHOLD = 10000
+    LOWER_BOUND = 7500  # 75% of threshold
+    WINDOW_DAYS = 7
+    
+    result = accounts[['account_id']].copy()
+    
+    # Identify sub-threshold transactions
+    txn['transaction_date'] = pd.to_datetime(txn['transaction_date'])
+    sub_thresh = txn[
+        (txn['amount'] >= LOWER_BOUND) & 
+        (txn['amount'] < THRESHOLD)
+    ].copy()
+    
+    # Count sub-threshold hits per account in window
+    cutoff = txn['transaction_date'].max() - pd.Timedelta(days=WINDOW_DAYS)
+    recent = sub_thresh[sub_thresh['transaction_date'] >= cutoff]
+    
+    agg = recent.groupby('account_id').agg(
+        count=('amount', 'count'),
+        total=('amount', 'sum')
+    ).reset_index()
+    
+    result = result.merge(agg, on='account_id', how='left')
+    result['f_acc_structuring_count_7d'] = result['count'].fillna(0).astype(int)
+    result['f_acc_structuring_total_7d'] = result['total'].fillna(0.0).round(2)
+    
+    # Score: higher if more hits and total approaches N * threshold
+    max_count = max(result['f_acc_structuring_count_7d'].max(), 1)
+    result['f_acc_structuring_score'] = np.clip(
+        (result['f_acc_structuring_count_7d'] / max_count) * 0.5 +
+        (result['f_acc_structuring_total_7d'] / (THRESHOLD * 5)) * 0.5,
+        0, 1
+    ).round(3)
+    
+    result['f_acc_structuring_flag'] = (
+        result['f_acc_structuring_count_7d'] >= 3
+    ).astype(int)
+    
+    result = result.drop(columns=['count','total'], errors='ignore')
+    return result`,
+
+  "Flag rapid fund movement patterns (deposit → withdrawal < 24h)": `"""
+Feature Block: Rapid Fund Movement Detection
+Description: Flags accounts where deposits are quickly followed
+  by withdrawals within 24 hours — classic layering indicator.
+Axis: ACCOUNT | Risk Typology: RT#25
+Output: f_acc_rapid_pairs_30d, f_acc_rapid_total_volume,
+        f_acc_rapid_movement_score, f_acc_flow_through_ratio
+"""
+import pandas as pd
+import numpy as np
+
+def compute_features(datasets):
+    txn = datasets.get('transactions')
+    accounts = datasets.get('accounts')
+    
+    HOURS_THRESHOLD = 24
+    LOOKBACK_DAYS = 30
+    
+    result = accounts[['account_id']].copy()
+    
+    txn['transaction_date'] = pd.to_datetime(txn['transaction_date'])
+    cutoff = txn['transaction_date'].max() - pd.Timedelta(days=LOOKBACK_DAYS)
+    recent = txn[txn['transaction_date'] >= cutoff].copy()
+    
+    INFLOW_TYPES = ['WIRE_IN', 'CASH_DEPOSIT', 'CHECK_DEPOSIT']
+    OUTFLOW_TYPES = ['WIRE_OUT', 'CASH_WITHDRAWAL', 'INTERNAL_TRANSFER']
+    
+    rapid_pairs = []
+    for acc_id, grp in recent.groupby('account_id'):
+        inflows = grp[grp['transaction_type'].isin(INFLOW_TYPES)].sort_values('transaction_date')
+        outflows = grp[grp['transaction_type'].isin(OUTFLOW_TYPES)].sort_values('transaction_date')
+        
+        pair_count = 0
+        pair_volume = 0.0
+        for _, inf in inflows.iterrows():
+            matching = outflows[
+                (outflows['transaction_date'] >= inf['transaction_date']) &
+                (outflows['transaction_date'] <= inf['transaction_date'] + pd.Timedelta(hours=HOURS_THRESHOLD))
+            ]
+            pair_count += len(matching)
+            pair_volume += matching['amount'].sum()
+        
+        total_in = grp[grp['transaction_type'].isin(INFLOW_TYPES)]['amount'].sum()
+        total_out = grp[grp['transaction_type'].isin(OUTFLOW_TYPES)]['amount'].sum()
+        flow_ratio = min(total_out / max(total_in, 1), 1.0)
+        
+        rapid_pairs.append({
+            'account_id': acc_id,
+            'f_acc_rapid_pairs_30d': pair_count,
+            'f_acc_rapid_total_volume': round(pair_volume, 2),
+            'f_acc_flow_through_ratio': round(flow_ratio, 3)
+        })
+    
+    pairs_df = pd.DataFrame(rapid_pairs)
+    result = result.merge(pairs_df, on='account_id', how='left').fillna(0)
+    
+    max_pairs = max(result['f_acc_rapid_pairs_30d'].max(), 1)
+    result['f_acc_rapid_movement_score'] = np.clip(
+        result['f_acc_rapid_pairs_30d'] / max_pairs * 0.6 +
+        result['f_acc_flow_through_ratio'] * 0.4,
+        0, 1
+    ).round(3)
+    
+    return result`,
+
+  "Score transactions based on cross-border + high-risk country + amount": `"""
+Feature Block: Cross-Border Wire Risk Scoring
+Description: Multi-factor risk score combining cross-border
+  status, jurisdiction risk, and transaction amount.
+Axis: TRANSACTION | Risk Typology: RT#11
+Output: f_txn_wire_risk_score, f_txn_jurisdiction_risk,
+        f_txn_amount_risk, f_txn_cross_border_risk_flag
+"""
+import pandas as pd
+import numpy as np
+
+def compute_features(datasets):
+    txn = datasets.get('transactions')
+    
+    HIGH_RISK = {'IR','KP','SY','AF','MM','YE','SO','SD','LY','IQ'}
+    ELEVATED_RISK = {'RU','BY','VE','NI','ZW','KH','LA','PK','NG'}
+    TAX_HAVENS = {'KY','PA','VG','BVI','BM','JE','GG','IM','LI','MC'}
+    
+    result = txn[['transaction_id']].copy()
+    
+    # Factor 1: Jurisdiction risk (0-1)
+    orig_high = txn['originator_country'].isin(HIGH_RISK)
+    benf_high = txn['beneficiary_country'].isin(HIGH_RISK)
+    orig_elev = txn['originator_country'].isin(ELEVATED_RISK)
+    benf_elev = txn['beneficiary_country'].isin(ELEVATED_RISK)
+    orig_haven = txn['originator_country'].isin(TAX_HAVENS)
+    benf_haven = txn['beneficiary_country'].isin(TAX_HAVENS)
+    
+    result['f_txn_jurisdiction_risk'] = np.where(
+        orig_high | benf_high, 1.0,
+        np.where(orig_elev | benf_elev, 0.7,
+            np.where(orig_haven | benf_haven, 0.5, 0.0))
+    )
+    
+    # Factor 2: Amount risk (percentile-based)
+    result['f_txn_amount_risk'] = np.clip(
+        txn['amount'].rank(pct=True), 0, 1
+    ).round(3)
+    
+    # Factor 3: Cross-border indicator
+    is_cross = txn['is_cross_border'].astype(float)
+    
+    # Composite score: weighted combination
+    result['f_txn_wire_risk_score'] = np.clip(
+        result['f_txn_jurisdiction_risk'] * 0.45 +
+        result['f_txn_amount_risk'] * 0.30 +
+        is_cross * 0.25,
+        0, 1
+    ).round(3)
+    
+    result['f_txn_cross_border_risk_flag'] = (
+        (result['f_txn_wire_risk_score'] > 0.6) & 
+        (txn['is_cross_border'] == True)
+    ).astype(int)
+    
+    return result`,
+
+  "Compute rolling 30-day counterparty diversity per account": `"""
+Feature Block: Counterparty Diversity Metrics
+Description: Measures the diversity and concentration of
+  counterparties per account over a 30-day rolling window.
+Axis: ACCOUNT | Risk Typology: RT#42
+Output: f_acc_unique_counterparties_30d, f_acc_top_counterparty_pct,
+        f_acc_counterparty_diversity_score, f_acc_fan_out_flag
+"""
+import pandas as pd
+import numpy as np
+
+def compute_features(datasets):
+    txn = datasets.get('transactions')
+    accounts = datasets.get('accounts')
+    
+    result = accounts[['account_id']].copy()
+    txn['transaction_date'] = pd.to_datetime(txn['transaction_date'])
+    cutoff = txn['transaction_date'].max() - pd.Timedelta(days=30)
+    recent = txn[txn['transaction_date'] >= cutoff]
+    
+    metrics = []
+    for acc_id, grp in recent.groupby('account_id'):
+        counterparties = grp['beneficiary_name'].value_counts()
+        unique_ct = len(counterparties)
+        top_pct = counterparties.iloc[0] / len(grp) if len(grp) > 0 else 0
+        
+        # Shannon entropy for diversity
+        probs = counterparties / counterparties.sum()
+        entropy = -(probs * np.log2(probs + 1e-10)).sum()
+        max_entropy = np.log2(max(unique_ct, 1))
+        norm_entropy = entropy / max_entropy if max_entropy > 0 else 0
+        
+        metrics.append({
+            'account_id': acc_id,
+            'f_acc_unique_counterparties_30d': unique_ct,
+            'f_acc_top_counterparty_pct': round(top_pct, 3),
+            'f_acc_counterparty_diversity_score': round(norm_entropy, 3),
+            'f_acc_fan_out_flag': int(unique_ct > 15)
+        })
+    
+    df = pd.DataFrame(metrics)
+    result = result.merge(df, on='account_id', how='left').fillna(0)
+    return result`,
+
+  "Detect dormant account reactivation with sudden high volume": `"""
+Feature Block: Dormant Account Reactivation
+Description: Identifies accounts that were inactive for 90+
+  days and suddenly show high-volume activity.
+Axis: ACCOUNT | Risk Typology: RT#23
+Output: f_acc_days_inactive, f_acc_reactivation_flag,
+        f_acc_post_react_volume, f_acc_reactivation_risk_score
+"""
+import pandas as pd
+import numpy as np
+
+def compute_features(datasets):
+    txn = datasets.get('transactions')
+    accounts = datasets.get('accounts')
+    
+    DORMANCY_DAYS = 90
+    
+    result = accounts[['account_id']].copy()
+    txn['transaction_date'] = pd.to_datetime(txn['transaction_date'])
+    max_date = txn['transaction_date'].max()
+    
+    metrics = []
+    for acc_id, grp in txn.groupby('account_id'):
+        sorted_dates = grp['transaction_date'].sort_values()
+        gaps = sorted_dates.diff().dt.days
+        max_gap = gaps.max() if len(gaps) > 1 else 0
+        
+        was_dormant = max_gap >= DORMANCY_DAYS if max_gap else False
+        
+        recent_30 = grp[grp['transaction_date'] >= max_date - pd.Timedelta(days=30)]
+        post_vol = recent_30['amount'].sum()
+        
+        metrics.append({
+            'account_id': acc_id,
+            'f_acc_days_inactive': int(max_gap) if max_gap else 0,
+            'f_acc_reactivation_flag': int(was_dormant and len(recent_30) > 0),
+            'f_acc_post_react_volume': round(post_vol, 2),
+        })
+    
+    df = pd.DataFrame(metrics)
+    result = result.merge(df, on='account_id', how='left').fillna(0)
+    
+    max_vol = max(result['f_acc_post_react_volume'].max(), 1)
+    result['f_acc_reactivation_risk_score'] = np.clip(
+        result['f_acc_reactivation_flag'] * 0.4 +
+        (result['f_acc_days_inactive'] / 365) * 0.3 +
+        (result['f_acc_post_react_volume'] / max_vol) * 0.3,
+        0, 1
+    ).round(3)
+    
+    return result`,
+
+  "Flag PEP-linked transactions with unusual amounts": `"""
+Feature Block: PEP Transaction Anomaly
+Description: Flags transactions linked to PEP clients where
+  amounts deviate significantly from their profile.
+Axis: TRANSACTION | Risk Typology: RT#18
+Output: f_txn_pep_linked, f_txn_pep_amount_zscore,
+        f_txn_pep_anomaly_flag, f_txn_pep_risk_score
+"""
+import pandas as pd
+import numpy as np
+
+def compute_features(datasets):
+    txn = datasets.get('transactions')
+    clients = datasets.get('clients')
+    
+    result = txn[['transaction_id']].copy()
+    
+    pep_ids = set(clients[clients['pep_status'] == True]['client_id'])
+    result['f_txn_pep_linked'] = txn['client_id'].isin(pep_ids).astype(int)
+    
+    # Z-score of amount within each client's history
+    client_stats = txn.groupby('client_id')['amount'].agg(['mean','std']).reset_index()
+    client_stats.columns = ['client_id','cli_mean','cli_std']
+    
+    merged = txn.merge(client_stats, on='client_id', how='left')
+    z_scores = np.where(
+        merged['cli_std'] > 0,
+        (merged['amount'] - merged['cli_mean']) / merged['cli_std'],
+        0.0
+    )
+    result['f_txn_pep_amount_zscore'] = np.round(z_scores, 3)
+    
+    result['f_txn_pep_anomaly_flag'] = (
+        (result['f_txn_pep_linked'] == 1) & 
+        (np.abs(result['f_txn_pep_amount_zscore']) > 2.0)
+    ).astype(int)
+    
+    result['f_txn_pep_risk_score'] = np.clip(
+        result['f_txn_pep_linked'] * 0.4 +
+        np.clip(np.abs(result['f_txn_pep_amount_zscore']) / 4, 0, 1) * 0.6,
+        0, 1
+    ).round(3)
+    
+    return result`,
+};
+const AI_DEFAULT_CODE = AI_CODE_TEMPLATES["Score transactions based on cross-border + high-risk country + amount"];
+
+// ─── ADD FEATURE MODAL ─────────────────────────────────────────────────
+function AddFeatureModal({ onClose, onSave }) {
+  const [tab, setTab] = useState("code");
+  const [name, setName] = useState("");
+  const [desc, setDesc] = useState("");
+  const [category, setCategory] = useState("TRANSACTION");
+  const [axis, setAxis] = useState("TRANSACTION");
+  const [rt, setRt] = useState("RT#11");
+  const [code, setCode] = useState(`"""
+Feature Block: New Feature
+Axis: TRANSACTION
+"""
+import pandas as pd
+import numpy as np
+
+def compute_features(datasets):
+    txn = datasets.get('transactions')
+    result = txn[['transaction_id']].copy()
+    
+    # Add your feature logic here
+    result['f_txn_new_feature'] = 0
+    
+    return result`);
+  const [prompt, setPrompt] = useState("");
+  const [generating, setGenerating] = useState(false);
+  const [generated, setGenerated] = useState(false);
+  const [genStage, setGenStage] = useState(null); // null | 'analyzing' | 'mapping' | 'generating' | 'streaming' | 'validating' | 'done'
+  const [streamedCode, setStreamedCode] = useState("");
+  const [genLog, setGenLog] = useState([]);
+  const streamRef = useRef(null);
+
+  // Validation state
+  const [validating, setValidating] = useState(false);
+  const [validationStage, setValidationStage] = useState(null); // null | 'syntax' | 'contract' | 'dryrun' | 'output' | 'done'
+  const [validationResults, setValidationResults] = useState([]);
+  const [validationSummary, setValidationSummary] = useState(null);
+  const [sampleOutput, setSampleOutput] = useState(null);
+  const valTimerRef = useRef(null);
+
+  // ── VALIDATION LOGIC ──
+  const runValidation = useCallback(() => {
+    setValidating(true);
+    setValidationStage('syntax');
+    setValidationResults([]);
+    setValidationSummary(null);
+    setSampleOutput(null);
+
+    const codeText = code;
+    const steps = [];
+
+    // Step 1: Syntax check (400ms)
+    const hasDef = codeText.includes('def compute_features');
+    const hasReturn = codeText.includes('return');
+    const hasImportPd = codeText.includes('import pandas');
+    const balancedParens = (codeText.match(/\(/g) || []).length === (codeText.match(/\)/g) || []).length;
+    const balancedBrackets = (codeText.match(/\[/g) || []).length === (codeText.match(/\]/g) || []).length;
+    const noDisallowed = !codeText.includes('import os') && !codeText.includes('import sys') && !codeText.includes('subprocess') && !codeText.includes('__import__');
+
+    steps.push({ delay: 400, fn: () => {
+      const results = [
+        { check: "Python syntax parse", status: balancedParens && balancedBrackets ? "pass" : "fail", detail: balancedParens && balancedBrackets ? "No syntax errors detected" : "Unbalanced parentheses or brackets" },
+        { check: "Import validation", status: hasImportPd && noDisallowed ? "pass" : noDisallowed ? "warn" : "fail", detail: !noDisallowed ? "Disallowed imports detected (os, sys, subprocess)" : hasImportPd ? "Only allowed modules used (pandas, numpy, datetime, math, re)" : "Missing 'import pandas' — recommended" },
+        { check: "Indentation check", status: "pass", detail: "Consistent indentation (4 spaces)" },
+      ];
+      setValidationResults(prev => [...prev, ...results]);
+      setValidationStage('contract');
+    }});
+
+    // Step 2: Contract check (800ms)
+    steps.push({ delay: 800, fn: () => {
+      const featureOutputs = (codeText.match(/result\['(f_\w+)'\]/g) || []).map(m => m.match(/'(f_\w+)'/)[1]);
+      const results = [
+        { check: "Function signature", status: hasDef ? "pass" : "fail", detail: hasDef ? "compute_features(datasets) found" : "Missing required function: compute_features(datasets)" },
+        { check: "Return statement", status: hasReturn ? "pass" : "fail", detail: hasReturn ? "Function returns a DataFrame" : "Missing return statement — function must return pd.DataFrame" },
+        { check: "Feature naming convention", status: featureOutputs.every(f => /^f_(txn|acc|cli|der)_/.test(f)) ? "pass" : featureOutputs.length > 0 ? "warn" : "warn", detail: featureOutputs.length > 0 ? `${featureOutputs.length} features detected: ${featureOutputs.slice(0,3).join(', ')}${featureOutputs.length > 3 ? '...' : ''}` : "No feature columns detected matching f_{axis}_ pattern" },
+        { check: "Entity key column", status: codeText.includes("transaction_id") || codeText.includes("account_id") || codeText.includes("client_id") ? "pass" : "warn", detail: "Entity key column included in output" },
+        { check: "Null handling", status: codeText.includes("fillna") || codeText.includes("dropna") ? "pass" : "warn", detail: codeText.includes("fillna") ? "Null handling via fillna() detected" : "No explicit null handling — consider adding fillna() for robustness" },
+      ];
+      setValidationResults(prev => [...prev, ...results]);
+      setValidationStage('dryrun');
+    }});
+
+    // Step 3: Dry run on sample data (1400ms)
+    steps.push({ delay: 1400, fn: () => {
+      const results = [
+        { check: "Dry run (100 rows)", status: hasDef && hasReturn ? "pass" : "fail", detail: hasDef && hasReturn ? "Executed on 100-row sample in 23ms — no runtime errors" : "Dry run failed — fix function signature and return" },
+        { check: "Memory usage", status: "pass", detail: "Peak memory: 2.1 MB — within 50 MB limit" },
+        { check: "Execution time estimate", status: "pass", detail: "Estimated full execution: ~145ms for 5,000 rows" },
+      ];
+      setValidationResults(prev => [...prev, ...results]);
+      setValidationStage('output');
+    }});
+
+    // Step 4: Output validation (1800ms)
+    steps.push({ delay: 1800, fn: () => {
+      const featureOutputs = (codeText.match(/result\['(f_\w+)'\]/g) || []).map(m => m.match(/'(f_\w+)'/)[1]);
+      const results = [
+        { check: "Output shape", status: "pass", detail: `DataFrame: 100 rows × ${1 + featureOutputs.length} columns` },
+        { check: "Output types", status: "pass", detail: "All columns are numeric (int64/float64) — compatible with downstream models" },
+        { check: "No duplicate keys", status: "pass", detail: "Entity key column has 100 unique values" },
+        { check: "Value range", status: featureOutputs.some(f => f.includes('score')) ? "pass" : "pass", detail: "Score features in [0, 1] range — normalized correctly" },
+      ];
+      setValidationResults(prev => [...prev, ...results]);
+      setValidationStage('done');
+
+      const allResults = [...(steps.flatMap(() => [])), ...results]; // just for counting
+      setValidationSummary({
+        total: 12,
+        pass: 10 + (hasDef && hasReturn ? 2 : 0),
+        warn: hasDef && hasReturn ? 1 : 2,
+        fail: hasDef && hasReturn ? 0 : 1,
+      });
+
+      // Generate sample output preview
+      setSampleOutput({
+        columns: ["transaction_id", ...featureOutputs.slice(0, 4)],
+        rows: Array.from({ length: 5 }, (_, i) => ({
+          id: `TXN-${10001 + i}`,
+          values: featureOutputs.slice(0, 4).map(() => +(Math.random()).toFixed(3))
+        }))
+      });
+
+      setValidating(false);
+    }});
+
+    let elapsed = 0;
+    steps.forEach(step => {
+      elapsed += step.delay;
+      setTimeout(step.fn, elapsed);
+    });
+  }, [code]);
+
+  // ── AI GENERATION LOGIC ──
+  const generateCode = useCallback(() => {
+    setGenerating(true);
+    setGenStage('analyzing');
+    setStreamedCode("");
+    setGenLog([]);
+    // Reset validation when generating new code
+    setValidationResults([]);
+    setValidationSummary(null);
+    setSampleOutput(null);
+    setValidationStage(null);
+
+    const targetCode = AI_CODE_TEMPLATES[prompt] || AI_DEFAULT_CODE;
+    const lines = targetCode.split('\n');
+
+    // Stage 1: Analyzing prompt (600ms)
+    setTimeout(() => {
+      setGenLog(prev => [...prev, { icon: "🔍", text: "Analyzing prompt and identifying risk typology context...", color: "#94a3b8" }]);
+    }, 200);
+
+    setTimeout(() => {
+      setGenLog(prev => [...prev, { icon: "📊", text: `Mapping to dataset schemas: transactions (18 cols), clients (16 cols), accounts (10 cols)`, color: "#94a3b8" }]);
+      setGenStage('mapping');
+    }, 900);
+
+    // Stage 2: Mapping features (1400ms)
+    setTimeout(() => {
+      const outFeatures = (targetCode.match(/result\['(f_\w+)'\]/g) || []).map(m => m.match(/'(f_\w+)'/)[1]);
+      setGenLog(prev => [...prev, { icon: "🧠", text: `Identified ${outFeatures.length} output features: ${outFeatures.slice(0, 3).join(', ')}...`, color: "#c4b5fd" }]);
+      setGenStage('generating');
+    }, 1600);
+
+    // Stage 3: Stream code line by line (2000ms - 5000ms)
+    setTimeout(() => {
+      setGenLog(prev => [...prev, { icon: "⚡", text: "Generating Python code with Claude API...", color: "#93c5fd" }]);
+      setGenStage('streaming');
+      
+      let lineIdx = 0;
+      streamRef.current = setInterval(() => {
+        if (lineIdx >= lines.length) {
+          clearInterval(streamRef.current);
+          // Stage 4: Auto-validate
+          setGenStage('validating');
+          setGenLog(prev => [...prev, { icon: "✅", text: `Code generation complete — ${lines.length} lines, auto-validating...`, color: "#6ee7b7" }]);
+
+          setTimeout(() => {
+            const outFeatures = (targetCode.match(/result\['(f_\w+)'\]/g) || []).map(m => m.match(/'(f_\w+)'/)[1]);
+            setGenLog(prev => [...prev, 
+              { icon: "🔬", text: "Syntax check: PASSED", color: "#6ee7b7" },
+              { icon: "🔬", text: "Contract check: PASSED — compute_features(datasets) → pd.DataFrame", color: "#6ee7b7" },
+              { icon: "🔬", text: `Dry run (100 rows): PASSED in 31ms — ${outFeatures.length} features computed`, color: "#6ee7b7" },
+              { icon: "🎯", text: "Code is ready for review. Edit if needed, then save.", color: "#fde68a" },
+            ]);
+            setGenStage('done');
+            setCode(targetCode);
+            setGenerated(true);
+            setGenerating(false);
+
+            // Auto-populate name/desc if empty
+            const firstLineMatch = targetCode.match(/Feature Block: (.+)/);
+            if (firstLineMatch && !name) setName(firstLineMatch[1].trim());
+            const descMatch = targetCode.match(/Description: (.+(?:\n\s+.+)*)/);
+            if (descMatch && !desc) setDesc(descMatch[1].replace(/\n\s+/g, ' ').trim());
+
+            // Set axis/rt from code comments
+            if (targetCode.includes('ACCOUNT')) { setCategory('ACCOUNT'); setAxis('ACCOUNT'); }
+            if (targetCode.includes('RT#26')) setRt('RT#26');
+            else if (targetCode.includes('RT#25')) setRt('RT#25');
+            else if (targetCode.includes('RT#11')) setRt('RT#11');
+            else if (targetCode.includes('RT#42')) setRt('RT#42');
+            else if (targetCode.includes('RT#23')) setRt('RT#23');
+            else if (targetCode.includes('RT#18')) setRt('RT#18');
+          }, 800);
+          return;
+        }
+        // Add 1-3 lines per tick for natural streaming feel
+        const chunk = lines.slice(lineIdx, lineIdx + (Math.random() > 0.6 ? 2 : 1)).join('\n') + '\n';
+        setStreamedCode(prev => prev + chunk);
+        lineIdx += (Math.random() > 0.6 ? 2 : 1);
+      }, 50);
+    }, 2200);
+
+    return () => { if (streamRef.current) clearInterval(streamRef.current); };
+  }, [prompt, name, desc]);
+
+  const handleSave = () => {
+    if (!name.trim()) return;
+    onSave({
+      id: `fb-${Date.now()}`, name, desc: desc || prompt, category, axis, rt, status: "ACTIVE",
+      outputs: code.match(/result\['(f_\w+)'\]/g)?.map(m => m.match(/'(f_\w+)'/)[1]) || ["f_new_feature"],
+      createdBy: generated ? "AI_GENERATED" : "USER", lastExecMs: Math.floor(Math.random() * 200) + 50, version: 1, code, prompt,
+    });
+  };
+
+  const promptSuggestions = Object.keys(AI_CODE_TEMPLATES);
+
+  // ── Validation result row component ──
+  const ValRow = ({ r }) => {
+    const icons = { pass: "✓", warn: "⚠", fail: "✗" };
+    const colors = { pass: "#10b981", warn: "#f59e0b", fail: "#ef4444" };
+    const bgs = { pass: "#064e3b", warn: "#451a03", fail: "#450a0a" };
+    return (
+      <div style={{ display: "flex", alignItems: "start", gap: 10, padding: "7px 0", borderBottom: "1px solid #1e293b20", animation: "fadeIn 0.3s ease" }}>
+        <span style={{ width: 22, height: 22, borderRadius: 6, background: bgs[r.status], color: colors[r.status], display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0, marginTop: 1 }}>{icons[r.status]}</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "#e2e8f0" }}>{r.check}</div>
+          <div style={{ fontSize: 11, color: colors[r.status], marginTop: 1, lineHeight: 1.4, fontFamily: "'JetBrains Mono', monospace" }}>{r.detail}</div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeIn 0.2s ease" }}>
+      <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "#00000080", backdropFilter: "blur(4px)" }} />
+      <div style={{ position: "relative", width: "94%", maxWidth: 1140, maxHeight: "92vh", background: "#111827", border: "1px solid #1e293b", borderRadius: 16, display: "flex", flexDirection: "column", animation: "scaleIn 0.25s ease", overflow: "hidden" }}>
+        {/* Modal Header */}
+        <div style={{ padding: "16px 24px", borderBottom: "1px solid #1e293b", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+          <div>
+            <h2 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>Add Feature Block</h2>
+            <p style={{ margin: "2px 0 0", fontSize: 12, color: "#64748b" }}>Create a new feature extractor via code or AI prompt</p>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#64748b", cursor: "pointer", padding: 4 }}><Icon name="x" size={20} /></button>
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display: "flex", borderBottom: "1px solid #1e293b", flexShrink: 0 }}>
+          {[{ id: "code", icon: "code", label: "Write Code" }, { id: "ai", icon: "sparkle", label: "Generate with AI" }].map(t => (
+            <button key={t.id} onClick={() => { if (!generating) setTab(t.id); }} style={{ flex: 1, padding: "11px", background: tab === t.id ? "#1e293b" : "transparent", border: "none", borderBottom: tab === t.id ? "2px solid #3b82f6" : "2px solid transparent", color: tab === t.id ? "#f1f5f9" : "#64748b", fontSize: 13, fontWeight: 600, cursor: generating ? "default" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center", gap: 8, opacity: generating && t.id !== tab ? 0.4 : 1 }}>
+              <Icon name={t.icon} size={16} />{t.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Modal Body */}
+        <div style={{ flex: 1, overflow: "hidden", display: "flex", minHeight: 0 }}>
+          {/* Left Panel — Metadata */}
+          <div style={{ width: 270, borderRight: "1px solid #1e293b", padding: "16px 18px", flexShrink: 0, overflow: "auto" }}>
+            {[
+              { label: "Feature Name *", val: name, set: setName, type: "input", placeholder: "e.g., Wire Transfer Risk Score" },
+              { label: "Description", val: desc, set: setDesc, type: "textarea", placeholder: "What does this feature compute?" },
+            ].map(f => (
+              <div key={f.label} style={{ marginBottom: 14 }}>
+                <label style={{ display: "block", fontSize: 10, color: "#94a3b8", marginBottom: 3, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{f.label}</label>
+                {f.type === "textarea" ? (
+                  <textarea value={f.val} onChange={e => f.set(e.target.value)} rows={2} placeholder={f.placeholder} style={{ width: "100%", padding: "7px 9px", background: "#0a0e1a", border: "1px solid #1e293b", borderRadius: 6, color: "#e2e8f0", fontSize: 12, fontFamily: "inherit", outline: "none", resize: "vertical" }} />
+                ) : (
+                  <input value={f.val} onChange={e => f.set(e.target.value)} placeholder={f.placeholder} style={{ width: "100%", padding: "7px 9px", background: "#0a0e1a", border: "1px solid #1e293b", borderRadius: 6, color: "#e2e8f0", fontSize: 12, fontFamily: "inherit", outline: "none" }} />
+                )}
+              </div>
+            ))}
+            {[
+              { label: "Category", val: category, set: setCategory, opts: ["TRANSACTION","ACCOUNT","CLIENT","DERIVED"] },
+              { label: "Axis", val: axis, set: setAxis, opts: ["TRANSACTION","ACCOUNT","CLIENT"] },
+              { label: "Risk Typology", val: rt, set: setRt, opts: RT_OPTIONS },
+            ].map(f => (
+              <div key={f.label} style={{ marginBottom: 14 }}>
+                <label style={{ display: "block", fontSize: 10, color: "#94a3b8", marginBottom: 3, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{f.label}</label>
+                <select value={f.val} onChange={e => f.set(e.target.value)} style={{ width: "100%", padding: "7px 9px", background: "#0a0e1a", border: "1px solid #1e293b", borderRadius: 6, color: "#e2e8f0", fontSize: 12, fontFamily: "inherit", outline: "none" }}>
+                  {f.opts.map(o => <option key={o} value={o}>{o}</option>)}
+                </select>
+              </div>
+            ))}
+            <div style={{ padding: 12, background: "#0a0e1a", borderRadius: 8, border: "1px solid #1e293b", marginTop: 8 }}>
+              <div style={{ fontSize: 10, fontWeight: 600, color: "#64748b", marginBottom: 6, textTransform: "uppercase", letterSpacing: "0.05em" }}>Input Datasets</div>
+              {["transactions","clients","accounts"].map(d => (
+                <label key={d} style={{ display: "flex", alignItems: "center", gap: 7, fontSize: 12, color: "#94a3b8", marginBottom: 3, cursor: "pointer" }}>
+                  <input type="checkbox" defaultChecked style={{ accentColor: "#3b82f6" }} />{d}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Panel */}
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+
+            {/* ── AI TAB ── */}
+            {tab === "ai" && (
+              <div style={{ flex: 1, overflow: "auto", padding: 20, display: "flex", flexDirection: "column" }}>
+                {/* Prompt Input */}
+                <div style={{ marginBottom: 14 }}>
+                  <label style={{ display: "block", fontSize: 10, color: "#94a3b8", marginBottom: 4, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Describe the features you want to extract</label>
+                  <textarea value={prompt} onChange={e => setPrompt(e.target.value)} disabled={generating} rows={3} placeholder="e.g., Create a feature that detects transactions just below the 10,000 reporting threshold within a 7-day rolling window per account, scoring the likelihood of structuring behavior..." style={{ width: "100%", padding: 12, background: "#0a0e1a", border: `1px solid ${generating ? "#334155" : "#1e293b"}`, borderRadius: 8, color: generating ? "#475569" : "#e2e8f0", fontSize: 13, fontFamily: "inherit", outline: "none", resize: "none", lineHeight: 1.6 }} />
+                </div>
+
+                {/* Suggestions */}
+                {!generating && !generated && (
+                  <div style={{ marginBottom: 16 }}>
+                    <div style={{ fontSize: 10, color: "#475569", marginBottom: 6, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Click a suggestion to try:</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                      {promptSuggestions.map(s => (
+                        <button key={s} onClick={() => { setPrompt(s); if (!name) { const n = s.split('—')[0].replace(/^(Detect|Flag|Score|Compute) /, '').trim(); setName(n.charAt(0).toUpperCase() + n.slice(1)); }}} style={{ padding: "5px 11px", background: prompt === s ? "#1e3a5f" : "#1e293b", border: `1px solid ${prompt === s ? "#3b82f6" : "#334155"}`, borderRadius: 6, color: prompt === s ? "#93c5fd" : "#94a3b8", fontSize: 11, cursor: "pointer", fontFamily: "inherit", textAlign: "left", transition: "all 0.15s", lineHeight: 1.4 }}>{s}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Generate Button */}
+                {!generating && !generated && (
+                  <button onClick={generateCode} disabled={!prompt.trim()} style={{ alignSelf: "flex-start", padding: "10px 24px", background: !prompt.trim() ? "#1e293b" : "linear-gradient(135deg, #8b5cf6, #6d28d9)", color: "#fff", border: "none", borderRadius: 8, cursor: prompt.trim() ? "pointer" : "default", fontSize: 13, fontWeight: 600, fontFamily: "inherit", display: "flex", alignItems: "center", gap: 8, opacity: prompt.trim() ? 1 : 0.4, marginBottom: 12 }}>
+                    <Icon name="sparkle" size={15} />Generate Code with Claude
+                  </button>
+                )}
+
+                {/* Generation Progress Log */}
+                {(generating || generated) && (
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 12, minHeight: 0 }}>
+                    {/* Progress stages */}
+                    <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                      {[
+                        { id: 'analyzing', label: 'Analyze' },
+                        { id: 'mapping', label: 'Map Schema' },
+                        { id: 'streaming', label: 'Generate' },
+                        { id: 'validating', label: 'Validate' },
+                        { id: 'done', label: 'Ready' },
+                      ].map((s, i) => {
+                        const stages = ['analyzing','mapping','generating','streaming','validating','done'];
+                        const currentIdx = stages.indexOf(genStage);
+                        const stepIdx = stages.indexOf(s.id);
+                        const isActive = genStage === s.id;
+                        const isDone = stepIdx < currentIdx || genStage === 'done';
+                        return (
+                          <div key={s.id} style={{ flex: 1, padding: "6px 0", textAlign: "center", background: isDone ? "#064e3b" : isActive ? "#1e3a5f" : "#0f172a", border: `1px solid ${isDone ? "#10b981" : isActive ? "#3b82f6" : "#1e293b"}`, borderRadius: 6, fontSize: 10, fontWeight: 600, color: isDone ? "#6ee7b7" : isActive ? "#93c5fd" : "#475569", transition: "all 0.3s" }}>
+                            {isDone ? "✓ " : isActive ? "● " : ""}{s.label}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Live log + streaming code */}
+                    <div style={{ flex: 1, display: "flex", gap: 12, minHeight: 0, overflow: "hidden" }}>
+                      {/* Log panel */}
+                      <div style={{ width: 280, flexShrink: 0, background: "#0a0e1a", border: "1px solid #1e293b", borderRadius: 8, overflow: "auto", padding: 12 }}>
+                        <div style={{ fontSize: 10, color: "#475569", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Generation Log</div>
+                        {genLog.map((l, i) => (
+                          <div key={i} style={{ fontSize: 11, color: l.color, marginBottom: 6, lineHeight: 1.5, display: "flex", gap: 6, animation: "fadeIn 0.3s ease" }}>
+                            <span style={{ flexShrink: 0 }}>{l.icon}</span><span>{l.text}</span>
+                          </div>
+                        ))}
+                        {generating && <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
+                          <span style={{ width: 10, height: 10, border: "2px solid #3b82f630", borderTop: "2px solid #3b82f6", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />
+                          <span style={{ fontSize: 11, color: "#475569" }}>Processing...</span>
+                        </div>}
+                      </div>
+
+                      {/* Streaming code */}
+                      <div style={{ flex: 1, background: "#0a0e1a", border: "1px solid #1e293b", borderRadius: 8, overflow: "auto", position: "relative" }}>
+                        <div style={{ padding: "8px 14px", borderBottom: "1px solid #1e293b", fontSize: 10, color: "#475569", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", display: "flex", justifyContent: "space-between", position: "sticky", top: 0, background: "#0a0e1a", zIndex: 1 }}>
+                          <span>Generated Code</span>
+                          <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{(genStage === 'done' ? code : streamedCode).split('\n').length} lines</span>
+                        </div>
+                        <pre style={{ margin: 0, padding: "10px 14px", fontSize: 11.5, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.7, color: "#e2e8f0", whiteSpace: "pre-wrap" }}>
+                          {genStage === 'done' ? code : streamedCode}
+                          {generating && genStage === 'streaming' && <span style={{ background: "#3b82f6", animation: "blink 1s step-end infinite" }}>▎</span>}
+                        </pre>
+                      </div>
+                    </div>
+
+                    {/* Post-generation actions */}
+                    {generated && !generating && (
+                      <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                        <button onClick={() => { setGenerated(false); setGenStage(null); setGenLog([]); setStreamedCode(""); }} style={{ padding: "7px 14px", background: "#1e293b", color: "#94a3b8", border: "1px solid #334155", borderRadius: 6, fontSize: 11, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 5 }}><Icon name="refresh" size={12} />Regenerate</button>
+                        <button onClick={() => { setTab("code"); }} style={{ padding: "7px 14px", background: "#1e3a5f", color: "#93c5fd", border: "1px solid #3b82f6", borderRadius: 6, fontSize: 11, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 5 }}><Icon name="edit" size={12} />Edit Code</button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ── CODE TAB ── */}
+            {tab === "code" && (
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden" }}>
+                {/* AI badge */}
+                {generated && (
+                  <div style={{ margin: "12px 20px 0", padding: "7px 14px", background: "#2e1f5e", borderRadius: 8, border: "1px solid #8b5cf6", display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 12, color: "#c4b5fd", flexShrink: 0 }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 6 }}><Icon name="sparkle" size={14} />AI-generated code — review and edit before saving</span>
+                    <button onClick={() => setTab("ai")} style={{ background: "none", border: "none", color: "#8b5cf6", cursor: "pointer", fontSize: 11, fontFamily: "inherit", textDecoration: "underline" }}>Back to AI</button>
+                  </div>
+                )}
+
+                {/* Code Editor */}
+                <div style={{ flex: 1, padding: "12px 20px", display: "flex", flexDirection: "column", minHeight: 0 }}>
+                  <label style={{ display: "block", fontSize: 10, color: "#94a3b8", marginBottom: 4, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", flexShrink: 0 }}>Feature Code (Python)</label>
+                  <div style={{ flex: 1, display: "flex", border: "1px solid #1e293b", borderRadius: 8, overflow: "hidden", minHeight: 0 }}>
+                    {/* Line numbers */}
+                    <div style={{ width: 40, background: "#080c16", overflow: "hidden", flexShrink: 0 }}>
+                      {code.split("\n").map((_, i) => (
+                        <div key={i} style={{ height: 20, lineHeight: "20px", textAlign: "right", paddingRight: 8, fontSize: 11, color: "#334155", fontFamily: "'JetBrains Mono', monospace" }}>{i + 1}</div>
+                      ))}
+                    </div>
+                    <textarea value={code} onChange={e => { setCode(e.target.value); setValidationResults([]); setValidationSummary(null); setSampleOutput(null); setValidationStage(null); }} spellCheck={false} style={{ flex: 1, padding: "0 12px", background: "#0a0e1a", border: "none", color: "#e2e8f0", fontSize: 12, fontFamily: "'JetBrains Mono', monospace", outline: "none", resize: "none", lineHeight: "20px", tabSize: 4 }} />
+                  </div>
+                </div>
+
+                {/* Validation Results Panel (slides up when present) */}
+                {(validating || validationResults.length > 0) && (
+                  <div style={{ borderTop: "1px solid #1e293b", maxHeight: 260, overflow: "auto", padding: "12px 20px", background: "#0d1117", flexShrink: 0, animation: "fadeIn 0.3s ease" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: "#f1f5f9" }}>Validation Results</span>
+                        {validating && <span style={{ width: 12, height: 12, border: "2px solid #3b82f630", borderTop: "2px solid #3b82f6", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />}
+                        {validationStage && !validating && (
+                          <span style={{ fontSize: 10, padding: "2px 8px", borderRadius: 4, background: validationSummary?.fail > 0 ? "#450a0a" : "#064e3b", color: validationSummary?.fail > 0 ? "#fca5a5" : "#6ee7b7", fontWeight: 600 }}>
+                            {validationSummary?.fail > 0 ? "FAILED" : "ALL CHECKS PASSED"}
+                          </span>
+                        )}
+                      </div>
+                      {validationSummary && (
+                        <div style={{ display: "flex", gap: 10, fontSize: 11 }}>
+                          <span style={{ color: "#10b981" }}>✓ {validationSummary.pass} passed</span>
+                          {validationSummary.warn > 0 && <span style={{ color: "#f59e0b" }}>⚠ {validationSummary.warn} warnings</span>}
+                          {validationSummary.fail > 0 && <span style={{ color: "#ef4444" }}>✗ {validationSummary.fail} failed</span>}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Stage progress */}
+                    {validating && (
+                      <div style={{ display: "flex", gap: 4, marginBottom: 12 }}>
+                        {['syntax','contract','dryrun','output'].map(s => {
+                          const order = ['syntax','contract','dryrun','output','done'];
+                          const active = validationStage === s;
+                          const done = order.indexOf(validationStage) > order.indexOf(s);
+                          return <div key={s} style={{ flex: 1, height: 3, borderRadius: 2, background: done ? "#10b981" : active ? "#3b82f6" : "#1e293b", transition: "background 0.3s" }} />;
+                        })}
+                      </div>
+                    )}
+
+                    {/* Result rows */}
+                    {validationResults.map((r, i) => <ValRow key={i} r={r} />)}
+
+                    {/* Sample Output Preview */}
+                    {sampleOutput && (
+                      <div style={{ marginTop: 12, padding: 12, background: "#111827", borderRadius: 8, border: "1px solid #1e293b" }}>
+                        <div style={{ fontSize: 10, color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Sample Output Preview (5 rows)</div>
+                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, fontFamily: "'JetBrains Mono', monospace" }}>
+                          <thead>
+                            <tr>{sampleOutput.columns.map(c => <th key={c} style={{ padding: "4px 8px", textAlign: "left", borderBottom: "1px solid #1e293b", color: "#64748b", fontSize: 10 }}>{c}</th>)}</tr>
+                          </thead>
+                          <tbody>
+                            {sampleOutput.rows.map((row, ri) => (
+                              <tr key={ri}>
+                                <td style={{ padding: "4px 8px", color: "#3b82f6" }}>{row.id}</td>
+                                {row.values.map((v, vi) => (
+                                  <td key={vi} style={{ padding: "4px 8px", color: v > 0.7 ? "#ef4444" : v > 0.4 ? "#f59e0b" : "#94a3b8" }}>{v}</td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Modal Footer */}
+        <div style={{ padding: "12px 24px", borderTop: "1px solid #1e293b", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+          <div style={{ display: "flex", gap: 8 }}>
+            <button onClick={runValidation} disabled={validating || generating} style={{ padding: "8px 16px", background: validating ? "#1e293b" : validationSummary && !validationSummary.fail ? "#064e3b" : "#1e293b", color: validationSummary && !validationSummary.fail ? "#6ee7b7" : "#94a3b8", border: `1px solid ${validationSummary && !validationSummary.fail ? "#10b981" : "#334155"}`, borderRadius: 8, fontSize: 12, cursor: validating ? "default" : "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6, fontWeight: 600, transition: "all 0.2s" }}>
+              {validating ? <><span style={{ width: 12, height: 12, border: "2px solid #94a3b830", borderTop: "2px solid #94a3b8", borderRadius: "50%", display: "inline-block", animation: "spin 0.8s linear infinite" }} />Validating...</> : validationSummary && !validationSummary.fail ? <><Icon name="check" size={13} />Validated</> : <><Icon name="check" size={13} />Validate Code</>}
+            </button>
+          </div>
+          <div style={{ display: "flex", gap: 10 }}>
+            <button onClick={onClose} style={{ padding: "8px 16px", background: "transparent", color: "#64748b", border: "1px solid #334155", borderRadius: 8, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Cancel</button>
+            <button style={{ padding: "8px 16px", background: "#1e293b", color: "#94a3b8", border: "1px solid #334155", borderRadius: 8, fontSize: 13, cursor: "pointer", fontFamily: "inherit" }}>Save as Draft</button>
+            <button onClick={handleSave} disabled={generating} style={{ padding: "8px 20px", background: generating ? "#334155" : "linear-gradient(135deg, #10b981, #059669)", color: "#fff", border: "none", borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: generating ? "default" : "pointer", fontFamily: "inherit" }}>Save & Activate</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── BLOCK DETAIL MODAL ────────────────────────────────────────────────
+function BlockDetailModal({ block, onClose }) {
+  const c = CATEGORY_COLORS[block.category];
+  const st = STATUS_STYLES[block.status];
+  return (
+    <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", animation: "fadeIn 0.2s ease" }}>
+      <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "#00000080", backdropFilter: "blur(4px)" }} />
+      <div style={{ position: "relative", width: "80%", maxWidth: 860, maxHeight: "82vh", background: "#111827", border: "1px solid #1e293b", borderRadius: 16, display: "flex", flexDirection: "column", animation: "scaleIn 0.25s ease", overflow: "hidden" }}>
+        <div style={{ padding: "18px 24px", borderBottom: "1px solid #1e293b", display: "flex", justifyContent: "space-between", alignItems: "start" }}>
+          <div>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginBottom: 6 }}>
+              <h2 style={{ margin: 0, fontSize: 17, fontWeight: 700 }}>{block.name}</h2>
+              <span style={{ background: st.bg, color: st.text, padding: "2px 8px", borderRadius: 6, fontSize: 10, fontWeight: 600 }}>{st.label}</span>
+              {block.createdBy === "AI_GENERATED" && <span style={{ background: "#4a1d96", color: "#c4b5fd", padding: "2px 8px", borderRadius: 6, fontSize: 10, display: "flex", alignItems: "center", gap: 3 }}><Icon name="sparkle" size={9} />AI Generated</span>}
+            </div>
+            <p style={{ margin: 0, fontSize: 13, color: "#94a3b8" }}>{block.desc}</p>
+          </div>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#64748b", cursor: "pointer", padding: 4 }}><Icon name="x" size={20} /></button>
+        </div>
+
+        <div style={{ flex: 1, overflow: "auto", padding: 24 }}>
+          {/* Metadata */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 20 }}>
+            {[
+              { label: "Category", value: block.category, bg: c.bg, color: c.text },
+              { label: "Axis", value: block.axis, bg: c.bg, color: c.text },
+              { label: "Risk Typology", value: block.rt, bg: "#1e293b", color: "#94a3b8" },
+              { label: "Execution Time", value: `${block.lastExecMs}ms`, bg: "#1e293b", color: "#94a3b8" },
+            ].map(m => (
+              <div key={m.label} style={{ background: "#0a0e1a", borderRadius: 8, padding: 12, border: "1px solid #1e293b" }}>
+                <div style={{ fontSize: 10, color: "#64748b", marginBottom: 4, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>{m.label}</div>
+                <span style={{ background: m.bg, color: m.color, padding: "2px 8px", borderRadius: 4, fontSize: 12, fontWeight: 600 }}>{m.value}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Output Features */}
+          <div style={{ marginBottom: 20 }}>
+            <div style={{ fontSize: 11, color: "#64748b", marginBottom: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Output Features ({block.outputs.length})</div>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+              {block.outputs.map(o => (
+                <span key={o} style={{ background: "#1e293b", color: "#94a3b8", padding: "4px 10px", borderRadius: 6, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", border: "1px solid #334155" }}>{o}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Code */}
+          <div>
+            <div style={{ fontSize: 11, color: "#64748b", marginBottom: 8, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em" }}>Feature Code</div>
+            <pre style={{ background: "#0a0e1a", border: "1px solid #1e293b", borderRadius: 10, padding: 18, margin: 0, overflow: "auto", maxHeight: 300, fontSize: 12, fontFamily: "'JetBrains Mono', monospace", lineHeight: 1.7, color: "#94a3b8" }}>
+              {block.code}
+            </pre>
+          </div>
+        </div>
+
+        <div style={{ padding: "14px 24px", borderTop: "1px solid #1e293b", display: "flex", gap: 10, justifyContent: "flex-end" }}>
+          <button style={{ padding: "7px 14px", background: "#1e293b", color: "#94a3b8", border: "1px solid #334155", borderRadius: 8, fontSize: 12, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}><Icon name="copy" size={13} />Duplicate</button>
+          <button style={{ padding: "7px 14px", background: "#1e293b", color: "#94a3b8", border: "1px solid #334155", borderRadius: 8, fontSize: 12, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6 }}><Icon name="edit" size={13} />Edit</button>
+          <button style={{ padding: "7px 14px", background: "#10b981", color: "#fff", border: "none", borderRadius: 8, fontSize: 12, cursor: "pointer", fontFamily: "inherit", display: "flex", alignItems: "center", gap: 6, fontWeight: 600 }}><Icon name="play" size={13} />Run Block</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
