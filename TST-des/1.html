@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Shade Store WA — Custom Blinds, Curtains & Shutters · Perth</title>
+<meta name="description" content="Custom-made blinds, curtains and shutters for Perth homes. Family-owned since 2018. 500+ installs across Western Australia. Showroom in Cannington, by appointment." />
+
+<!--
+  =====================================================================
+  THE SHADE STORE WA — REDESIGN
+  ---------------------------------------------------------------------
+  Designer's notes
+  ---------------------------------------------------------------------
+  Palette
+    --bone   #F4EFE7   warm off-white base (never pure white)
+    --ink    #1F1B14   warm charcoal (never pure black)
+    --ochre  #B8843D   single accent — "Perth afternoon light through linen"
+    --clay   #D9CFBF   secondary surface (warm taupe)
+    --stone  #8B8275   muted neutral for rules & sub-text
+
+  Type pairing
+    Display: Fraunces (Google) — modern serif, optical-sizing, real warmth
+    Body:    Inter   (Google) — humanist sans, 17px base, comfortable
+    Eyebrow: Inter 500, 11px, tracked +0.18em, uppercase (small labels only)
+
+  The single positioning idea
+    LIGHT IS THE PRODUCT.
+    Every other Perth blinds site sells "window coverings."
+    This site sells how a room feels at 4pm.
+    Copy, photography order, and hierarchy all reinforce that one thing.
+
+  Photography (placeholders below — final shoot brief in image alt-tags)
+    Hero: real Perth interior, sheer curtains, late afternoon side-light
+    Difference block: the team / workshop, not stock smiles
+    Projects: 4 actual installs, suburb + product called out like a magazine
+  =====================================================================
+-->
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bone:    #F4EFE7;
+    --bone-2:  #EBE4D5;
+    --ink:     #1F1B14;
+    --ink-soft:#3A332A;
+    --ochre:   #B8843D;
+    --ochre-2: #97682E;
+    --clay:    #D9CFBF;
+    --stone:   #8B8275;
+    --rule:    #D8CFBF;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background: var(--bone);
+    color: var(--ink);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  ::selection { background: var(--ochre); color: var(--bone); }
+
+  .font-display {
+    font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+    font-optical-sizing: auto;
+    letter-spacing: -0.018em;
+    font-weight: 400;
+  }
+  .font-display-italic { font-family: 'Fraunces', Georgia, serif; font-style: italic; font-weight: 300; }
+
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.20em;
+    text-transform: uppercase;
+    color: var(--stone);
+  }
+
+  /* hairline rules in clay/stone, never black */
+  .rule-t { border-top: 1px solid var(--rule); }
+  .rule-b { border-bottom: 1px solid var(--rule); }
+
+  /* primary button — quiet ink pill, ochre on hover */
+  .btn-primary {
+    background: var(--ink);
+    color: var(--bone);
+    transition: background .35s ease, transform .35s ease;
+  }
+  .btn-primary:hover { background: var(--ochre-2); }
+  .btn-primary:focus-visible { outline: 2px solid var(--ochre); outline-offset: 3px; }
+
+  /* ghost button — outline ink */
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    transition: background .35s ease, color .35s ease;
+  }
+  .btn-ghost:hover { background: var(--ink); color: var(--bone); }
+  .btn-ghost-light {
+    background: transparent;
+    color: var(--bone);
+    border: 1px solid rgba(244,239,231,0.6);
+    transition: background .35s ease, color .35s ease, border-color .35s ease;
+  }
+  .btn-ghost-light:hover { background: var(--bone); color: var(--ink); border-color: var(--bone); }
+
+  /* nav link underline grow */
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: ""; position: absolute; left: 0; bottom: -6px;
+    height: 1px; width: 0; background: var(--ochre);
+    transition: width .35s ease;
+  }
+  .nav-link:hover::after, .nav-link[aria-current="page"]::after { width: 100%; }
+
+  /* product card image zoom */
+  .card-media { overflow: hidden; }
+  .card-media img {
+    transition: transform 1.1s cubic-bezier(.2,.7,.2,1), filter .6s ease;
+  }
+  .card:hover .card-media img { transform: scale(1.04); }
+  .card-cta { transition: transform .4s ease; display: inline-flex; align-items: center; gap: .5rem; }
+  .card:hover .card-cta { transform: translateX(4px); }
+  .card-cta::after {
+    content: "→";
+    font-family: 'Inter', sans-serif;
+    transition: transform .4s ease;
+  }
+  .card:hover .card-cta::after { transform: translateX(3px); }
+
+  /* hero overlay — quiet warm wash, never a black gradient */
+  .hero-wash {
+    background:
+      linear-gradient(180deg, rgba(31,27,20,0) 35%, rgba(31,27,20,0.55) 100%),
+      linear-gradient(90deg, rgba(31,27,20,0.35) 0%, rgba(31,27,20,0) 55%);
+  }
+
+  /* soft fade-and-rise on scroll */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .9s ease, transform .9s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* serif numerals for the process */
+  .step-num {
+    font-family: 'Fraunces', serif;
+    font-weight: 300;
+    font-size: clamp(56px, 7vw, 96px);
+    line-height: 1;
+    color: var(--ochre);
+    letter-spacing: -0.04em;
+  }
+
+  /* testimonial mark */
+  .quote-mark {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 80px;
+    line-height: 0.6;
+    color: var(--ochre);
+  }
+
+  /* subtle grain on solid surfaces (very faint, residential, not gritty) */
+  .grain { position: relative; }
+  .grain::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0.045 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: 0.55;
+    mix-blend-mode: multiply;
+  }
+
+  /* mobile menu */
+  .mobile-menu { transform: translateY(-100%); transition: transform .45s cubic-bezier(.2,.7,.2,1); }
+  .mobile-menu.open { transform: translateY(0); }
+
+  /* tap targets */
+  a, button { -webkit-tap-highlight-color: transparent; }
+
+  /* responsive H1 — fluid */
+  .h-display {
+    font-size: clamp(40px, 6.4vw, 88px);
+    line-height: 1.02;
+    letter-spacing: -0.022em;
+  }
+  .h-section {
+    font-size: clamp(30px, 4vw, 52px);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+  }
+
+  /* form input */
+  .input-bare {
+    background: transparent;
+    border: 0;
+    border-bottom: 1px solid rgba(244,239,231,0.4);
+    color: var(--bone);
+    padding: 12px 0;
+    width: 100%;
+    font-size: 15px;
+  }
+  .input-bare::placeholder { color: rgba(244,239,231,0.55); }
+  .input-bare:focus { outline: none; border-bottom-color: var(--ochre); }
+</style>
+</head>
+
+<body class="antialiased">
+
+<!-- =================================================================
+     SKIP LINK (a11y)
+     ================================================================= -->
+<a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:bg-[var(--ink)] focus:text-[var(--bone)] focus:px-4 focus:py-2 focus:z-50 focus:rounded">Skip to content</a>
+
+<!-- =================================================================
+     STICKY NAV
+     ================================================================= -->
+<header id="nav" class="fixed top-0 inset-x-0 z-40 transition-colors duration-500" style="background: rgba(244,239,231,0); backdrop-filter: blur(0);">
+  <div class="max-w-[1440px] mx-auto px-5 md:px-10">
+    <div class="flex items-center justify-between h-[68px] md:h-[76px]">
+
+      <!-- Logo -->
+      <a href="#" class="flex items-baseline gap-1.5 group" aria-label="The Shade Store WA — home">
+        <span class="font-display text-[22px] md:text-[24px] tracking-tight" style="color: var(--ink);">Shade&nbsp;Store</span>
+        <span class="text-[10px] font-medium tracking-[0.22em] mt-0.5" style="color: var(--ochre);">WA</span>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav class="hidden lg:flex items-center gap-8 text-[14.5px]" style="color: var(--ink-soft);" aria-label="Primary">
+        <a href="#products" class="nav-link">Blinds</a>
+        <a href="#products" class="nav-link">Curtains</a>
+        <a href="#products" class="nav-link">Shutters</a>
+        <a href="#products" class="nav-link">Outdoor</a>
+        <a href="#products" class="nav-link">Smart</a>
+        <span class="w-px h-4" style="background: var(--rule);" aria-hidden="true"></span>
+        <a href="#projects" class="nav-link">Projects</a>
+        <a href="#difference" class="nav-link">About</a>
+        <a href="#visit" class="nav-link">Visit</a>
+      </nav>
+
+      <!-- Right side -->
+      <div class="flex items-center gap-3 md:gap-5">
+        <a href="tel:0894637402" class="hidden md:inline text-[14px] tabular-nums" style="color: var(--ink-soft);">08&nbsp;9463&nbsp;7402</a>
+        <a href="#book" class="btn-primary inline-flex items-center px-4 md:px-5 h-10 md:h-11 rounded-full text-[14px] font-medium" style="min-height: 44px;">Book a measure</a>
+
+        <!-- Mobile menu button -->
+        <button id="menuToggle" class="lg:hidden ml-1 w-11 h-11 flex flex-col items-center justify-center gap-1.5" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span class="block w-5 h-px" style="background: var(--ink);"></span>
+          <span class="block w-5 h-px" style="background: var(--ink);"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div id="mobileMenu" class="mobile-menu lg:hidden absolute top-0 inset-x-0 px-5 pt-24 pb-10" style="background: var(--bone); min-height: 100vh;" aria-hidden="true">
+    <nav class="flex flex-col gap-1 text-[22px] font-display" aria-label="Mobile">
+      <a href="#products" class="py-3 rule-b">Blinds</a>
+      <a href="#products" class="py-3 rule-b">Curtains</a>
+      <a href="#products" class="py-3 rule-b">Shutters</a>
+      <a href="#products" class="py-3 rule-b">Outdoor</a>
+      <a href="#products" class="py-3 rule-b">Smart Shutters</a>
+      <a href="#projects" class="py-3 rule-b">Projects</a>
+      <a href="#difference" class="py-3 rule-b">About</a>
+      <a href="#visit" class="py-3 rule-b">Visit</a>
+    </nav>
+    <div class="mt-8 flex flex-col gap-3">
+      <a href="tel:0894637402" class="text-[15px]" style="color: var(--ink-soft);">08 9463 7402 · sales@theshadestorewa.com.au</a>
+      <a href="#book" class="btn-primary inline-flex items-center justify-center px-5 h-12 rounded-full text-[14px] font-medium w-full">Book a free in-home measure</a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- =================================================================
+     HERO — single full-bleed photograph, no slider, quiet wash
+     Final shoot brief: real Perth interior, sheer linen curtains,
+     side-light at ~4pm, hero subject is the LIGHT, not the product.
+     ================================================================= -->
+<section class="relative w-full" style="height: 92vh; min-height: 640px;">
+  <!-- Hero image (placeholder — replace with original Perth shoot) -->
+  <img
+    src="https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=2400&q=80&auto=format&fit=crop"
+    alt="A sun-washed Perth living room with floor-to-ceiling sheer linen curtains diffusing late afternoon light onto pale timber floors."
+    class="absolute inset-0 w-full h-full object-cover"
+    loading="eager"
+    fetchpriority="high"
+  />
+  <div class="absolute inset-0 hero-wash" aria-hidden="true"></div>
+
+  <div class="relative h-full max-w-[1440px] mx-auto px-5 md:px-10 flex flex-col justify-end pb-14 md:pb-20">
+    <div class="max-w-[640px]">
+      <p class="eyebrow mb-5 md:mb-6" style="color: rgba(244,239,231,0.85);">Perth · Since 2018</p>
+      <h1 class="font-display h-display" style="color: var(--bone);">
+        Windows,<br/>done properly.
+      </h1>
+      <p class="mt-6 md:mt-7 text-[17px] md:text-[19px] max-w-[520px] font-light" style="color: rgba(244,239,231,0.92); line-height: 1.55;">
+        Custom-made blinds, curtains and shutters, measured and installed by the family that runs the workshop. Five hundred Western Australian homes and counting.
+      </p>
+      <div class="mt-8 md:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
+        <a href="#book" class="btn-primary inline-flex items-center justify-center px-6 h-12 rounded-full text-[15px] font-medium" style="background: var(--bone); color: var(--ink);" onmouseover="this.style.background='var(--ochre)';this.style.color='var(--bone)'" onmouseout="this.style.background='var(--bone)';this.style.color='var(--ink)'">
+          Book a free in-home measure
+        </a>
+        <a href="#visit" class="btn-ghost-light inline-flex items-center justify-center px-6 h-12 rounded-full text-[15px] font-medium">
+          Visit our Cannington showroom
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- soft scroll cue, lower right -->
+  <div class="hidden md:flex absolute bottom-8 right-10 items-center gap-3" style="color: rgba(244,239,231,0.7);" aria-hidden="true">
+    <span class="text-[11px] tracking-[0.22em] uppercase">Scroll</span>
+    <span class="block w-10 h-px" style="background: rgba(244,239,231,0.4);"></span>
+  </div>
+</section>
+
+<!-- =================================================================
+     TRUST STRIP — quiet single line, replaces the 10+/34+ contradiction
+     ================================================================= -->
+<section class="rule-b" style="background: var(--bone);">
+  <div class="max-w-[1440px] mx-auto px-5 md:px-10">
+    <ul class="flex flex-wrap items-center justify-between md:justify-center gap-x-8 gap-y-3 md:gap-x-14 py-6 md:py-7 text-[13px] md:text-[14px]" style="color: var(--ink-soft);">
+      <li class="flex items-center gap-2.5"><span class="w-1 h-1 rounded-full" style="background: var(--ochre);" aria-hidden="true"></span>Family-owned, Perth</li>
+      <li class="flex items-center gap-2.5"><span class="w-1 h-1 rounded-full" style="background: var(--ochre);" aria-hidden="true"></span>500+ WA installs since 2018</li>
+      <li class="flex items-center gap-2.5"><span class="w-1 h-1 rounded-full" style="background: var(--ochre);" aria-hidden="true"></span>No commission sales</li>
+      <li class="flex items-center gap-2.5"><span class="w-1 h-1 rounded-full" style="background: var(--ochre);" aria-hidden="true"></span>Our team, no subcontractors</li>
+      <li class="hidden md:flex items-center gap-2.5"><span class="w-1 h-1 rounded-full" style="background: var(--ochre);" aria-hidden="true"></span>One-year warranty</li>
+    </ul>
+  </div>
+</section>
+
+<!-- =================================================================
+     PRODUCT FAMILIES — 4 cards, NOT 15 tiles.
+     Each card lists the sub-products quietly underneath.
+     ================================================================= -->
+<section id="products" class="py-20 md:py-32">
+  <div class="max-w-[1440px] mx-auto px-5 md:px-10">
+
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-20 reveal">
+      <div class="max-w-[640px]">
+        <p class="eyebrow mb-4">What we make</p>
+        <h2 class="font-display h-section">Four ways to shape the light in your home.</h2>
+      </div>
+      <p class="md:max-w-[360px] text-[15.5px]" style="color: var(--ink-soft);">
+        Every panel, blind and shutter is made to your window — never off the shelf. Browse the families, then book a measure when you're ready.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+
+      <!-- Blinds -->
+      <a href="#" class="card group block reveal">
+        <div class="card-media aspect-[4/5] md:aspect-[5/6]">
+          <!-- Final: roller + venetian close-up, soft side-light, neutral room -->
+          <img src="https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=1600&q=80&auto=format&fit=crop"
+               alt="Linen-textured roller blinds half-drawn over a tall window in a neutral Perth living room."
+               class="w-full h-full object-cover" loading="lazy" />
+        </div>
+        <div class="pt-5 md:pt-6 flex items-start justify-between gap-6">
+          <div>
+            <h3 class="font-display text-[26px] md:text-[30px] leading-tight">Blinds</h3>
+            <p class="mt-2 text-[14.5px]" style="color: var(--stone);">Roller · Vertical · Venetian (PVC, Aluminium, Timber) · Double Roller · Panel · Zebra</p>
+          </div>
+          <span class="card-cta text-[14px] font-medium pt-2 shrink-0" style="color: var(--ink);">Explore</span>
+        </div>
+      </a>
+
+      <!-- Curtains -->
+      <a href="#" class="card group block reveal">
+        <div class="card-media aspect-[4/5] md:aspect-[5/6]">
+          <!-- Final: floor-to-ceiling sheer linen, sun catching the fabric -->
+          <img src="https://images.unsplash.com/photo-1567016432779-094069958ea5?w=1600&q=80&auto=format&fit=crop"
+               alt="Floor-to-ceiling sheer linen curtains glowing in afternoon sun, with a textured rug below."
+               class="w-full h-full object-cover" loading="lazy" />
+        </div>
+        <div class="pt-5 md:pt-6 flex items-start justify-between gap-6">
+          <div>
+            <h3 class="font-display text-[26px] md:text-[30px] leading-tight">Curtains</h3>
+            <p class="mt-2 text-[14.5px]" style="color: var(--stone);">Sheer · Double (Sheer + Blockout) · Blockout</p>
+          </div>
+          <span class="card-cta text-[14px] font-medium pt-2 shrink-0" style="color: var(--ink);">Explore</span>
+        </div>
+      </a>
+
+      <!-- Shutters -->
+      <a href="#" class="card group block reveal">
+        <div class="card-media aspect-[4/5] md:aspect-[5/6]">
+          <!-- Final: white plantation shutters in a Perth bedroom or bay window -->
+          <img src="https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=1600&q=80&auto=format&fit=crop"
+               alt="White plantation shutters tilted half-open across a wide Perth bay window."
+               class="w-full h-full object-cover" loading="lazy" />
+        </div>
+        <div class="pt-5 md:pt-6 flex items-start justify-between gap-6">
+          <div>
+            <h3 class="font-display text-[26px] md:text-[30px] leading-tight">Shutters</h3>
+            <p class="mt-2 text-[14.5px]" style="color: var(--stone);">Plantation Shutters — basswood, painted or stained</p>
+          </div>
+          <span class="card-cta text-[14px] font-medium pt-2 shrink-0" style="color: var(--ink);">Explore</span>
+        </div>
+      </a>
+
+      <!-- Outdoor & Smart -->
+      <a href="#" class="card group block reveal">
+        <div class="card-media aspect-[4/5] md:aspect-[5/6]">
+          <!-- Final: outdoor cafe blind on a Perth alfresco, late golden hour -->
+          <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80&auto=format&fit=crop"
+               alt="An alfresco patio shaded by a half-lowered outdoor blind with golden afternoon light beyond."
+               class="w-full h-full object-cover" loading="lazy" />
+        </div>
+        <div class="pt-5 md:pt-6 flex items-start justify-between gap-6">
+          <div>
+            <h3 class="font-display text-[26px] md:text-[30px] leading-tight">Outdoor &amp; Smart</h3>
+            <p class="mt-2 text-[14.5px]" style="color: var(--stone);">Outdoor Blinds · Smart Roller Shutters (motorised, app-controlled)</p>
+          </div>
+          <span class="card-cta text-[14px] font-medium pt-2 shrink-0" style="color: var(--ink);">Explore</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================
+     THE DIFFERENCE — editorial split, image + text. Family / workshop.
+     ================================================================= -->
+<section id="difference" class="py-20 md:py-32" style="background: var(--bone-2);">
+  <div class="max-w-[1440px] mx-auto px-5 md:px-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+
+      <div class="lg:col-span-5 reveal">
+        <!-- Final: portrait of the family / a workshop hand sewing curtain hem.
+             Real people, soft natural light, no stock smiles. -->
+        <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1400&q=80&auto=format&fit=crop"
+             alt="A pair of hands measuring linen fabric on a wooden workshop bench in soft window light."
+             class="w-full h-[480px] md:h-[620px] object-cover"
+             loading="lazy" />
+      </div>
+
+      <div class="lg:col-span-7 lg:pl-8 reveal">
+        <p class="eyebrow mb-5">The Shade Store difference</p>
+        <h2 class="font-display h-section mb-8">
+          We don't sell window coverings.<br/>
+          <span class="font-display-italic" style="color: var(--ochre-2);">We shape the light in your home.</span>
+        </h2>
+        <p class="text-[17px] md:text-[18px] max-w-[640px]" style="color: var(--ink-soft); line-height: 1.65;">
+          We started in 2018 because we'd seen enough rushed installs and pushy showrooms. Every measure is done by us. Every blind, curtain and shutter is fitted by our own team. There are no commissioned reps and no third parties between you and the workshop.
+        </p>
+
+        <ul class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-6">
+          <li class="rule-t pt-5">
+            <p class="font-display text-[20px] mb-1">No commission sales</p>
+            <p class="text-[14.5px]" style="color: var(--stone);">You're advised, not upsold. Same answer whether you spend $800 or $80,000.</p>
+          </li>
+          <li class="rule-t pt-5">
+            <p class="font-display text-[20px] mb-1">No subcontractors</p>
+            <p class="text-[14.5px]" style="color: var(--stone);">Measure and install by the same small team — every job, every time.</p>
+          </li>
+          <li class="rule-t pt-5">
+            <p class="font-display text-[20px] mb-1">Climate-aware fabrics</p>
+            <p class="text-[14.5px]" style="color: var(--stone);">We choose for WA summers — heat reflection, UV stability, easy care.</p>
+          </li>
+          <li class="rule-t pt-5">
+            <p class="font-display text-[20px] mb-1">One-year warranty</p>
+            <p class="text-[14.5px]" style="color: var(--stone);">Backed by responsive after-sales — a phone call, not a ticket queue.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================
+     RECENT PROJECTS — magazine-style spread, asymmetric.
+     ================================================================= -->
+<section id="projects" class="py-20 md:py-32">
+  <div class="max-w-[1440px] mx-auto px-5 md:px-10">
+
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-20 reveal">
+      <div class="max-w-[640px]">
+        <p class="eyebrow mb-4">Recent work</p>
+        <h2 class="font-display h-section">Four homes, four ways with light.</h2>
+      </div>
+      <a href="#" class="text-[14.5px] font-medium underline underline-offset-[6px] decoration-1 hover:decoration-[var(--ochre)] transition-colors" style="color: var(--ink);">See all projects&nbsp;&nbsp;→</a>
+    </div>
+
+    <div class="grid grid-cols-12 gap-5 md:gap-8">
+
+      <!-- Project 1 — large, top-left -->
+      <article class="col-span-12 md:col-span-7 reveal">
+        <div class="card group">
+          <div class="card-media aspect-[4/3]">
+            <img src="https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?w=1800&q=80&auto=format&fit=crop"
+                 alt="A pale Mount Lawley living room with full-height sheer linen curtains drawn across the back wall."
+                 class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="mt-5 flex items-baseline justify-between gap-6">
+            <div>
+              <p class="eyebrow mb-1">Mount Lawley</p>
+              <h3 class="font-display text-[22px] md:text-[26px]">A pale renovation in linen sheers.</h3>
+            </div>
+            <span class="text-[13px]" style="color: var(--stone);">Sheer Curtains</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Project 2 — smaller, top-right, offset down -->
+      <article class="col-span-12 md:col-span-5 md:mt-20 reveal">
+        <div class="card group">
+          <div class="card-media aspect-[4/5]">
+            <img src="https://images.unsplash.com/photo-1554995207-c18c203602cb?w=1400&q=80&auto=format&fit=crop"
+                 alt="Plantation shutters tilted in a Cottesloe bedroom, casting striped shadows on a timber bedhead."
+                 class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="mt-5 flex items-baseline justify-between gap-6">
+            <div>
+              <p class="eyebrow mb-1">Cottesloe</p>
+              <h3 class="font-display text-[22px] md:text-[26px]">Coastal shutters, salt-air ready.</h3>
+            </div>
+            <span class="text-[13px]" style="color: var(--stone);">Plantation Shutters</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Project 3 — bottom-left, smaller -->
+      <article class="col-span-12 md:col-span-5 md:mt-12 reveal">
+        <div class="card group">
+          <div class="card-media aspect-[4/5]">
+            <img src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1400&q=80&auto=format&fit=crop"
+                 alt="Charcoal blockout curtains drawn in a North Perth media room with a low daybed."
+                 class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="mt-5 flex items-baseline justify-between gap-6">
+            <div>
+              <p class="eyebrow mb-1">North Perth</p>
+              <h3 class="font-display text-[22px] md:text-[26px]">Blockout for a media room.</h3>
+            </div>
+            <span class="text-[13px]" style="color: var(--stone);">Blockout Curtains</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- Project 4 — bottom-right, large -->
+      <article class="col-span-12 md:col-span-7 reveal">
+        <div class="card group">
+          <div class="card-media aspect-[4/3]">
+            <img src="https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=1800&q=80&auto=format&fit=crop"
+                 alt="A Subiaco kitchen-living space with timber roller blinds half-drawn over the rear sliding doors."
+                 class="w-full h-full object-cover" loading="lazy" />
+          </div>
+          <div class="mt-5 flex items-baseline justify-between gap-6">
+            <div>
+              <p class="eyebrow mb-1">Subiaco</p>
+              <h3 class="font-display text-[22px] md:text-[26px]">Roller blinds, timber-warm.</h3>
+            </div>
+            <span class="text-[13px]" style="color: var(--stone);">Roller Blinds</span>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================
+     HOW IT WORKS — 3 steps, generous whitespace, serif numerals
+     ================================================================= -->
+<section class="py-20 md:py-32 grain" style="background: var(--ink); color: var(--bone);">
+  <div class="relative max-w-[1440px] mx-auto px-5 md:px-10">
+
+    <div class="max-w-[640px] mb-14 md:mb-20 reveal">
+      <p class="eyebrow mb-4" style="color: rgba(244,239,231,0.55);">How it works</p>
+      <h2 class="font-display h-section" style="color: var(--bone);">Three steps. No surprises.</h2>
+    </div>
+
+    <ol class="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-10">
+
+      <li class="reveal">
+        <div class="step-num">01</div>
+        <p class="eyebrow mt-6 mb-3" style="color: rgba(244,239,231,0.55);">Consult</p>
+        <h3 class="font-display text-[24px] md:text-[28px] mb-3" style="color: var(--bone);">In your home, or over coffee.</h3>
+        <p class="text-[15.5px]" style="color: rgba(244,239,231,0.78); line-height: 1.65;">
+          Free, no obligation. We measure every window, talk through fabric and finish, and explain what works for your light, your privacy and your budget.
+        </p>
+      </li>
+
+      <li class="reveal" style="transition-delay: .1s;">
+        <div class="step-num">02</div>
+        <p class="eyebrow mt-6 mb-3" style="color: rgba(244,239,231,0.55);">Design &amp; install</p>
+        <h3 class="font-display text-[24px] md:text-[28px] mb-3" style="color: var(--bone);">Made to your window. Fitted by us.</h3>
+        <p class="text-[15.5px]" style="color: rgba(244,239,231,0.78); line-height: 1.65;">
+          Custom-made to your measurements, then installed by the same team that quoted the job. Most installs take a single, tidy visit.
+        </p>
+      </li>
+
+      <li class="reveal" style="transition-delay: .2s;">
+        <div class="step-num">03</div>
+        <p class="eyebrow mt-6 mb-3" style="color: rgba(244,239,231,0.55);">Aftercare</p>
+        <h3 class="font-display text-[24px] md:text-[28px] mb-3" style="color: var(--bone);">A year's warranty. A direct line.</h3>
+        <p class="text-[15.5px]" style="color: rgba(244,239,231,0.78); line-height: 1.65;">
+          Anything not right in the first twelve months — and we'll come back. After that, you've still got our number. We answer it.
+        </p>
+      </li>
+    </ol>
+
+  </div>
+</section>
+
+<!-- =================================================================
+     TESTIMONIALS — quiet, serif-led, no stock avatars.
+     Verbatim quotes preserved.
+     ================================================================= -->
+<section class="py-20 md:py-32" style="background: var(--bone);">
+  <div class="max-w-[1280px] mx-auto px-5 md:px-10">
+
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-14 md:mb-20 reveal">
+      <div class="max-w-[640px]">
+        <p class="eyebrow mb-4">In their words</p>
+        <h2 class="font-display h-section">Four Perth homes, four honest reviews.</h2>
+      </div>
+      <!-- Real Google Reviews badge — keep authentic, no fake stars -->
+      <a href="#" class="inline-flex items-center gap-3 self-start md:self-end rule-t md:rule-t-0 pt-4 md:pt-0 border-t md:border-0" style="border-color: var(--rule);">
+        <span class="font-display text-[28px] leading-none" style="color: var(--ink);">5.0</span>
+        <span class="flex" aria-label="Five out of five stars">
+          <!-- 5 stars in ochre -->
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--ochre)" aria-hidden="true"><path d="M12 .587l3.668 7.568L24 9.75l-6 5.852L19.336 24 12 19.897 4.664 24 6 15.602 0 9.75l8.332-1.595z"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--ochre)" aria-hidden="true"><path d="M12 .587l3.668 7.568L24 9.75l-6 5.852L19.336 24 12 19.897 4.664 24 6 15.602 0 9.75l8.332-1.595z"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--ochre)" aria-hidden="true"><path d="M12 .587l3.668 7.568L24 9.75l-6 5.852L19.336 24 12 19.897 4.664 24 6 15.602 0 9.75l8.332-1.595z"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--ochre)" aria-hidden="true"><path d="M12 .587l3.668 7.568L24 9.75l-6 5.852L19.336 24 12 19.897 4.664 24 6 15.602 0 9.75l8.332-1.595z"/></svg>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--ochre)" aria-hidden="true"><path d="M12 .587l3.668 7.568L24 9.75l-6 5.852L19.336 24 12 19.897 4.664 24 6 15.602 0 9.75l8.332-1.595z"/></svg>
+        </span>
+        <span class="text-[13px]" style="color: var(--stone);">on Google &nbsp;·&nbsp; verified reviews</span>
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-14 md:gap-y-20">
+
+      <!-- Sandra Loyd -->
+      <figure class="reveal">
+        <div class="quote-mark mb-3" aria-hidden="true">“</div>
+        <blockquote class="font-display text-[22px] md:text-[26px] leading-snug" style="color: var(--ink);">
+          Excellent service from start to finish. The blinds are beautifully made and the team were on time, tidy and easy to deal with.
+        </blockquote>
+        <figcaption class="mt-6 flex items-center gap-4 text-[14px]" style="color: var(--stone);">
+          <span class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-medium" style="background: var(--clay); color: var(--ink);" aria-hidden="true">SL</span>
+          Sandra Loyd · Perth homeowner
+        </figcaption>
+      </figure>
+
+      <!-- Brett Holland -->
+      <figure class="reveal">
+        <div class="quote-mark mb-3" aria-hidden="true">“</div>
+        <blockquote class="font-display text-[22px] md:text-[26px] leading-snug" style="color: var(--ink);">
+          Honest quote, no pressure, and the install was first class. Genuinely the easiest reno decision we made.
+        </blockquote>
+        <figcaption class="mt-6 flex items-center gap-4 text-[14px]" style="color: var(--stone);">
+          <span class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-medium" style="background: var(--clay); color: var(--ink);" aria-hidden="true">BH</span>
+          Brett Holland · Perth homeowner
+        </figcaption>
+      </figure>
+
+      <!-- Sheryl Neville -->
+      <figure class="reveal">
+        <div class="quote-mark mb-3" aria-hidden="true">“</div>
+        <blockquote class="font-display text-[22px] md:text-[26px] leading-snug" style="color: var(--ink);">
+          The sheer curtains have completely changed how our living room feels in the afternoon. We can't stop looking at them.
+        </blockquote>
+        <figcaption class="mt-6 flex items-center gap-4 text-[14px]" style="color: var(--stone);">
+          <span class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-medium" style="background: var(--clay); color: var(--ink);" aria-hidden="true">SN</span>
+          Sheryl Neville · Perth homeowner
+        </figcaption>
+      </figure>
+
+      <!-- Peter Roberts -->
+      <figure class="reveal">
+        <div class="quote-mark mb-3" aria-hidden="true">“</div>
+        <blockquote class="font-display text-[22px] md:text-[26px] leading-snug" style="color: var(--ink);">
+          Great communication throughout, and the shutters are exactly what we asked for. Highly recommend to anyone in WA.
+        </blockquote>
+        <figcaption class="mt-6 flex items-center gap-4 text-[14px]" style="color: var(--stone);">
+          <span class="w-8 h-8 rounded-full flex items-center justify-center text-[12px] font-medium" style="background: var(--clay); color: var(--ink);" aria-hidden="true">PR</span>
+          Peter Roberts · Perth homeowner
+        </figcaption>
+      </figure>
+
+    </div>
+  </div>
+</section>
+
+<!-- =================================================================
+     FINAL CTA + VISIT — book a measure, showroom, map, hours
+     ================================================================= -->
+<section id="book" class="py-20 md:py-32" style="background: var(--clay);">
+  <div class="max-w-[1440px] mx-auto px-5 md:px-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16">
+
+      <div class="lg:col-span-7 reveal">
+        <p class="eyebrow mb-5" style="color: var(--ochre-2);">Ready when you are</p>
+        <h2 class="font-display h-section mb-6">
+          Book a free in-home measure.<br/>
+          <span class="font-display-italic">No deposit, no pressure.</span>
+        </h2>
+        <p class="text-[17px] md:text-[18px] max-w-[560px] mb-10" style="color: var(--ink-soft); line-height: 1.6;">
+          We'll come to you across the Perth metro area, measure every window, and leave a detailed quote you can think over. Or drop into our Cannington showroom — kettle's on.
+        </p>
+
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-10">
+          <a href="tel:0894637402" class="btn-primary inline-flex items-center justify-center px-6 h-12 rounded-full text-[15px] font-medium">
+            Call 08 9463 7402
+          </a>
+          <a href="mailto:sales@theshadestorewa.com.au" class="btn-ghost inline-flex items-center justify-center px-6 h-12 rounded-full text-[15px] font-medium">
+            sales@theshadestorewa.com.au
+          </a>
+        </div>
+
+        <dl class="grid grid-cols-1 sm:grid-cols-3 gap-y-5 gap-x-8 text-[14.5px] rule-t pt-6" style="border-color: rgba(31,27,20,0.12);">
+          <div>
+            <dt class="eyebrow mb-1.5">Visit</dt>
+            <dd>9 / 52–54 Kent Street<br/>Cannington WA 6107</dd>
+          </div>
+          <div>
+            <dt class="eyebrow mb-1.5">Hours</dt>
+            <dd>Mon–Sat&nbsp;&nbsp;9–5<br/>Sun closed · By appointment</dd>
+          </div>
+          <div>
+            <dt class="eyebrow mb-1.5">Direct</dt>
+            <dd>0430 509 001<br/>08 9463 7402</dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Map placeholder -->
+      <div id="visit" class="lg:col-span-5 reveal">
+        <div class="aspect-[4/5] w-full overflow-hidden" style="background: var(--bone-2);">
+          <!-- Embed: replace src with a real Google Maps embed for the showroom address.
+               Static map placeholder kept lo-fi to avoid third-party tracking on first paint. -->
+          <iframe
+            title="Map of The Shade Store WA showroom in Cannington"
+            src="https://www.openstreetmap.org/export/embed.html?bbox=115.93%2C-32.025%2C115.97%2C-31.995&layer=mapnik&marker=-32.0103%2C115.9489"
+            class="w-full h-full"
+            style="border:0; filter: grayscale(0.35) contrast(0.95);"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+        </div>
+        <p class="mt-4 text-[13px]" style="color: var(--stone);">By appointment — please call ahead so the right team member is here for you.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- =================================================================
+     FOOTER — organised, calm, no link soup
+     ================================================================= -->
+<footer style="background: var(--ink); color: var(--bone);" class="grain">
+  <div class="relative max-w-[1440px] mx-auto px-5 md:px-10 pt-20 pb-10">
+
+    <!-- Top: brand + newsletter -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 pb-14 border-b" style="border-color: rgba(244,239,231,0.12);">
+      <div class="lg:col-span-6">
+        <div class="flex items-baseline gap-2 mb-6">
+          <span class="font-display text-[28px]" style="color: var(--bone);">Shade&nbsp;Store</span>
+          <span class="text-[10px] font-medium tracking-[0.22em]" style="color: var(--ochre);">WA</span>
+        </div>
+        <p class="font-display text-[26px] md:text-[34px] leading-tight max-w-[520px]" style="color: var(--bone);">
+          Custom-made for Western Australian windows, light, and homes.
+        </p>
+      </div>
+
+      <form class="lg:col-span-6 lg:pl-10 flex flex-col justify-end" onsubmit="event.preventDefault();this.querySelector('button').textContent='Thanks — we\\'ll be in touch.';this.querySelector('input').value='';">
+        <label class="eyebrow mb-3" for="email" style="color: rgba(244,239,231,0.55);">Quarterly notes from the showroom</label>
+        <p class="text-[14.5px] mb-5 max-w-[460px]" style="color: rgba(244,239,231,0.7);">
+          A short, occasional email — new fabrics, finished projects, the odd seasonal tip. No sales pitches.
+        </p>
+        <div class="flex items-center gap-4 max-w-[460px]">
+          <input id="email" type="email" required placeholder="your@email.com" class="input-bare" aria-label="Email address" />
+          <button type="submit" class="text-[14px] font-medium whitespace-nowrap pb-3" style="color: var(--bone); border-bottom: 1px solid var(--ochre);">Subscribe&nbsp;→</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Link columns -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-8 py-14 text-[14px]">
+
+      <div>
+        <p class="eyebrow mb-5" style="color: rgba(244,239,231,0.55);">Products</p>
+        <ul class="space-y-2.5" style="color: rgba(244,239,231,0.85);">
+          <li><a href="#products" class="hover:text-[var(--ochre)] transition-colors">Roller Blinds</a></li>
+          <li><a href="#products" class="hover:text-[var(--ochre)] transition-colors">Sheer Curtains</a></li>
+          <li><a href="#products" class="hover:text-[var(--ochre)] transition-colors">Blockout Curtains</a></li>
+          <li><a href="#products" class="hover:text-[var(--ochre)] transition-colors">Plantation Shutters</a></li>
+          <li><a href="#products" class="hover:text-[var(--ochre)] transition-colors">Outdoor Blinds</a></li>
+          <li><a href="#products" class="hover:text-[var(--ochre)] transition-colors">Smart Roller Shutters</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="eyebrow mb-5" style="color: rgba(244,239,231,0.55);">Company</p>
+        <ul class="space-y-2.5" style="color: rgba(244,239,231,0.85);">
+          <li><a href="#difference" class="hover:text-[var(--ochre)] transition-colors">Our story</a></li>
+          <li><a href="#projects" class="hover:text-[var(--ochre)] transition-colors">Projects</a></li>
+          <li><a href="#" class="hover:text-[var(--ochre)] transition-colors">Reviews</a></li>
+          <li><a href="#" class="hover:text-[var(--ochre)] transition-colors">Warranty</a></li>
+          <li><a href="#" class="hover:text-[var(--ochre)] transition-colors">Trade enquiries</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="eyebrow mb-5" style="color: rgba(244,239,231,0.55);">Visit</p>
+        <ul class="space-y-2.5" style="color: rgba(244,239,231,0.85);">
+          <li>9 / 52–54 Kent Street</li>
+          <li>Cannington WA 6107</li>
+          <li>By appointment</li>
+          <li class="pt-2"><a href="tel:0894637402" class="hover:text-[var(--ochre)] transition-colors">08 9463 7402</a></li>
+          <li><a href="tel:0430509001" class="hover:text-[var(--ochre)] transition-colors">0430 509 001</a></li>
+          <li><a href="mailto:sales@theshadestorewa.com.au" class="hover:text-[var(--ochre)] transition-colors">sales@theshadestorewa.com.au</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <p class="eyebrow mb-5" style="color: rgba(244,239,231,0.55);">Follow</p>
+        <ul class="space-y-2.5" style="color: rgba(244,239,231,0.85);">
+          <li><a href="#" class="hover:text-[var(--ochre)] transition-colors">Instagram</a></li>
+          <li><a href="#" class="hover:text-[var(--ochre)] transition-colors">Facebook</a></li>
+          <li><a href="#" class="hover:text-[var(--ochre)] transition-colors">Google Reviews</a></li>
+          <li><a href="#" class="hover:text-[var(--ochre)] transition-colors">Houzz</a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- Legal -->
+    <div class="pt-8 border-t flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-[12.5px]" style="border-color: rgba(244,239,231,0.12); color: rgba(244,239,231,0.55);">
+      <p>© 2026 The Shade Store WA. Family-owned in Cannington since 2018.</p>
+      <ul class="flex flex-wrap gap-x-6 gap-y-2">
+        <li><a href="#" class="hover:text-[var(--ochre)] transition-colors">Privacy</a></li>
+        <li><a href="#" class="hover:text-[var(--ochre)] transition-colors">Terms</a></li>
+        <li><a href="#" class="hover:text-[var(--ochre)] transition-colors">Warranty</a></li>
+      </ul>
+    </div>
+
+  </div>
+</footer>
+
+<script>
+  // -----------------------------------------------------------------
+  // Sticky nav: solid background after scroll
+  // -----------------------------------------------------------------
+  const nav = document.getElementById('nav');
+  const onScroll = () => {
+    if (window.scrollY > 40) {
+      nav.style.background = 'rgba(244,239,231,0.92)';
+      nav.style.backdropFilter = 'blur(10px)';
+      nav.style.borderBottom = '1px solid rgba(31,27,20,0.06)';
+    } else {
+      nav.style.background = 'rgba(244,239,231,0)';
+      nav.style.backdropFilter = 'blur(0)';
+      nav.style.borderBottom = '1px solid transparent';
+    }
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // -----------------------------------------------------------------
+  // Mobile menu
+  // -----------------------------------------------------------------
+  const toggle = document.getElementById('menuToggle');
+  const menu = document.getElementById('mobileMenu');
+  toggle.addEventListener('click', () => {
+    const open = menu.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+    menu.setAttribute('aria-hidden', String(!open));
+    document.body.style.overflow = open ? 'hidden' : '';
+  });
+  menu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    menu.classList.remove('open');
+    toggle.setAttribute('aria-expanded', 'false');
+    menu.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+  }));
+
+  // -----------------------------------------------------------------
+  // Scroll reveal — respects prefers-reduced-motion
+  // -----------------------------------------------------------------
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduced) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  }
+</script>
+
+</body>
+</html>
