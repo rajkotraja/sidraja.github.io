@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Deep Learning Essentials | Foundations | AI Mastery by Siddharth Raja</title>
+<link rel="stylesheet" href="../../assets/main.css">
+<script>
+(function(){
+  var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.dataset.theme=t;
+  if(sessionStorage.getItem('am_auth')!=='1'){
+    document.documentElement.style.opacity='0';
+  }
+})();
+</script>
+</head>
+<body data-root="../../">
+<header class="site-header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">AI <span>Mastery</span> <span class="logo-by">by Siddharth Raja</span></a>
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+      <input type="search" id="search-input" placeholder="Search questions… (/)" autocomplete="off" spellcheck="false" aria-label="Search questions">
+      <div id="search-results" role="listbox" hidden></div>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+<div class="page-body">
+  <div class="layout">
+    <nav class="course-sidebar" aria-label="Course topics">
+      <a href="../../index.html" class="sidebar-back">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        All courses
+      </a>
+      <div class="sidebar-course-name">Foundations</div>
+      <ul class="topic-list">
+        <li class=""><a href="../python-essentials-for-ai-engineer/index.html">Python Essentials for AI Engineer</a></li>
+        <li class=""><a href="../statistics-math-for-aiml-interviews/index.html">Statistics &amp; Math for AI/ML Interviews</a></li>
+        <li class=""><a href="../machine-learning-foundations/index.html">Machine Learning Foundations</a></li>
+        <li class="active"><a href="../deep-learning-essentials/index.html">Deep Learning Essentials</a></li>
+      </ul>
+    </nav>
+    <main class="topic-main" id="main-content">
+      <select class="topic-select" onchange="location.href=this.value" aria-label="Jump to topic">
+        <option value="../python-essentials-for-ai-engineer/index.html">Python Essentials for AI Engineer</option>
+        <option value="../statistics-math-for-aiml-interviews/index.html">Statistics &amp; Math for AI/ML Interviews</option>
+        <option value="../machine-learning-foundations/index.html">Machine Learning Foundations</option>
+        <option value="../deep-learning-essentials/index.html" selected>Deep Learning Essentials</option>
+      </select>
+      <div class="topic-header">
+        <div class="topic-breadcrumb">
+          <a href="../../index.html">Home</a> /
+          <a href="../index.html">Foundations</a>
+        </div>
+        <h1>Deep Learning Essentials</h1>
+        <div class="topic-meta">
+          <span class="topic-stats">61 questions</span>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-wrap">
+          <svg class="filter-icon" width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+          <input type="search" id="topic-filter" placeholder="Filter questions… (f)" autocomplete="off" spellcheck="false" aria-label="Filter questions on this page">
+        </div>
+        <span id="filter-count"></span>
+      </div>
+      <div id="filter-no-results" class="filter-no-results">No questions match your filter.</div>
+      <div class="qa-sections-full">
+
+        <div class="qa-sections">
+      <section id="deep-learning-vs-machine-learning" class="qa-section">
+        <div class="section-header">
+          <h2>Deep Learning vs Machine Learning</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why do we need Deep Learning when Machine Learning already exists?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<div class="ui-rte-editor-div ui-rte-editor" style="overflow-wrap: break-word; font-variant-ligatures: none"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><span style="box-sizing: border-box"><span style="box-sizing: border-box">Machine learning is a framework that uses past data to identify relationships among features. Machines can then predict new data using mathematical relationships by generating dynamic, accurate, and stable models.<br/></span></span></p><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><span style="box-sizing: border-box"><span style="box-sizing: border-box">On the other hand, deep learning is a segment of machine learning that uses complex algorithms based on biological neural networks to mimic the human brain and make decisions and actions like humans.<br/></span></span></p><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><span style="box-sizing: border-box"><span style="box-sizing: border-box">The brain’s functioning and structure inspire Deep Learning to train neural networks. Deep learning also performs various complex operations to extract hidden features and patterns.<br/></span></span></p><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><span style="box-sizing: border-box"><span style="box-sizing: border-box">The critical aspect differentiating the two is that deep learning can extract hidden features and patterns in the data. In contrast, other machine learning can reduce dimensions but not identify new features.<br/></span></span></p><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><br/></p></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the applications of Deep Learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p style="box-sizing: border-box; margin-block: 0px 0.9rem; margin-top: 0px; margin-bottom: 1rem; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial"><span style="box-sizing: border-box; font-weight: 400">The applications of Deep Learning bucketed according to the type of learning are:</span><br/></p><p style="box-sizing: border-box; margin-block: 0px 0.9rem; margin-top: 0px; margin-bottom: 1rem; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial"><span style="box-sizing: border-box; font-weight: 400">The supervised tasks in deep learning are:</span><br/></p><ul class="wp-block-list" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; padding-left: 2rem; margin-top: 0px; margin-bottom: 1rem; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial"><li aria-level="1" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; font-weight: 400"><span style="box-sizing: border-box; font-weight: 400">Text Classification</span><br/></li><li aria-level="1" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; font-weight: 400"><span style="box-sizing: border-box; font-weight: 400">Sentiment Analysis</span><br/></li><li aria-level="1" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; font-weight: 400"><span style="box-sizing: border-box; font-weight: 400">Auto-Tagging System</span><br/></li><li aria-level="1" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; font-weight: 400"><span style="box-sizing: border-box; font-weight: 400">Image Classification</span><br/></li><li aria-level="1" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; font-weight: 400"><span style="box-sizing: border-box; font-weight: 400">Audio Classification</span><br/></li><li aria-level="1" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; font-weight: 400"><span style="box-sizing: border-box; font-weight: 400">Forecasting</span><br/></li></ul><p style="box-sizing: border-box; margin-block: 0px 0.9rem; margin-top: 0px; margin-bottom: 1rem; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial"><span style="box-sizing: border-box; font-weight: 400">The unsupervised tasks in deep learning are:</span><br/></p><ul class="wp-block-list" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; padding-left: 2rem; margin-top: 0px; margin-bottom: 1rem; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial"><li aria-level="1" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; font-weight: 400"><span style="box-sizing: border-box; font-weight: 400">Image Segmentation</span><br/></li><li aria-level="1" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; font-weight: 400"><span style="box-sizing: border-box; font-weight: 400">Image Localization</span><br/></li><li aria-level="1" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; font-weight: 400"><span style="box-sizing: border-box; font-weight: 400">Image Captioning</span><br/></li><li aria-level="1" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; font-weight: 400"><span style="box-sizing: border-box; font-weight: 400">Object Detection or IdentificationThe problems that involve generating data in deep learning are:</span><br/></li></ul><ul class="wp-block-list" style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline; padding-left: 2rem; margin-top: 0px; margin-bottom: 1rem; font-style: normal; font-variant-ligatures: normal; font-variant-caps: normal; font-weight: 400; letter-spacing: normal; orphans: 2; text-align: start; text-indent: 0px; text-transform: none; widows: 2; word-spacing: 0px; -webkit-text-stroke-width: 0px; white-space: normal; text-decoration-thickness: initial; text-decoration-style: initial; text-decoration-color: initial"><li style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline"><span style="box-sizing: border-box; font-weight: 400">Machine Translation</span><br/></li><li style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline"><span style="box-sizing: border-box; font-weight: 400">Chatbots</span><br/></li><li style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline"><span style="box-sizing: border-box; font-weight: 400">Speech to Text</span><br/></li><li style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline"><span style="box-sizing: border-box; font-weight: 400">Recommendation Systems</span><br/></li><li style="box-sizing: border-box; border: 0px; margin-block: 0px; outline: 0px; vertical-align: baseline"><span style="box-sizing: border-box; font-weight: 400">Automatic Text Generation</span><br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are deep and shallow networks? Which one is better and why?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<h1>What is a Neural Network?<br/></h1><p>Before understanding deep vs shallow networks, let’s quickly recall:<br/></p><p>A <b>neural network</b> is a model made of:<br/></p><ul><li><p style="margin-top: 0px"><b>Input layer</b><br/></p></li><li><p style="margin-top: 0px"><b>Hidden layer(s)</b><br/></p></li><li><p style="margin-top: 0px"><b>Output layer</b><br/></p></li></ul><p>The hidden layers are where learning happens.<br/></p><p>The number of <b>hidden layers</b> decides whether the network is shallow or deep.<br/></p><div><hr/><br/></div><h1>What is a Shallow Neural Network?<br/></h1><p>A <b>shallow network</b> has:<br/></p><ul><li><p style="margin-top: 0px">Only <b>one hidden layer</b><br/></p></li><li><p style="margin-top: 0px">OR very few hidden layers (usually 1)<br/></p></li></ul><h3>Structure:<br/></h3><pre><code class="hljs language-css"><span class="hljs-selector-tag">Input</span> → Hidden Layer → Output
+</code><br/></pre><h3>Example:<br/></h3><ul><li><p style="margin-top: 0px">Logistic Regression (no hidden layer)<br/></p></li><li><p style="margin-top: 0px">Neural network with 1 hidden layer<br/></p></li></ul><div><hr/><br/></div><h3>? Beginner Analogy<br/></h3><p>Think of a shallow network like:<br/></p><blockquote><p>A student who solves a math problem in one step.<br/></p></blockquote><p>It can solve simple problems, but struggles with complex reasoning.<br/></p><div><hr/><br/></div><h3>? Characteristics of Shallow Networks<br/></h3><ul><li><p style="margin-top: 0px">Simple architecture<br/></p></li><li><p style="margin-top: 0px">Fewer parameters<br/></p></li><li><p style="margin-top: 0px">Easier to train<br/></p></li><li><p style="margin-top: 0px">Less computational power needed<br/></p></li><li><p style="margin-top: 0px">Limited ability to learn complex patterns<br/></p></li></ul><div><hr/><br/></div><h1>3️⃣ What is a Deep Neural Network?<br/></h1><p>A <b>deep network</b> has:<br/></p><ul><li><p style="margin-top: 0px"><b>Multiple hidden layers</b> (2, 5, 10, 50… even 100+)<br/></p></li></ul><h3>Structure:<br/></h3><pre><code class="hljs language-scss"><span class="hljs-selector-tag">Input</span> → Hidden → Hidden → Hidden → Output
+</code><br/></pre><p>Each hidden layer learns something more complex than the previous one.<br/></p><div><hr/><br/></div><h3>? Beginner Analogy<br/></h3><p>Think of a deep network like:<br/></p><blockquote><p>A team of specialists solving a problem step by step.<br/></p></blockquote><p>Example in image recognition:<br/></p><p></p><div>Layer 1 → Detect edges<br/></div><div>Layer 2 → Detect shapes<br/></div><div>Layer 3 → Detect object parts<br/></div><div>Layer 4 → Recognize full object<br/></div><p></p><p>That’s how deep learning works.<br/></p><div><hr/><br/></div><h3>? Characteristics of Deep Networks<br/></h3><ul><li><p style="margin-top: 0px">Many hidden layers<br/></p></li><li><p style="margin-top: 0px">Large number of parameters<br/></p></li><li><p style="margin-top: 0px">Can learn complex patterns<br/></p></li><li><p style="margin-top: 0px">Requires more data<br/></p></li><li><p style="margin-top: 0px">Requires more computational power (GPU)<br/></p></li></ul><div><hr/><br/></div><h1>4️⃣ Key Differences (Interview-Friendly Table)<br/></h1><table><thead><tr><th>Feature<br/></th><th>Shallow Network<br/></th><th>Deep Network<br/></th></tr></thead><tbody><tr><td>Hidden Layers<br/></td><td>1<br/></td><td>2 or more<br/></td></tr><tr><td>Complexity<br/></td><td>Low<br/></td><td>High<br/></td></tr><tr><td>Learning Ability<br/></td><td>Simple patterns<br/></td><td>Complex patterns<br/></td></tr><tr><td>Data Requirement<br/></td><td>Small dataset<br/></td><td>Large dataset<br/></td></tr><tr><td>Computation<br/></td><td>Low<br/></td><td>High<br/></td></tr><tr><td>Real-world Use<br/></td><td>Basic tasks<br/></td><td>AI applications like vision, NLP<br/></td></tr></tbody></table><div><hr/><br/></div><h1>5️⃣ Which One is Better?<br/></h1><p>⚠️ Interview Tip: Never say one is always better.<br/></p><p>The correct answer is:<br/></p><blockquote><p>It depends on the problem.<br/></p></blockquote><div><hr/><br/></div><h2>✅ When Shallow Networks Are Better<br/></h2><ul><li><p style="margin-top: 0px">Small dataset<br/></p></li><li><p style="margin-top: 0px">Simple pattern recognition<br/></p></li><li><p style="margin-top: 0px">Limited computational resources<br/></p></li><li><p style="margin-top: 0px">Faster training needed<br/></p></li></ul><p>Example:<br/></p><ul><li><p style="margin-top: 0px">Spam detection<br/></p></li><li><p style="margin-top: 0px">Simple classification tasks<br/></p></li></ul><div><hr/><br/></div><h2>✅ When Deep Networks Are Better<br/></h2><ul><li><p style="margin-top: 0px">Complex problems<br/></p></li><li><p style="margin-top: 0px">Large datasets<br/></p></li><li><p style="margin-top: 0px">Image recognition<br/></p></li><li><p style="margin-top: 0px">Speech recognition<br/></p></li><li><p style="margin-top: 0px">NLP (ChatGPT, BERT, etc.)<br/></p></li></ul><p>Example:<br/></p><ul><li><p style="margin-top: 0px">Self-driving cars<br/></p></li><li><p style="margin-top: 0px">Face recognition<br/></p></li><li><p style="margin-top: 0px">Language translation<br/></p></li></ul><div><hr/><br/></div><h1>6️⃣ Why Deep Networks Are Powerful<br/></h1><p>Deep networks can learn <b>hierarchical feature representations</b>.<br/></p><p>? This means:<br/></p><ul><li><p style="margin-top: 0px">Early layers learn basic features<br/></p></li><li><p style="margin-top: 0px">Later layers combine them into complex features<br/></p></li></ul><p>This makes them extremely powerful for:<br/></p><ul><li><p style="margin-top: 0px">Computer Vision<br/></p></li><li><p style="margin-top: 0px">Natural Language Processing<br/></p></li><li><p style="margin-top: 0px">Speech Recognition<br/></p></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is model capacity?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Model capacity is the ability of a machine learning model to learn and represent complex patterns from data.<br/></p><p>In simple terms, it describes how flexible or powerful a model is.<br/></p><p></p><div>If a model has low capacity, it can only learn simple relationships.<br/></div><div>If a model has high capacity, it can learn very complex relationships.<br/></div><p></p><p>What determines model capacity:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Number of parameters<br/></div><div>More weights and biases increase capacity. A neural network with millions of parameters has higher capacity than one with a few thousand.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Number of layers<br/></div><div>Deeper networks (more hidden layers) usually have higher capacity because they can build hierarchical representations.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Number of neurons per layer<br/></div><div>Wider layers increase the number of learnable parameters and therefore increase capacity.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Model type<br/></div><div>Linear regression has low capacity because it can only model linear relationships.<br/></div><div>Polynomial regression has higher capacity.<br/></div><div>Deep neural networks and large language models have very high capacity.<br/></div><p></p></li></ol><p>Example:<br/></p><p>If the true relationship in data is a straight line like:<br/></p><p>y = 2x + 3<br/></p><p>A simple linear model can learn it easily.<br/></p><p>But if the relationship is:<br/></p><p>y = x³ + sin(x)<br/></p><p>A linear model cannot represent this complexity. It does not have enough capacity.<br/></p><p>Low capacity model:<br/></p><ul><li><p style="margin-top: 0px">Cannot capture the true pattern.<br/></p></li><li><p style="margin-top: 0px">Performs poorly even on training data.<br/></p></li><li><p style="margin-top: 0px">This situation is called underfitting.<br/></p></li><li><p style="margin-top: 0px">It has high bias and low variance.<br/></p></li></ul><p>High capacity model:<br/></p><ul><li><p style="margin-top: 0px">Can fit very complex patterns.<br/></p></li><li><p style="margin-top: 0px">May even memorize the training data.<br/></p></li><li><p style="margin-top: 0px">Performs very well on training data but poorly on unseen data.<br/></p></li><li><p style="margin-top: 0px">This is called overfitting.<br/></p></li><li><p style="margin-top: 0px">It has low bias and high variance.<br/></p></li></ul><p>Connection to bias-variance tradeoff:<br/></p><p></p><div>Low capacity → High bias, Low variance<br/></div><div>High capacity → Low bias, High variance<br/></div><p></p><p>The goal is to choose a model with enough capacity to capture the true pattern, but not so much that it memorizes noise.<br/></p><p>Interview-ready answer:<br/></p><p>Model capacity refers to the ability of a model to fit a wide range of functions or patterns. It depends on factors like the number of parameters, layers, and neurons. A low-capacity model may underfit, while a high-capacity model may overfit. The key is to balance capacity so the model generalizes well to unseen data.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Convex Hull? Where is it used?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Convex Hull is a concept from computational geometry.<br/></p><p>Definition:<br/></p><p>The convex hull of a set of points is the smallest convex shape that contains all the points.<br/></p><p>Another way to say it:<br/></p><p>If you have several points on a plane, the convex hull is the tightest convex boundary that encloses all of them.<br/></p><p>Simple intuition:<br/></p><p>Imagine you put nails on a board at different positions. Now stretch a rubber band around all the nails and release it. The rubber band will snap tightly around the outermost nails. The shape formed by the rubber band is the convex hull.<br/></p><p>Important properties:<br/></p><ol><li><p style="margin-top: 0px">It is always a convex polygon (in 2D).<br/></p></li><li><p style="margin-top: 0px">All given points lie either inside it or on its boundary.<br/></p></li><li><p style="margin-top: 0px">The boundary is formed only by the outermost points.<br/></p></li></ol><p>What does convex mean?<br/></p><p>A shape is convex if for any two points inside the shape, the straight line connecting them lies entirely inside the shape.<br/></p><p>Examples:<br/></p><p>If you have points forming a circle-like distribution, the convex hull will look like a polygon approximating the circle.<br/></p><p>If some points are inside the cluster and some are on the edge, only the edge points form the convex hull. Interior points are ignored when forming the boundary.<br/></p><p>Mathematical perspective:<br/></p><p>Given a set of points S, the convex hull is the smallest convex set that contains S.<br/></p><p>In higher dimensions:<br/></p><ul><li><p style="margin-top: 0px">In 2D → convex hull is a polygon.<br/></p></li><li><p style="margin-top: 0px">In 3D → convex hull is a polyhedron.<br/></p></li><li><p style="margin-top: 0px">In higher dimensions → convex polytope.<br/></p></li></ul><p>Common algorithms to compute convex hull:<br/></p><ul><li><p style="margin-top: 0px">Graham Scan<br/></p></li><li><p style="margin-top: 0px">Jarvis March (Gift Wrapping)<br/></p></li><li><p style="margin-top: 0px">QuickHull<br/></p></li><li><p style="margin-top: 0px">Monotone Chain algorithm<br/></p></li></ul><p>Time complexity (2D case):<br/></p><p>Most efficient algorithms run in O(n log n), where n is the number of points.<br/></p><p>Where is Convex Hull used?<br/></p><ol><li><p style="margin-top: 0px">Computer Graphics<br/></p></li></ol><ul><li><p style="margin-top: 0px">Collision detection<br/></p></li><li><p style="margin-top: 0px">Shape boundary detection<br/></p></li><li><p style="margin-top: 0px">Object wrapping<br/></p></li><li><p style="margin-top: 0px">Simplifying complex shapes<br/></p></li></ul><p>For example, in a game engine, to check whether two objects might collide, their convex hulls are often used as approximations.<br/></p><ol start="2"><li><p style="margin-top: 0px">Machine Learning<br/></p></li></ol><ul><li><p style="margin-top: 0px">In Support Vector Machines (SVM)<br/></p></li></ul><p>For linearly separable classes, the optimal separating hyperplane depends on the convex hulls of the two classes. If the convex hulls of two classes do not intersect, they are linearly separable.<br/></p><ul><li><p style="margin-top: 0px">Outlier detection<br/></p></li></ul><p>Points far from the convex hull boundary can sometimes indicate anomalies or extreme points.<br/></p><ol start="3"><li><p style="margin-top: 0px">Pattern Recognition and Image Processing<br/></p></li></ol><ul><li><p style="margin-top: 0px">Boundary detection of objects in images<br/></p></li><li><p style="margin-top: 0px">Shape analysis<br/></p></li><li><p style="margin-top: 0px">Finding the outer contour of a cluster of pixels<br/></p></li></ul><ol start="4"><li><p style="margin-top: 0px">Geographic Information Systems (GIS)<br/></p></li></ol><ul><li><p style="margin-top: 0px">Finding the boundary of a set of geographic locations<br/></p></li><li><p style="margin-top: 0px">Defining service areas or coverage regions<br/></p></li></ul><ol start="5"><li><p style="margin-top: 0px">Robotics and Path Planning<br/></p></li></ol><ul><li><p style="margin-top: 0px">Determining safe regions<br/></p></li><li><p style="margin-top: 0px">Obstacle boundary representation<br/></p></li></ul><ol start="6"><li><p style="margin-top: 0px">Computational Geometry and Optimization<br/></p></li></ol><ul><li><p style="margin-top: 0px">Used in solving linear programming problems<br/></p></li><li><p style="margin-top: 0px">Many geometric algorithms use convex hull as a subroutine<br/></p></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is an artificial neuron, and how does it relate to a biological neuron?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020780">
+<!-- --> <p>An <b>artificial neuron</b> is a mathematical function that:<br/></p><ul><li>Takes multiple inputs<br/></li><li>Applies weights<br/></li><li>Adds a bias<br/></li><li>Passes the result through an activation function<br/></li></ul><p><b>Biological analogy</b><br/></p><ul><li>Dendrites → inputs<br/></li><li>Synapse strength → weights<br/></li><li>Cell firing threshold → bias<br/></li><li>Axon firing → output<br/></li></ul><p><b>Example</b><br/></p><p>Inputs: <code>[x1, x2, x3]</code><br/></p><p>Weights: <code>[w1, w2, w3]</code><br/></p><p>Output = activation(w1·x1 + w2·x2 + w3·x3 + bias)<br/></p><p>The neuron “fires” if the weighted sum is strong enough.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are weights and biases, and why are they critical in neural networks?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020789">
+<!-- --> <p><b>Weights</b><br/></p><ul><li>Control how important each input is<br/></li><li>Learned during training<br/></li></ul><p><b>Bias</b><br/></p><ul><li>Shifts the activation threshold<br/></li><li>Allows flexibility even when inputs are zero<br/></li></ul><p><b>Example</b><br/></p><p>Predicting house price:<br/></p><ul><li>Weight for “area” might be high<br/></li><li>Weight for “number of doors” might be low<br/></li><li>Bias sets the base price<br/></li></ul><p>Without weights → all inputs treated equally<br/></p><p>Without bias → model becomes too rigid<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the role of layers in a deep neural network?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020798">
+<!-- --> <p>Layers organize neurons into <b>levels of abstraction</b>.<br/></p><p><b>Types</b><br/></p><ul><li>Input layer: receives raw data<br/></li><li>Hidden layers: extract patterns<br/></li><li>Output layer: produces prediction<br/></li></ul><p><b>Example (image)</b><br/></p><ul><li>Layer 1: detects edges<br/></li><li>Layer 2: detects shapes<br/></li><li>Layer 3: detects objects<br/></li></ul><p>Each layer builds on the previous one.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does increasing the number of layers change model capacity and risk?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020807">
+<!-- --> <p>More layers:<br/></p><ul><li>Increase representational power<br/></li><li>Allow learning complex functions<br/></li></ul><p>But also:<br/></p><ul><li>Increase risk of overfitting<br/></li><li>Increase training difficulty<br/></li><li>Increase compute cost<br/></li></ul><p><b>Example</b><br/></p><ul><li>1–2 layers → simple patterns<br/></li><li>10+ layers → very complex patterns<br/></li></ul><p>Deep models require:<br/></p><ul><li>More data<br/></li><li>Regularization<br/></li><li>Careful architecture design<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why are deep neural networks more prone to overfitting?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020910">
+<!-- --> <p>Deep networks:<br/></p><ul><li>Have very high capacity<br/></li><li>Can memorize training data<br/></li></ul><p><b>Example</b><br/></p><p>Model learns:<br/></p><ul><li>Exact images<br/></li><li>Exact noise patterns<br/></li></ul><p>Result:<br/></p><ul><li>High training accuracy<br/></li><li>Poor test accuracy<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is dropout, and how does it reduce overfitting?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020919">
+<!-- --> <p>Dropout randomly <b>turns off neurons during training</b>.<br/></p><p><b>Effect</b><br/></p><ul><li>Network cannot rely on specific neurons<br/></li><li>Forces redundancy<br/></li><li>Encourages robust features<br/></li></ul><p><b>Example</b><br/></p><p>During one pass:<br/></p><ul><li><p style="margin-top: 0px">Some neurons are inactive<br/></p><p style="margin-top: 0px">Next pass:<br/></p></li><li><p style="margin-top: 0px">Different neurons are inactive<br/></p></li></ul><p>At inference:<br/></p><ul><li>All neurons are used, but scaled<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does L1/L2 regularization help in deep learning models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020929">
+<!-- --> <p><b>L1 regularization</b><br/></p><ul><li>Encourages sparsity<br/></li><li>Pushes some weights to zero<br/></li></ul><p><b>L2 regularization</b><br/></p><ul><li>Penalizes large weights<br/></li><li>Keeps weights small and smooth<br/></li></ul><p><b>Effect</b><br/></p><ul><li>Reduces model complexity<br/></li><li>Improves generalization<br/></li><li>Prevents extreme weight values<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why are Convolutional Neural Networks better suited for image data than fully connected networks?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020939">
+<!-- --> <p>Images have:<br/></p><ul><li>Spatial structure<br/></li><li>Local patterns<br/></li></ul><p>CNNs:<br/></p><ul><li>Preserve spatial relationships<br/></li><li>Use shared weights<br/></li><li>Require fewer parameters<br/></li></ul><p><b>Example</b><br/></p><p>Edge detected in top-left is useful in bottom-right too.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What problem does convolution solve in computer vision tasks?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020948">
+<!-- --> <p>Convolution:<br/></p><ul><li>Detects local features<br/></li><li>Reduces parameters<br/></li><li>Enables translation invariance<br/></li></ul><p>Instead of learning every pixel relationship separately, it learns reusable filters.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Name the Deep Learning frameworks and tools that you have used</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Commonly used deep learning frameworks and tools include:<br/></p><p><b>Core Deep Learning Frameworks</b><br/></p><ul><li><p style="margin-top: 0px">TensorFlow<br/></p></li><li><p style="margin-top: 0px">Keras<br/></p></li><li><p style="margin-top: 0px">PyTorch<br/></p></li><li><p style="margin-top: 0px">MXNet<br/></p></li><li><p style="margin-top: 0px">JAX<br/></p></li></ul><p><b>High-Level Libraries</b><br/></p><ul><li><p style="margin-top: 0px">FastAI (built on PyTorch)<br/></p></li><li><p style="margin-top: 0px">Hugging Face Transformers<br/></p></li></ul><p><b>Model Deployment and Serving</b><br/></p><ul><li><p style="margin-top: 0px">TensorFlow Serving<br/></p></li><li><p style="margin-top: 0px">TorchServe<br/></p></li><li><p style="margin-top: 0px">ONNX<br/></p></li><li><p style="margin-top: 0px">TensorRT<br/></p></li></ul><p><b>Data Handling and Preprocessing</b><br/></p><ul><li><p style="margin-top: 0px">NumPy<br/></p></li><li><p style="margin-top: 0px">Pandas<br/></p></li><li><p style="margin-top: 0px">OpenCV<br/></p></li><li><p style="margin-top: 0px">Scikit-learn<br/></p></li></ul><p><b>Experiment Tracking and Visualization</b><br/></p><ul><li><p style="margin-top: 0px">TensorBoard<br/></p></li><li><p style="margin-top: 0px">Weights &amp; Biases<br/></p></li><li><p style="margin-top: 0px">MLflow<br/></p></li></ul><p><b>Hardware Acceleration</b><br/></p><ul><li><p style="margin-top: 0px">CUDA<br/></p></li><li><p style="margin-top: 0px">cuDNN<br/></p></li></ul><p>In interviews, it is better to mention only the frameworks you have actually worked with and briefly describe how you used them (training models, experimentation, deployment, etc.).<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>List the commonly used data structures in deep learning</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Deep learning primarily works with numerical data. The most commonly used data structures are:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Scalars<br/></div><div> A single number (0-dimensional).<br/></div><div> Example: loss value = 0.25<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Vectors<br/></div><div> One-dimensional array of numbers.<br/></div><div> Example: [0.2, 0.8, 0.5]<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Matrices<br/></div><div> Two-dimensional array.<br/></div><div> Example:<br/></div><div> [[1, 2],<br/></div><div> [3, 4]]<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Tensors<br/></div><div> Multi-dimensional generalization of scalars, vectors, and matrices.<br/></div><div> Used to represent:<br/></div><p></p><ul><li><p style="margin-top: 0px">Images<br/></p></li><li><p style="margin-top: 0px">Batches of data<br/></p></li><li><p style="margin-top: 0px">Model parameters<br/></p></li></ul></li><li><p style="margin-top: 0px"></p><div>Arrays (NumPy arrays)<br/></div><div> Used for numerical computation before converting into tensors.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>DataLoader / Dataset structures (in PyTorch)<br/></div><div> Used to efficiently load data in batches.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Graph structures<br/></div><div> Used in computational graphs to represent operations and dependencies.<br/></div><p></p></li></ol><p>The most important data structure in deep learning is the tensor.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are tensors?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A tensor is a multi-dimensional array used to represent data in deep learning.<br/></p><p>It is a generalization of:<br/></p><ul><li><p style="margin-top: 0px">Scalar → 0D tensor<br/></p></li><li><p style="margin-top: 0px">Vector → 1D tensor<br/></p></li><li><p style="margin-top: 0px">Matrix → 2D tensor<br/></p></li><li><p style="margin-top: 0px">Higher dimensional array → 3D, 4D, or nD tensor<br/></p></li></ul><p>Examples:<br/></p><p></p><div>Scalar (0D):<br/></div><div> 5<br/></div><p></p><p></p><div>Vector (1D):<br/></div><div> [1, 2, 3]<br/></div><p></p><p></p><div>Matrix (2D):<br/></div><div> [[1, 2],<br/></div><div> [3, 4]]<br/></div><p></p><p></p><div>3D Tensor:<br/></div><div> Used for color images.<br/></div><div> Height × Width × Channels<br/></div><p></p><p></p><div>4D Tensor:<br/></div><div> Used for batch of images.<br/></div><div> Batch Size × Height × Width × Channels<br/></div><p></p><p>Why tensors are important:<br/></p><ul><li><p style="margin-top: 0px">They are the fundamental data structure in TensorFlow and PyTorch.<br/></p></li><li><p style="margin-top: 0px">They support GPU acceleration.<br/></p></li><li><p style="margin-top: 0px">They allow efficient large-scale numerical computation.<br/></p></li><li><p style="margin-top: 0px">All model parameters (weights and biases) are stored as tensors.<br/></p></li></ul><p>Tensors also track gradients during backpropagation in frameworks like PyTorch.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a computational graph? How is it useful for Deep Learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A computational graph is a directed graph that represents mathematical operations as nodes and data as edges.<br/></p><p>In simple terms:<br/></p><ul><li><p style="margin-top: 0px">Nodes represent operations (addition, multiplication, activation, etc.).<br/></p></li><li><p style="margin-top: 0px">Edges represent data (tensors) flowing between operations.<br/></p></li></ul><p>Example:<br/></p><p>If we compute:<br/></p><p>z = (x + y) * w<br/></p><p>The computational graph would look like:<br/></p><p></p><div>x ----<br/></div><div> → (+) → (*) → z<br/></div><div> y ----         ↑<br/></div><div> w<br/></div><p></p><p>Here:<br/></p><ul><li><p style="margin-top: 0px">Addition is one node.<br/></p></li><li><p style="margin-top: 0px">Multiplication is another node.<br/></p></li><li><p style="margin-top: 0px">x, y, and w are inputs.<br/></p></li><li><p style="margin-top: 0px">z is output.<br/></p></li></ul><p>Why computational graphs are useful:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Automatic Differentiation<br/></div><div> Deep learning relies on backpropagation.<br/></div><div> Computational graphs make it easy to compute gradients automatically using the chain rule.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Efficient Execution<br/></div><div> Frameworks optimize the graph to:<br/></div><p></p><ul><li><p style="margin-top: 0px">Reduce redundant computations<br/></p></li><li><p style="margin-top: 0px">Use parallel processing<br/></p></li><li><p style="margin-top: 0px">Run efficiently on GPUs<br/></p></li></ul></li><li><p style="margin-top: 0px"></p><div>Visualization<br/></div><div> Tools like TensorBoard allow visualization of the model architecture using computational graphs.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Debugging<br/></div><div> Helps understand how data flows through the network.<br/></div><p></p></li></ol><p>There are two types:<br/></p><p>Static computational graph<br/></p><ul><li><p style="margin-top: 0px">Defined once and then executed.<br/></p></li><li><p style="margin-top: 0px">Used in older TensorFlow versions.<br/></p></li></ul><p>Dynamic computational graph<br/></p><ul><li><p style="margin-top: 0px">Built during runtime.<br/></p></li><li><p style="margin-top: 0px">Used in PyTorch.<br/></p></li><li><p style="margin-top: 0px">Easier to debug and more flexible.<br/></p></li></ul><p data-is-last-node="" data-is-only-node="">Computational graphs are fundamental because they enable automatic gradient computation, which makes training deep neural networks possible.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the supervised and unsupervised learning algorithms in Deep Learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Supervised learning in deep learning involves training a model using labeled data. Each input has a corresponding correct output.<br/></p><p>Common supervised deep learning algorithms and models:<br/></p><ul><li><p style="margin-top: 0px">Artificial Neural Networks (ANN)<br/></p></li><li><p style="margin-top: 0px">Convolutional Neural Networks (CNN) – used in image classification<br/></p></li><li><p style="margin-top: 0px">Recurrent Neural Networks (RNN) – used in sequence modeling<br/></p></li><li><p style="margin-top: 0px">LSTM and GRU – improved RNN variants<br/></p></li><li><p style="margin-top: 0px">Transformers – used in NLP and vision tasks<br/></p></li><li><p style="margin-top: 0px">Deep feedforward networks for regression and classification<br/></p></li></ul><p>Applications:<br/></p><ul><li><p style="margin-top: 0px">Image classification<br/></p></li><li><p style="margin-top: 0px">Speech recognition<br/></p></li><li><p style="margin-top: 0px">Sentiment analysis<br/></p></li><li><p style="margin-top: 0px">Fraud detection<br/></p></li></ul><p>Unsupervised learning involves training on unlabeled data. The model tries to discover patterns or structure in the data.<br/></p><p>Common unsupervised deep learning algorithms and models:<br/></p><ul><li><p style="margin-top: 0px">Autoencoders<br/></p></li><li><p style="margin-top: 0px">Variational Autoencoders (VAE)<br/></p></li><li><p style="margin-top: 0px">Generative Adversarial Networks (GANs)<br/></p></li><li><p style="margin-top: 0px">Restricted Boltzmann Machines (RBM)<br/></p></li><li><p style="margin-top: 0px">Self-Organizing Maps (SOM)<br/></p></li><li><p style="margin-top: 0px">Deep clustering models<br/></p></li></ul><p>Applications:<br/></p><ul><li><p style="margin-top: 0px">Dimensionality reduction<br/></p></li><li><p style="margin-top: 0px">Feature extraction<br/></p></li><li><p style="margin-top: 0px">Anomaly detection<br/></p></li><li><p style="margin-top: 0px">Data generation<br/></p></li></ul><p>The key difference is whether labeled outputs are provided during training.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are Autoencoders? What is the use of Autoencoders?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>An autoencoder is a type of neural network used to learn compressed representations of data.<br/></p><p>It consists of two main parts:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Encoder<br/></div><div> Compresses the input into a lower-dimensional representation called the latent vector.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Decoder<br/></div><div> Reconstructs the original input from the latent representation.<br/></div><p></p></li></ol><p>Structure:<br/></p><p>Input → Encoder → Latent Representation → Decoder → Output<br/></p><p>The goal is to minimize reconstruction error between input and output.<br/></p><p>Uses of autoencoders:<br/></p><ul><li><p style="margin-top: 0px">Dimensionality reduction (alternative to PCA)<br/></p></li><li><p style="margin-top: 0px">Feature learning<br/></p></li><li><p style="margin-top: 0px">Noise removal (Denoising Autoencoders)<br/></p></li><li><p style="margin-top: 0px">Anomaly detection (high reconstruction error indicates abnormal data)<br/></p></li><li><p style="margin-top: 0px">Data compression<br/></p></li><li><p style="margin-top: 0px">Pretraining deep networks (historically)<br/></p></li></ul><p>Autoencoders are unsupervised because they do not require labeled data. The input itself acts as the target.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are GANs?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>GAN stands for Generative Adversarial Network.<br/></p><p>It consists of two neural networks competing against each other:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Generator<br/></div><div> Tries to generate realistic fake data.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Discriminator<br/></div><div> Tries to distinguish between real data and fake data.<br/></div><p></p></li></ol><p>Training process:<br/></p><ul><li><p style="margin-top: 0px">The generator creates fake samples.<br/></p></li><li><p style="margin-top: 0px">The discriminator evaluates whether they are real or fake.<br/></p></li><li><p style="margin-top: 0px">The generator improves to fool the discriminator.<br/></p></li><li><p style="margin-top: 0px">The discriminator improves to detect fake samples.<br/></p></li></ul><p>This adversarial process continues until the generator produces highly realistic outputs.<br/></p><p>Uses of GANs:<br/></p><ul><li><p style="margin-top: 0px">Image generation<br/></p></li><li><p style="margin-top: 0px">Deepfake creation<br/></p></li><li><p style="margin-top: 0px">Super-resolution<br/></p></li><li><p style="margin-top: 0px">Style transfer<br/></p></li><li><p style="margin-top: 0px">Data augmentation<br/></p></li><li><p style="margin-top: 0px">Text-to-image generation<br/></p></li></ul><p>GANs are powerful generative models capable of producing realistic synthetic data.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Explain the Boltzmann machine. What is a Restricted Boltzmann machine?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Boltzmann Machine is a type of stochastic recurrent neural network.<br/></p><p>It is an energy-based model that learns probability distributions over inputs.<br/></p><p>Characteristics:<br/></p><ul><li><p style="margin-top: 0px">Fully connected network<br/></p></li><li><p style="margin-top: 0px">Connections exist between all visible and hidden units<br/></p></li><li><p style="margin-top: 0px">Undirected connections<br/></p></li><li><p style="margin-top: 0px">Uses probabilistic sampling<br/></p></li></ul><p>Training is computationally expensive because of the full connectivity between units.<br/></p><p>Restricted Boltzmann Machine (RBM)<br/></p><p>RBM is a simplified version of Boltzmann Machine.<br/></p><p>Key restriction:<br/></p><ul><li><p style="margin-top: 0px">No connections between visible units<br/></p></li><li><p style="margin-top: 0px">No connections between hidden units<br/></p></li><li><p style="margin-top: 0px">Only connections between visible and hidden layers<br/></p></li></ul><p>Structure:<br/></p><p>Visible Layer ↔ Hidden Layer<br/></p><p>Because of this restriction:<br/></p><ul><li><p style="margin-top: 0px">Training becomes much more efficient.<br/></p></li><li><p style="margin-top: 0px">Easier to compute gradients.<br/></p></li></ul><p>Uses of RBM:<br/></p><ul><li><p style="margin-top: 0px">Dimensionality reduction<br/></p></li><li><p style="margin-top: 0px">Feature extraction<br/></p></li><li><p style="margin-top: 0px">Collaborative filtering (used in recommendation systems)<br/></p></li><li><p style="margin-top: 0px">Pretraining deep belief networks<br/></p></li></ul><p>RBMs were historically important in early deep learning research<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are Seq2Seq (encoder-decoder) models? How is it different from Autoencoders?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Seq2Seq (Sequence-to-Sequence) models are neural network architectures used to transform one sequence into another sequence.<br/></p><p>Common in:<br/></p><ul><li><p style="margin-top: 0px">Machine translation<br/></p></li><li><p style="margin-top: 0px">Text summarization<br/></p></li><li><p style="margin-top: 0px">Speech recognition<br/></p></li><li><p style="margin-top: 0px">Chatbots<br/></p></li></ul><p>Structure:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Encoder<br/></div><div> Takes input sequence and converts it into a context vector.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Decoder<br/></div><div> Takes context vector and generates output sequence.<br/></div><p></p></li></ol><p>Input Sequence → Encoder → Context Vector → Decoder → Output Sequence<br/></p><p>Example:<br/></p><p></p><div>Input: "Hello"<br/></div><div> Output: "Bonjour"<br/></div><p></p><p>Difference between Seq2Seq and Autoencoder:<br/></p><p>Autoencoder:<br/></p><ul><li><p style="margin-top: 0px">Input and output are the same.<br/></p></li><li><p style="margin-top: 0px">Goal is reconstruction.<br/></p></li><li><p style="margin-top: 0px">Used for representation learning.<br/></p></li></ul><p>Seq2Seq:<br/></p><ul><li><p style="margin-top: 0px">Input and output are different sequences.<br/></p></li><li><p style="margin-top: 0px">Goal is transformation.<br/></p></li><li><p style="margin-top: 0px">Used for translation, summarization, etc.<br/></p></li></ul><p>Another difference:<br/></p><p>Autoencoders typically compress information into a latent space for reconstruction.<br/></p><p>Seq2Seq models use the encoded representation to generate a different output sequence.<br/></p><p>Modern Seq2Seq models use attention mechanisms and transformers instead of basic RNNs.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are ensemble learning methods?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<div class="flex flex-col text-sm pb-25"><article class="text-token-text-primary w-full focus:outline-none [--shadow-height:45px] has-data-writing-block:pointer-events-none has-data-writing-block:-mt-(--shadow-height) has-data-writing-block:pt-(--shadow-height) [&amp;:has([data-writing-block])&gt;*]:pointer-events-auto scroll-mt-[calc(var(--header-height)+min(200px,max(70px,20svh)))]" data-scroll-anchor="true" data-testid="conversation-turn-16" data-turn="assistant" data-turn-id="request-WEB:a93440d4-34e4-48f3-9c2d-1fbf18d084f8-8" dir="auto" tabindex="-1"><div class="text-base my-auto mx-auto pb-10 [--thread-content-margin:--spacing(4)] @w-sm/main:[--thread-content-margin:--spacing(6)] @w-lg/main:[--thread-content-margin:--spacing(16)] px-(--thread-content-margin)"><div class="[--thread-content-max-width:40rem] @w-lg/main:[--thread-content-max-width:48rem] mx-auto max-w-(--thread-content-max-width) flex-1 group/turn-messages focus-visible:outline-hidden relative flex w-full min-w-0 flex-col agent-turn" tabindex="-1"><div class="flex max-w-full flex-col grow"><div class="min-h-8 text-message relative flex w-full flex-col items-end gap-2 text-start break-words whitespace-normal [.text-message+&amp;]:mt-1" data-message-author-role="assistant" data-message-id="a5a73042-39db-4a65-8c8a-d57ac1311714" data-message-model-slug="gpt-5-2" dir="auto"><div class="flex w-full flex-col gap-1 empty:hidden first:pt-[1px]"><div class="markdown prose dark:prose-invert w-full wrap-break-word light markdown-new-styling"><p>Ensemble learning methods combine multiple models to improve overall performance.<br/></p><p>The idea:<br/></p><p>Multiple weak or moderate models together can produce stronger results than a single model.<br/></p><p>Main types:<br/></p><ol><li><p style="margin-top: 0px">Bagging (Bootstrap Aggregating)<br/></p><ul><li><p style="margin-top: 0px">Models are trained independently on different random subsets of data.<br/></p></li><li><p style="margin-top: 0px">Final output is averaged (regression) or majority vote (classification).<br/></p></li><li><p style="margin-top: 0px">Example: Random Forest<br/></p></li></ul></li><li><p style="margin-top: 0px">Boosting<br/></p><ul><li><p style="margin-top: 0px">Models are trained sequentially.<br/></p></li><li><p style="margin-top: 0px">Each new model focuses on correcting errors of previous models.<br/></p></li><li><p style="margin-top: 0px">Examples:<br/></p><ul><li><p style="margin-top: 0px">AdaBoost<br/></p></li><li><p style="margin-top: 0px">Gradient Boosting<br/></p></li><li><p style="margin-top: 0px">XGBoost<br/></p></li><li><p style="margin-top: 0px">LightGBM<br/></p></li></ul></li></ul></li><li><p style="margin-top: 0px">Stacking<br/></p><ul><li><p style="margin-top: 0px">Multiple models are trained.<br/></p></li><li><p style="margin-top: 0px">Their outputs are used as inputs to a final meta-model.<br/></p></li></ul></li></ol><p>Benefits:<br/></p><ul><li><p style="margin-top: 0px">Reduced variance<br/></p></li><li><p style="margin-top: 0px">Reduced bias<br/></p></li><li><p style="margin-top: 0px">Better generalization<br/></p></li><li><p style="margin-top: 0px">Improved robustness<br/></p></li></ul><p>In deep learning, ensembles can be created by:<br/></p><ul><li><p style="margin-top: 0px">Training multiple neural networks with different initializations<br/></p></li><li><p style="margin-top: 0px">Using different architectures<br/></p></li><li><p style="margin-top: 0px">Averaging predictions<br/></p></li></ul><p data-is-last-node="" data-is-only-node="">Ensemble methods often achieve higher accuracy in real-world machine learning competitions and production systems.<br/></p></div></div></div></div><div class="z-0 flex min-h-[46px] justify-start"><br/></div><div class="mt-3 w-full empty:hidden"><div class="text-center"><br/></div></div></div></div></article></div><div aria-hidden="true" class="pointer-events-none h-px w-px absolute bottom-0" data-edge="true"><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What happens during the forward pass in a neural network?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020817">
+<!-- --> <p>During the <b>forward pass</b>:<br/></p><ul><li>Input flows from left to right<br/></li><li>Each layer computes outputs using current weights<br/></li><li>Final output is produced<br/></li></ul><p><b>Example</b><br/></p><p>Input image → convolution layers → dense layers → class probabilities<br/></p><p>No learning happens here; it’s just <b>prediction using current parameters</b>.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why do we need a loss function in deep learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020826">
+<!-- --> <p>The loss function measures <b>how wrong the prediction is</b>.<br/></p><p>It provides:<br/></p><ul><li>A numeric error signal<br/></li><li>Direction for improvement<br/></li></ul><p><b>Example</b><br/></p><p>Actual price = 100<br/></p><p>Predicted price = 130<br/></p><p>Loss = difference between 100 and 130<br/></p><p>Without loss:<br/></p><ul><li>Model has no idea what “better” means<br/></li><li>No way to update weights meaningfully<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does the choice of loss function depend on the problem type (classification vs regression)?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020835">
+<!-- --> <p>Loss functions match the nature of the output.<br/></p><p><b>Regression</b><br/></p><ul><li>Output is continuous<br/></li><li>Common loss: Mean Squared Error (MSE)<br/></li></ul><p>Example:<br/></p><ul><li>Predicting house prices<br/></li></ul><p><b>Classification</b><br/></p><ul><li>Output is a class or probability<br/></li><li>Common loss: Cross-Entropy Loss<br/></li></ul><p>Example:<br/></p><ul><li>Email spam vs not spam<br/></li></ul><p>Using the wrong loss leads to:<br/></p><ul><li>Slow learning<br/></li><li>Poor predictions<br/></li><li>Incorrect gradients<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between Single-Layer and Multi-Layer Perceptron?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Single-Layer Perceptron (SLP):<br/></p><ul><li><p style="margin-top: 0px">Has only one layer of trainable weights.<br/></p></li><li><p style="margin-top: 0px">No hidden layers.<br/></p></li><li><p style="margin-top: 0px">Input is directly connected to output.<br/></p></li><li><p style="margin-top: 0px">Can solve only linearly separable problems.<br/></p></li></ul><p></p><div>Structure:<br/></div><div> Input → Output<br/></div><p></p><p></p><div>Limitation:<br/></div><div> It cannot solve non-linear problems such as the XOR problem.<br/></div><p></p><p>Multi-Layer Perceptron (MLP):<br/></p><ul><li><p style="margin-top: 0px">Has one or more hidden layers.<br/></p></li><li><p style="margin-top: 0px">Uses activation functions between layers.<br/></p></li><li><p style="margin-top: 0px">Can solve non-linear problems.<br/></p></li><li><p style="margin-top: 0px">More powerful and flexible than SLP.<br/></p></li></ul><p></p><div>Structure:<br/></div><div> Input → Hidden Layer(s) → Output<br/></div><p></p><p>Key difference:<br/></p><p>SLP can model only linear decision boundaries, while MLP can model complex non-linear decision boundaries due to hidden layers and activation functions.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the components of a neural network?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>The main components of a neural network are:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Input Layer<br/></div><div> Receives input features.<br/></div><div> Example: pixels of an image, numerical features, text embeddings.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Hidden Layers<br/></div><div> Perform intermediate computations and feature extraction.<br/></div><div> Can be multiple layers.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Output Layer<br/></div><div> Produces final prediction.<br/></div><div> Example: class probabilities, regression value.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Weights<br/></div><div> Parameters that determine the strength of connection between neurons.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Bias<br/></div><div> Additional parameter added to shift the activation function.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Activation Function<br/></div><div> Introduces non-linearity.<br/></div><div> Examples: ReLU, sigmoid, tanh, softmax.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Loss Function<br/></div><div> Measures difference between predicted output and true output.<br/></div><div> Examples: MSE, Cross-Entropy.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Optimizer<br/></div><div> Updates weights to minimize loss.<br/></div><div> Examples: Gradient Descent, Adam.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Backpropagation Mechanism<br/></div><div> Computes gradients and adjusts weights using the chain rule.<br/></div><p></p></li></ol><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Explain how a neural network works.</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A neural network works in three main stages:<br/></p><ol><li><p style="margin-top: 0px">Forward Propagation<br/></p></li></ol><p>Each neuron performs:<br/></p><p>Output = Activation(Weighted Sum of Inputs + Bias)<br/></p><p></p><div>Mathematically:<br/></div><div> z = W·x + b<br/></div><div> a = activation(z)<br/></div><p></p><p>Data flows from input layer to output layer.<br/></p><ol start="2"><li><p style="margin-top: 0px">Loss Computation<br/></p></li></ol><p>The predicted output is compared with the actual target using a loss function.<br/></p><p></p><div>Example:<br/></div><div> Loss = (Predicted − Actual)²<br/></div><p></p><ol start="3"><li><p style="margin-top: 0px">Backpropagation<br/></p></li></ol><ul><li><p style="margin-top: 0px">The loss is propagated backward.<br/></p></li><li><p style="margin-top: 0px">Gradients of the loss with respect to each weight are computed using the chain rule.<br/></p></li><li><p style="margin-top: 0px">Weights are updated using an optimizer.<br/></p></li></ul><p></p><div>Update rule (simplified):<br/></div><div> New Weight = Old Weight − Learning Rate × Gradient<br/></div><p></p><p>This process repeats over many iterations (epochs) until the model minimizes loss.<br/></p><p></p><div>In summary:<br/></div><div> Input → Linear Combination → Activation → Loss → Backpropagation → Weight Update<br/></div><p></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What role do weights and bias play in a neural network? How are the weights initialized?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Role of Weights:<br/></p><ul><li><p style="margin-top: 0px">Weights determine how strongly one neuron influences another.<br/></p></li><li><p style="margin-top: 0px">They control how input features are combined.<br/></p></li><li><p style="margin-top: 0px">During training, weights are adjusted to minimize loss.<br/></p></li></ul><p>Role of Bias:<br/></p><ul><li><p style="margin-top: 0px">Bias shifts the activation function.<br/></p></li><li><p style="margin-top: 0px">Allows the model to fit data that does not pass through the origin.<br/></p></li><li><p style="margin-top: 0px">Increases flexibility of the model.<br/></p></li></ul><p>Example:<br/></p><p></p><div>Without bias:<br/></div><div> y = wx<br/></div><p></p><p></p><div>With bias:<br/></div><div> y = wx + b<br/></div><p></p><p>Bias helps the model move the decision boundary.<br/></p><p>How are weights initialized?<br/></p><p>Weights should not be initialized to zero. Instead, they are initialized with small random values.<br/></p><p>Common initialization methods:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Random Initialization<br/></div><div> Small random numbers from normal or uniform distribution.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Xavier (Glorot) Initialization<br/></div><div> Used for sigmoid and tanh activations.<br/></div><div> Keeps variance stable across layers.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>He Initialization<br/></div><div> Used for ReLU activation.<br/></div><div> Designed to prevent vanishing/exploding gradients.<br/></div><p></p></li></ol><p>Proper initialization helps:<br/></p><ul><li><p style="margin-top: 0px">Faster convergence<br/></p></li><li><p style="margin-top: 0px">Stable gradient flow<br/></p></li><li><p style="margin-top: 0px">Avoiding vanishing or exploding gradients<br/></p></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Can a neural network be trained by initializing all the weights to 0 or a constant?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>No, it should not be trained by initializing all weights to 0 or the same constant.<br/></p><p>Reason: Symmetry Problem<br/></p><p>If all weights are initialized to the same value:<br/></p><ul><li><p style="margin-top: 0px">All neurons in a layer will produce the same output.<br/></p></li><li><p style="margin-top: 0px">They will receive the same gradient during backpropagation.<br/></p></li><li><p style="margin-top: 0px">They will update in the same way.<br/></p></li><li><p style="margin-top: 0px">All neurons will remain identical.<br/></p></li></ul><p>This means the network behaves as if each layer has only one neuron, reducing its learning capacity.<br/></p><p>Why random initialization is necessary:<br/></p><p></p><div>Random initialization breaks symmetry between neurons.<br/></div><div> Different neurons learn different features.<br/></div><p></p><p>Important distinction:<br/></p><p></p><div>Bias can sometimes be initialized to zero.<br/></div><div> Weights must be initialized randomly.<br/></div><p></p><p data-is-last-node="" data-is-only-node="">Initializing all weights to zero prevents effective learning in multi-layer neural networks.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is forward and backward propagation?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Forward propagation is the process where input data passes through the neural network to produce an output.<br/></p><p>Steps:<br/></p><ol><li><p style="margin-top: 0px">Input is fed into the network.<br/></p></li><li><p style="margin-top: 0px"></p><div>Each layer computes a weighted sum:<br/></div><div> z = W·x + b<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Activation function is applied:<br/></div><div> a = activation(z)<br/></div><p></p></li><li><p style="margin-top: 0px">This continues layer by layer until final output is produced.<br/></p></li><li><p style="margin-top: 0px">Loss is computed using a loss function.<br/></p></li></ol><p>Backward propagation is the process of computing gradients of the loss with respect to weights and biases and updating them.<br/></p><p>Steps:<br/></p><ol><li><p style="margin-top: 0px">Compute derivative of loss with respect to output.<br/></p></li><li><p style="margin-top: 0px">Use chain rule to propagate gradients backward through each layer.<br/></p></li><li><p style="margin-top: 0px">Compute gradients for weights and biases.<br/></p></li><li><p style="margin-top: 0px"></p><div>Update parameters using an optimizer:<br/></div><div> Weight = Weight − Learning Rate × Gradient<br/></div><p></p></li></ol><p></p><div>Forward pass computes predictions.<br/></div><div> Backward pass updates parameters to reduce error.<br/></div><p></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the challenges with gradient descent, and what are the treatments?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Challenges:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Slow convergence<br/></div><div> Especially in large datasets or poorly conditioned surfaces.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Getting stuck in local minima or saddle points<br/></div><div> Loss surface may not be smooth.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Oscillation<br/></div><div> Occurs when gradients are steep in one direction.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Vanishing gradients<br/></div><div> Gradients become too small in deep networks.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Exploding gradients<br/></div><div> Gradients become too large and destabilize training.<br/></div><p></p></li></ol><p>Treatments:<br/></p><ul><li><p style="margin-top: 0px">Use better optimizers like Adam or RMSProp.<br/></p></li><li><p style="margin-top: 0px">Use momentum to smooth oscillations.<br/></p></li><li><p style="margin-top: 0px">Proper weight initialization (He or Xavier).<br/></p></li><li><p style="margin-top: 0px">Normalize inputs and use Batch Normalization.<br/></p></li><li><p style="margin-top: 0px">Gradient clipping to handle exploding gradients.<br/></p></li><li><p style="margin-top: 0px">Learning rate scheduling.<br/></p></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Adaptive Moment Estimation (Adam)?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Adam is an optimization algorithm that combines:<br/></p><ul><li><p style="margin-top: 0px">Momentum<br/></p></li><li><p style="margin-top: 0px">RMSProp<br/></p></li></ul><p>It maintains two moving averages:<br/></p><ol><li><p style="margin-top: 0px">First moment (mean of gradients)<br/></p></li><li><p style="margin-top: 0px">Second moment (variance of gradients)<br/></p></li></ol><p>Update steps:<br/></p><ul><li><p style="margin-top: 0px">Compute gradient.<br/></p></li><li><p style="margin-top: 0px">Update moving averages.<br/></p></li><li><p style="margin-top: 0px">Correct bias in early steps.<br/></p></li><li><p style="margin-top: 0px">Update weights using adaptive learning rate.<br/></p></li></ul><p>Advantages:<br/></p><ul><li><p style="margin-top: 0px">Fast convergence<br/></p></li><li><p style="margin-top: 0px">Handles sparse gradients well<br/></p></li><li><p style="margin-top: 0px">Less sensitive to learning rate tuning<br/></p></li><li><p style="margin-top: 0px">Works well in large models<br/></p></li></ul><p>Adam adapts the learning rate individually for each parameter<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the vanishing gradient problem? How is it different from the exploding gradient problem?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Vanishing gradient problem:<br/></p><p>During backpropagation in deep networks, gradients become extremely small.<br/></p><p>As gradients move backward through many layers, they get multiplied repeatedly. If values are less than 1, gradients shrink exponentially.<br/></p><p>Consequences:<br/></p><ul><li><p style="margin-top: 0px">Early layers learn very slowly.<br/></p></li><li><p style="margin-top: 0px">Training becomes ineffective.<br/></p></li><li><p style="margin-top: 0px">Common with sigmoid and tanh activations.<br/></p></li></ul><p>Exploding gradient problem:<br/></p><p>Gradients grow exponentially during backpropagation.<br/></p><p>Consequences:<br/></p><ul><li><p style="margin-top: 0px">Extremely large weight updates.<br/></p></li><li><p style="margin-top: 0px">Unstable training.<br/></p></li><li><p style="margin-top: 0px">Loss becomes NaN.<br/></p></li><li><p style="margin-top: 0px">Model diverges.<br/></p></li></ul><p>Difference:<br/></p><p></p><div>Vanishing gradients → gradients approach zero → slow learning<br/></div><div> Exploding gradients → gradients become very large → unstable learning<br/></div><p></p><p>Both problems are common in deep networks and RNNs.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the ways to treat the vanishing and exploding gradient problem?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>For vanishing gradients:<br/></p><ul><li><p style="margin-top: 0px">Use ReLU activation instead of sigmoid/tanh.<br/></p></li><li><p style="margin-top: 0px">Use proper initialization (He or Xavier).<br/></p></li><li><p style="margin-top: 0px">Use Batch Normalization.<br/></p></li><li><p style="margin-top: 0px">Use residual connections (ResNet).<br/></p></li><li><p style="margin-top: 0px">Use LSTM or GRU for sequence models.<br/></p></li></ul><p>For exploding gradients:<br/></p><ul><li><p style="margin-top: 0px">Gradient clipping.<br/></p></li><li><p style="margin-top: 0px">Proper weight initialization.<br/></p></li><li><p style="margin-top: 0px">Lower learning rate.<br/></p></li><li><p style="margin-top: 0px">Batch normalization.<br/></p></li><li><p style="margin-top: 0px">Use regularization.<br/></p></li></ul><p>These techniques stabilize gradient flow and improve deep network training.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are batch, mini-batch, and stochastic gradient descent? Which one would you use and why?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Batch Gradient Descent:<br/></p><ul><li><p style="margin-top: 0px">Uses entire dataset to compute gradient.<br/></p></li><li><p style="margin-top: 0px">Stable but slow.<br/></p></li><li><p style="margin-top: 0px">Not suitable for large datasets.<br/></p></li></ul><p>Stochastic Gradient Descent (SGD):<br/></p><ul><li><p style="margin-top: 0px">Uses one data point at a time.<br/></p></li><li><p style="margin-top: 0px">Fast updates.<br/></p></li><li><p style="margin-top: 0px">Noisy and unstable.<br/></p></li></ul><p>Mini-Batch Gradient Descent:<br/></p><ul><li><p style="margin-top: 0px">Uses small batch of data (e.g., 32, 64, 128).<br/></p></li><li><p style="margin-top: 0px">Balanced approach.<br/></p></li><li><p style="margin-top: 0px">Faster than batch.<br/></p></li><li><p style="margin-top: 0px">More stable than pure SGD.<br/></p></li><li><p style="margin-top: 0px">Efficient on GPUs.<br/></p></li></ul><p>In practice, mini-batch gradient descent is preferred because:<br/></p><ul><li><p style="margin-top: 0px">It balances stability and speed.<br/></p></li><li><p style="margin-top: 0px">Efficient for parallel computation.<br/></p></li><li><p style="margin-top: 0px">Works well in large datasets.<br/></p></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between epoch, batch, and iteration?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Epoch:<br/></p><p>One complete pass through the entire dataset.<br/></p><p>Batch:<br/></p><p>A subset of the dataset used in one forward and backward pass.<br/></p><p>Iteration:<br/></p><p>One update step of the model parameters.<br/></p><p>Relationship:<br/></p><p>Iterations per epoch = Total samples / Batch size<br/></p><p><br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Explain the Learning Rate in a neural network model.</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Learning rate controls how much weights are updated during training.<br/></p><p>Update rule:<br/></p><p>Weight = Weight − Learning Rate × Gradient<br/></p><p>If learning rate is too low:<br/></p><ul><li><p style="margin-top: 0px">Training is very slow.<br/></p></li><li><p style="margin-top: 0px">May get stuck in local minima.<br/></p></li><li><p style="margin-top: 0px">Requires many epochs.<br/></p></li></ul><p>If learning rate is too high:<br/></p><ul><li><p style="margin-top: 0px">Training becomes unstable.<br/></p></li><li><p style="margin-top: 0px">Loss may oscillate.<br/></p></li><li><p style="margin-top: 0px">May diverge.<br/></p></li><li><p style="margin-top: 0px">Model may never converge.<br/></p></li></ul><p>Ideal learning rate:<br/></p><ul><li><p style="margin-top: 0px">Large enough for fast convergence.<br/></p></li><li><p style="margin-top: 0px">Small enough to avoid overshooting.<br/></p></li></ul><p>Techniques:<br/></p><ul><li><p style="margin-top: 0px">Learning rate scheduling<br/></p></li><li><p style="margin-top: 0px">Reduce on plateau<br/></p></li><li><p style="margin-top: 0px">Cyclical learning rates<br/></p></li><li><p style="margin-top: 0px">Warmup strategies<br/></p></li></ul><div><hr/><br/></div><h3><br/></h3><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How would you use backpropagation?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Backpropagation is used to train neural networks.<br/></p><p>Steps to use backpropagation:<br/></p><ol><li><p style="margin-top: 0px">Initialize weights randomly.<br/></p></li><li><p style="margin-top: 0px">Perform forward propagation to compute output.<br/></p></li><li><p style="margin-top: 0px">Compute loss between predicted and actual output.<br/></p></li><li><p style="margin-top: 0px">Compute gradients of loss with respect to each parameter using chain rule.<br/></p></li><li><p style="margin-top: 0px">Update weights using gradient descent or an optimizer.<br/></p></li><li><p style="margin-top: 0px">Repeat for multiple epochs until loss is minimized.<br/></p></li></ol><p data-is-last-node="" data-is-only-node="">Backpropagation enables the network to learn by systematically reducing prediction error through gradient-based optimization.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is an activation function, and why is it needed?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>An activation function is a mathematical function applied to the output of a neuron after the weighted sum of inputs is computed.<br/></p><p>For a neuron:<br/></p><p></p><div>z = W·x + b<br/></div><div> a = activation(z)<br/></div><p></p><p>The activation function introduces non-linearity into the model.<br/></p><p>Why it is needed:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Without activation functions, a neural network becomes a linear model.<br/></div><div> Multiple linear layers collapse into a single linear transformation.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Real-world problems are non-linear.<br/></div><div> Tasks like image recognition, speech recognition, and language modeling require modeling complex relationships.<br/></div><p></p></li><li><p style="margin-top: 0px">Activation functions allow the network to learn complex patterns by transforming linear combinations into non-linear mappings.<br/></p></li></ol><p>Common activation functions:<br/></p><ul><li><p style="margin-top: 0px">Sigmoid<br/></p></li><li><p style="margin-top: 0px">Tanh<br/></p></li><li><p style="margin-top: 0px">ReLU<br/></p></li><li><p style="margin-top: 0px">LeakyReLU<br/></p></li><li><p style="margin-top: 0px">Softmax<br/></p></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Which activation function do we use for each layer?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Choice of activation depends on the type of problem and layer.<br/></p><p>Hidden layers:<br/></p><ul><li><p style="margin-top: 0px">ReLU is most commonly used.<br/></p></li><li><p style="margin-top: 0px">LeakyReLU is used when avoiding dying ReLU problem.<br/></p></li><li><p style="margin-top: 0px">Tanh is sometimes used but less common in deep networks.<br/></p></li></ul><p>Output layer:<br/></p><p>For binary classification:<br/></p><ul><li><p style="margin-top: 0px">Sigmoid<br/></p></li></ul><p>For multi-class classification:<br/></p><ul><li><p style="margin-top: 0px">Softmax<br/></p></li></ul><p>For regression:<br/></p><ul><li><p style="margin-top: 0px">No activation (linear output)<br/></p></li></ul><p>For multi-label classification:<br/></p><ul><li><p style="margin-top: 0px">Sigmoid (one per output unit)<br/></p></li></ul><p>General rule:<br/></p><ul><li><p style="margin-top: 0px">Hidden layers → ReLU (or variants)<br/></p></li><li><p style="margin-top: 0px">Output layer → Depends on task type<br/></p></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why can we not use sigmoid or tanh to activate the hidden layer of the neural network?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Sigmoid and tanh can technically be used in hidden layers, but they create practical problems in deep networks.<br/></p><p>Main issues:<br/></p><ol><li><p style="margin-top: 0px">Vanishing gradient problem<br/></p></li></ol><p></p><div>Sigmoid and tanh saturate for large positive or negative values.<br/></div><div> Their derivatives become very small near extremes.<br/></div><p></p><p>During backpropagation, small gradients get multiplied across many layers, causing gradients to shrink toward zero.<br/></p><p>This slows learning in early layers.<br/></p><ol start="2"><li><p style="margin-top: 0px">Saturation problem<br/></p></li></ol><p>When inputs fall in saturated regions:<br/></p><ul><li><p style="margin-top: 0px">Output becomes almost constant.<br/></p></li><li><p style="margin-top: 0px">Neurons stop learning effectively.<br/></p></li></ul><ol start="3"><li><p style="margin-top: 0px">Sigmoid is not zero-centered<br/></p></li></ol><p>Sigmoid outputs values between 0 and 1.<br/></p><p>This causes gradients to have consistent signs, leading to inefficient weight updates.<br/></p><p>Tanh partially solves this because it is zero-centered, but it still suffers from vanishing gradients.<br/></p><p>For deep networks, ReLU works better because:<br/></p><ul><li><p style="margin-top: 0px">It does not saturate for positive inputs.<br/></p></li><li><p style="margin-top: 0px">It has constant gradient (1) for positive region.<br/></p></li><li><p style="margin-top: 0px">It trains faster.<br/></p></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between ReLU and LeakyReLU functions?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>ReLU (Rectified Linear Unit):<br/></p><p>f(x) = max(0, x)<br/></p><p></p><div>If x &gt; 0 → output = x<br/></div><div> If x ≤ 0 → output = 0<br/></div><p></p><p>Advantages:<br/></p><ul><li><p style="margin-top: 0px">Simple and computationally efficient.<br/></p></li><li><p style="margin-top: 0px">Reduces vanishing gradient problem.<br/></p></li><li><p style="margin-top: 0px">Fast convergence.<br/></p></li></ul><p></p><div>Problem:<br/></div><div> Dying ReLU problem<br/></div><div> If inputs are always negative, neuron outputs 0 and gradient becomes 0.<br/></div><div> Neuron stops updating permanently.<br/></div><p></p><p>LeakyReLU:<br/></p><p></p><div>f(x) = x if x &gt; 0<br/></div><div> f(x) = αx if x ≤ 0<br/></div><p></p><p>Where α is a small constant (e.g., 0.01).<br/></p><p>Difference:<br/></p><p>ReLU:<br/></p><ul><li><p style="margin-top: 0px">Zero gradient for negative inputs.<br/></p></li></ul><p>LeakyReLU:<br/></p><ul><li><p style="margin-top: 0px">Small non-zero gradient for negative inputs.<br/></p></li><li><p style="margin-top: 0px">Prevents neurons from dying completely.<br/></p></li></ul><p>LeakyReLU improves gradient flow in negative region and reduces the dying ReLU issue.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How can a Tanh activation function help the neural network converge faster than a logistic sigmoid?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<div class="flex flex-col text-sm pb-25"><article class="text-token-text-primary w-full focus:outline-none [--shadow-height:45px] has-data-writing-block:pointer-events-none has-data-writing-block:-mt-(--shadow-height) has-data-writing-block:pt-(--shadow-height) [&amp;:has([data-writing-block])&gt;*]:pointer-events-auto scroll-mt-[calc(var(--header-height)+min(200px,max(70px,20svh)))]" data-scroll-anchor="true" data-testid="conversation-turn-22" data-turn="assistant" data-turn-id="request-WEB:a93440d4-34e4-48f3-9c2d-1fbf18d084f8-11" dir="auto" tabindex="-1"><div class="text-base my-auto mx-auto pb-10 [--thread-content-margin:--spacing(4)] @w-sm/main:[--thread-content-margin:--spacing(6)] @w-lg/main:[--thread-content-margin:--spacing(16)] px-(--thread-content-margin)"><div class="[--thread-content-max-width:40rem] @w-lg/main:[--thread-content-max-width:48rem] mx-auto max-w-(--thread-content-max-width) flex-1 group/turn-messages focus-visible:outline-hidden relative flex w-full min-w-0 flex-col agent-turn" tabindex="-1"><div class="flex max-w-full flex-col grow"><div class="min-h-8 text-message relative flex w-full flex-col items-end gap-2 text-start break-words whitespace-normal [.text-message+&amp;]:mt-1" data-message-author-role="assistant" data-message-id="638a003a-5771-43c7-aa6f-d47ecaf50bc0" data-message-model-slug="gpt-5-2" dir="auto"><div class="flex w-full flex-col gap-1 empty:hidden first:pt-[1px]"><div class="markdown prose dark:prose-invert w-full wrap-break-word light markdown-new-styling"><p>Tanh outputs values between -1 and 1.<br/></p><p>Sigmoid outputs values between 0 and 1.<br/></p><p>Key advantage of tanh:<br/></p><p>Zero-centered output<br/></p><p>Since tanh outputs are centered around zero, the gradients during backpropagation are more balanced.<br/></p><p>With sigmoid:<br/></p><ul><li><p style="margin-top: 0px">Outputs are always positive.<br/></p></li><li><p style="margin-top: 0px">Gradients tend to have the same sign.<br/></p></li><li><p style="margin-top: 0px">This can cause inefficient zig-zag updates during optimization.<br/></p></li></ul><p>With tanh:<br/></p><ul><li><p style="margin-top: 0px">Outputs can be positive or negative.<br/></p></li><li><p style="margin-top: 0px">Gradients are more symmetric.<br/></p></li><li><p style="margin-top: 0px">Optimization becomes more stable.<br/></p></li></ul><p>As a result, networks using tanh often converge faster than those using sigmoid.<br/></p><p data-is-last-node="" data-is-only-node="">However, tanh still suffers from vanishing gradients in deep networks, which is why ReLU is generally preferred in modern deep learning.<br/></p></div></div></div></div><div class="z-0 flex min-h-[46px] justify-start"><br/></div><div class="mt-3 w-full empty:hidden"><div class="text-center"><br/></div></div></div></div></article></div><div aria-hidden="true" class="pointer-events-none h-px w-px absolute bottom-0" data-edge="true"><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you differentiate between CNN and RNN? Which algorithm should be used when?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>CNN (Convolutional Neural Network):<br/></p><ul><li><p style="margin-top: 0px">Designed for spatial data.<br/></p></li><li><p style="margin-top: 0px">Uses convolution operations.<br/></p></li><li><p style="margin-top: 0px">Captures local patterns using filters.<br/></p></li><li><p style="margin-top: 0px">Parallel computation possible.<br/></p></li><li><p style="margin-top: 0px">Best suited for image and grid-like data.<br/></p></li></ul><p>Applications:<br/></p><ul><li><p style="margin-top: 0px">Image classification<br/></p></li><li><p style="margin-top: 0px">Object detection<br/></p></li><li><p style="margin-top: 0px">Medical image analysis<br/></p></li><li><p style="margin-top: 0px">Video frame analysis<br/></p></li></ul><p>RNN (Recurrent Neural Network):<br/></p><ul><li><p style="margin-top: 0px">Designed for sequential data.<br/></p></li><li><p style="margin-top: 0px">Has recurrent connections (remembers previous inputs).<br/></p></li><li><p style="margin-top: 0px">Maintains hidden state.<br/></p></li><li><p style="margin-top: 0px">Processes data step by step in sequence.<br/></p></li></ul><p>Applications:<br/></p><ul><li><p style="margin-top: 0px">Language modeling<br/></p></li><li><p style="margin-top: 0px">Machine translation<br/></p></li><li><p style="margin-top: 0px">Speech recognition<br/></p></li><li><p style="margin-top: 0px">Time-series forecasting<br/></p></li></ul><p>Key differences:<br/></p><p>CNN:<br/></p><ul><li><p style="margin-top: 0px">Captures spatial dependencies.<br/></p></li><li><p style="margin-top: 0px">No memory of previous inputs.<br/></p></li><li><p style="margin-top: 0px">Efficient parallel training.<br/></p></li></ul><p>RNN:<br/></p><ul><li><p style="margin-top: 0px">Captures temporal dependencies.<br/></p></li><li><p style="margin-top: 0px">Maintains memory via hidden state.<br/></p></li><li><p style="margin-top: 0px">Sequential processing (slower).<br/></p></li></ul><p>When to use:<br/></p><ul><li><p style="margin-top: 0px">Use CNN for images, spatial data, or grid-like structures.<br/></p></li><li><p style="margin-top: 0px">Use RNN (or LSTM/GRU/Transformers) for sequences and time-dependent data.<br/></p></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why do we use CNN for image data and not Feedforward Neural Network (FNN)?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Feedforward Neural Network:<br/></p><ul><li><p style="margin-top: 0px">Fully connected layers.<br/></p></li><li><p style="margin-top: 0px">Every input neuron connects to every neuron in next layer.<br/></p></li><li><p style="margin-top: 0px">Large number of parameters.<br/></p></li><li><p style="margin-top: 0px">Does not preserve spatial structure.<br/></p></li></ul><p>For example:<br/></p><p></p><div>A 256×256 RGB image has:<br/></div><div> 256 × 256 × 3 = 196,608 input values.<br/></div><p></p><p></p><div>If connected to 1,000 neurons in the next layer:<br/></div><div> 196,608 × 1,000 = nearly 197 million parameters.<br/></div><p></p><p>Problems with FNN for images:<br/></p><ul><li><p style="margin-top: 0px">Too many parameters.<br/></p></li><li><p style="margin-top: 0px">High memory usage.<br/></p></li><li><p style="margin-top: 0px">Overfitting risk.<br/></p></li><li><p style="margin-top: 0px">No spatial feature extraction.<br/></p></li><li><p style="margin-top: 0px">Ignores local patterns.<br/></p></li></ul><p>CNN advantages:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Local connectivity<br/></div><div> Filters focus on small regions (e.g., 3×3).<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Parameter sharing<br/></div><div> Same filter slides across the image.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Preserves spatial structure<br/></div><div> Detects edges, textures, shapes.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Efficient training<br/></div><div> Far fewer parameters than FNN.<br/></div><p></p></li></ol><p>CNN is specifically designed for image data, while FNN is not efficient for high-dimensional spatial inputs.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Explain the difference between Conv1D, Conv2D, and Conv3D.</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Conv1D:<br/></p><ul><li><p style="margin-top: 0px">Used for 1-dimensional data.<br/></p></li><li><p style="margin-top: 0px">Filter moves in one direction.<br/></p></li><li><p style="margin-top: 0px">Example: time series, audio signals, text sequences.<br/></p></li></ul><p></p><div>Input shape example:<br/></div><div> (sequence_length, features)<br/></div><p></p><p>Conv2D:<br/></p><ul><li><p style="margin-top: 0px">Used for 2-dimensional data.<br/></p></li><li><p style="margin-top: 0px">Filter moves across height and width.<br/></p></li><li><p style="margin-top: 0px">Example: images.<br/></p></li></ul><p></p><div>Input shape example:<br/></div><div> (height, width, channels)<br/></div><p></p><p>Conv3D:<br/></p><ul><li><p style="margin-top: 0px">Used for 3-dimensional data.<br/></p></li><li><p style="margin-top: 0px">Filter moves across height, width, and depth.<br/></p></li><li><p style="margin-top: 0px">Example: videos (frames over time), medical scans.<br/></p></li></ul><p></p><div>Input shape example:<br/></div><div> (depth, height, width, channels)<br/></div><p></p><p>Difference summary:<br/></p><p></p><div>Conv1D → sequential data<br/></div><div> Conv2D → images<br/></div><div> Conv3D → volumetric or spatiotemporal data<br/></div><p></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Explain the different layers of CNN. When using CNN, which layers are the parameters estimated for?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Main layers of CNN:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Convolutional Layer<br/></div><div> Applies filters to extract features.<br/></div><div> Learns weights of filters.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Activation Layer<br/></div><div> Applies non-linearity (usually ReLU).<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Pooling Layer<br/></div><div> Reduces spatial dimensions.<br/></div><div> No learnable parameters.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Batch Normalization (optional)<br/></div><div> Normalizes activations.<br/></div><div> Has learnable scale and shift parameters.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Fully Connected (Dense) Layer<br/></div><div> Final classification or regression.<br/></div><div> Has learnable weights and biases.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Dropout<br/></div><div> Regularization technique.<br/></div><div> No learnable parameters.<br/></div><p></p></li></ol><p>Parameters are estimated for:<br/></p><ul><li><p style="margin-top: 0px">Convolutional layers (filter weights and biases).<br/></p></li><li><p style="margin-top: 0px">Dense (fully connected) layers.<br/></p></li><li><p style="margin-top: 0px">Batch normalization (scale and shift).<br/></p></li></ul><p>Pooling and activation layers do not have trainable parameters.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between valid and same padding in CNN?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Padding refers to adding extra pixels (usually zeros) around input before convolution.<br/></p><p>Valid padding:<br/></p><ul><li><p style="margin-top: 0px">No padding is added.<br/></p></li><li><p style="margin-top: 0px">Output size is smaller than input.<br/></p></li><li><p style="margin-top: 0px">Information near edges may be reduced.<br/></p></li></ul><p></p><div>Output size formula:<br/></div><div> Output = (Input − Kernel + 1)<br/></div><p></p><p>Same padding:<br/></p><ul><li><p style="margin-top: 0px">Padding added so output size equals input size (for stride = 1).<br/></p></li><li><p style="margin-top: 0px">Preserves spatial dimensions.<br/></p></li><li><p style="margin-top: 0px">Useful when stacking many convolution layers.<br/></p></li></ul><p>Difference:<br/></p><p>Valid:<br/></p><ul><li><p style="margin-top: 0px">Output shrinks.<br/></p></li><li><p style="margin-top: 0px">No artificial pixels added.<br/></p></li></ul><p>Same:<br/></p><ul><li><p style="margin-top: 0px">Output size maintained.<br/></p></li><li><p style="margin-top: 0px">Zeros added around borders.<br/></p></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is pooling? How does it help in filtering features?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Pooling is a downsampling operation that reduces spatial dimensions of feature maps.<br/></p><p>Common types:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Max Pooling<br/></div><div> Takes maximum value in a region.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Average Pooling<br/></div><div> Takes average value in a region.<br/></div><p></p></li></ol><p>Example:<br/></p><p></p><div>For a 2×2 region:<br/></div><div> [1, 5<br/></div><div> 2, 3]<br/></div><p></p><p></p><div>Max pooling → 5<br/></div><div> Average pooling → 2.75<br/></div><p></p><p>Benefits:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Reduces dimensionality<br/></div><div> Fewer parameters in next layers.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Reduces computation<br/></div><div> Faster training.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Controls overfitting<br/></div><div> Simplifies representation.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Translation invariance<br/></div><div> Small shifts in image do not drastically change output.<br/></div><p></p></li></ol><p>Pooling helps retain important features while discarding less important details.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How can a Dense Layer of a CNN convert into a Fully Convolutional Layer?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A Dense layer performs:<br/></p><p>Output = W·x + b<br/></p><p>A Fully Convolutional Layer can replicate this using a convolution operation.<br/></p><p>Conversion idea:<br/></p><p>A Dense layer can be replaced by a convolution layer with:<br/></p><ul><li><p style="margin-top: 0px">Kernel size equal to input feature map size.<br/></p></li><li><p style="margin-top: 0px">Same number of filters as number of output neurons.<br/></p></li></ul><p>Example:<br/></p><p>If feature map size is 7×7×512 and Dense layer outputs 1,000 neurons:<br/></p><p></p><div>Replace Dense with:<br/></div><div> Conv2D with:<br/></div><p></p><ul><li><p style="margin-top: 0px">Kernel size = 7×7<br/></p></li><li><p style="margin-top: 0px">Filters = 1,000<br/></p></li></ul><p>This produces output of size 1×1×1000, equivalent to Dense output.<br/></p><p>Why convert to Fully Convolutional Network (FCN)?<br/></p><ul><li><p style="margin-top: 0px">Allows variable input image sizes.<br/></p></li><li><p style="margin-top: 0px">Useful in segmentation tasks.<br/></p></li><li><p style="margin-top: 0px">Preserves spatial information.<br/></p></li></ul><p data-is-last-node="" data-is-only-node="">Fully Convolutional Networks are widely used in semantic segmentation and object detection.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is data or image augmentation?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Data augmentation is a technique used to artificially increase the size and diversity of a training dataset by applying transformations to existing data.<br/></p><p>In image augmentation, common transformations include:<br/></p><ul><li><p style="margin-top: 0px">Rotation<br/></p></li><li><p style="margin-top: 0px">Flipping (horizontal/vertical)<br/></p></li><li><p style="margin-top: 0px">Cropping<br/></p></li><li><p style="margin-top: 0px">Scaling<br/></p></li><li><p style="margin-top: 0px">Translation (shifting)<br/></p></li><li><p style="margin-top: 0px">Adding noise<br/></p></li><li><p style="margin-top: 0px">Brightness or contrast adjustment<br/></p></li></ul><p>The label of the image remains the same after transformation.<br/></p><p>Purpose:<br/></p><ol><li><p style="margin-top: 0px">Increase dataset size without collecting new data.<br/></p></li><li><p style="margin-top: 0px">Improve generalization.<br/></p></li><li><p style="margin-top: 0px">Reduce overfitting.<br/></p></li><li><p style="margin-top: 0px">Make the model robust to variations in real-world input.<br/></p></li></ol><p>Example:<br/></p><p>If you have 1,000 cat images, applying augmentation can effectively generate multiple variations of each image, improving the model’s ability to recognize cats under different conditions.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between dropout and batch normalization?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Dropout:<br/></p><ul><li><p style="margin-top: 0px">A regularization technique.<br/></p></li><li><p style="margin-top: 0px">Randomly sets a fraction of neurons to zero during training.<br/></p></li><li><p style="margin-top: 0px">Prevents neurons from co-adapting.<br/></p></li><li><p style="margin-top: 0px">Reduces overfitting.<br/></p></li><li><p style="margin-top: 0px">Active only during training, not during inference.<br/></p></li></ul><p>Batch Normalization:<br/></p><ul><li><p style="margin-top: 0px">Normalizes activations within a mini-batch.<br/></p></li><li><p style="margin-top: 0px">Reduces internal covariate shift.<br/></p></li><li><p style="margin-top: 0px">Stabilizes and accelerates training.<br/></p></li><li><p style="margin-top: 0px">Has learnable scale and shift parameters.<br/></p></li><li><p style="margin-top: 0px">Used during both training and inference (with running statistics).<br/></p></li></ul><p>Key differences:<br/></p><p>Dropout:<br/></p><ul><li><p style="margin-top: 0px">Reduces overfitting by randomly removing neurons.<br/></p></li><li><p style="margin-top: 0px">Introduces randomness.<br/></p></li><li><p style="margin-top: 0px">No learnable parameters.<br/></p></li></ul><p>Batch Normalization:<br/></p><ul><li><p style="margin-top: 0px">Improves training stability.<br/></p></li><li><p style="margin-top: 0px">Normalizes intermediate activations.<br/></p></li><li><p style="margin-top: 0px">Has learnable parameters.<br/></p></li><li><p style="margin-top: 0px">Can also provide slight regularization effect.<br/></p></li></ul><p></p><div>Dropout mainly addresses overfitting.<br/></div><div> Batch normalization mainly stabilizes and speeds up training.<br/></div><p></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Does the problem of overfitting happen in neural networks? If yes, then how would you treat it?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Yes, overfitting commonly occurs in neural networks, especially deep networks with many parameters.<br/></p><p>Overfitting happens when:<br/></p><ul><li><p style="margin-top: 0px">Model performs very well on training data.<br/></p></li><li><p style="margin-top: 0px">Model performs poorly on unseen test data.<br/></p></li><li><p style="margin-top: 0px">Model memorizes noise instead of learning general patterns.<br/></p></li></ul><p>Reasons:<br/></p><ul><li><p style="margin-top: 0px">High model capacity.<br/></p></li><li><p style="margin-top: 0px">Small dataset.<br/></p></li><li><p style="margin-top: 0px">Too many training epochs.<br/></p></li><li><p style="margin-top: 0px">Complex architecture.<br/></p></li></ul><p>Ways to treat overfitting:<br/></p><ol><li><p style="margin-top: 0px">Data augmentation<br/></p></li><li><p style="margin-top: 0px">Dropout<br/></p></li><li><p style="margin-top: 0px">L1 or L2 regularization<br/></p></li><li><p style="margin-top: 0px">Early stopping<br/></p></li><li><p style="margin-top: 0px">Reduce model complexity<br/></p></li><li><p style="margin-top: 0px">Collect more data<br/></p></li><li><p style="margin-top: 0px">Batch normalization<br/></p></li><li><p style="margin-top: 0px">Cross-validation<br/></p></li></ol><p>The goal is to improve generalization performance on unseen data.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Do we have regularizers for neural networks?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Yes, neural networks use several regularization techniques to prevent overfitting.<br/></p><p>Common regularizers:<br/></p><ol><li><p style="margin-top: 0px"></p><div>L1 Regularization<br/></div><div> Adds absolute value of weights to loss function.<br/></div><div> Encourages sparsity (some weights become zero).<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>L2 Regularization (Weight Decay)<br/></div><div> Adds squared value of weights to loss.<br/></div><div> Penalizes large weights.<br/></div><p></p></li></ol><p>Modified loss:<br/></p><p>Loss = Original Loss + λ × Regularization Term<br/></p><ol start="3"><li><p style="margin-top: 0px"></p><div>Dropout<br/></div><div> Randomly disables neurons during training.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Early Stopping<br/></div><div> Stop training when validation loss increases.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Data Augmentation<br/></div><div> Expands training dataset artificially.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Batch Normalization<br/></div><div> Provides some regularization effect.<br/></div><p></p></li></ol><p>Regularization controls model complexity and improves generalization<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Bottleneck in Autoencoders? Why is it used?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<div class="flex flex-col text-sm pb-25"><article class="text-token-text-primary w-full focus:outline-none [--shadow-height:45px] has-data-writing-block:pointer-events-none has-data-writing-block:-mt-(--shadow-height) has-data-writing-block:pt-(--shadow-height) [&amp;:has([data-writing-block])&gt;*]:pointer-events-auto scroll-mt-[calc(var(--header-height)+min(200px,max(70px,20svh)))]" data-scroll-anchor="true" data-testid="conversation-turn-26" data-turn="assistant" data-turn-id="request-WEB:a93440d4-34e4-48f3-9c2d-1fbf18d084f8-13" dir="auto" tabindex="-1"><div class="text-base my-auto mx-auto pb-10 [--thread-content-margin:--spacing(4)] @w-sm/main:[--thread-content-margin:--spacing(6)] @w-lg/main:[--thread-content-margin:--spacing(16)] px-(--thread-content-margin)"><div class="[--thread-content-max-width:40rem] @w-lg/main:[--thread-content-max-width:48rem] mx-auto max-w-(--thread-content-max-width) flex-1 group/turn-messages focus-visible:outline-hidden relative flex w-full min-w-0 flex-col agent-turn" tabindex="-1"><div class="flex max-w-full flex-col grow"><div class="min-h-8 text-message relative flex w-full flex-col items-end gap-2 text-start break-words whitespace-normal [.text-message+&amp;]:mt-1" data-message-author-role="assistant" data-message-id="d771adbe-a4e7-4f5e-a205-356e4b8eb487" data-message-model-slug="gpt-5-2" dir="auto"><div class="flex w-full flex-col gap-1 empty:hidden first:pt-[1px]"><div class="markdown prose dark:prose-invert w-full wrap-break-word light markdown-new-styling"><p>In an autoencoder, the bottleneck is the middle hidden layer with the smallest number of neurons.<br/></p><p>Structure:<br/></p><p>Input → Encoder → Bottleneck → Decoder → Output<br/></p><p>The bottleneck forces the network to compress input data into a lower-dimensional representation.<br/></p><p>Why it is used:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Feature learning<br/></div><div> Forces the model to learn the most important features.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Dimensionality reduction<br/></div><div> Acts similar to PCA but can capture non-linear relationships.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Noise removal<br/></div><div> In denoising autoencoders, bottleneck helps ignore noise.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Prevent trivial copying<br/></div><div> Without a bottleneck, the network could simply memorize input and copy it to output.<br/></div><p></p></li></ol><p data-is-last-node="" data-is-only-node="">The bottleneck ensures that the model learns meaningful and compact representations rather than just copying the input directly.<br/></p></div></div></div></div><div class="z-0 flex min-h-[46px] justify-start"><br/></div><div class="mt-3 w-full empty:hidden"><div class="text-center"><br/></div></div></div></div></article></div><div aria-hidden="true" class="pointer-events-none h-px w-px absolute bottom-0" data-edge="true"><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is transfer learning? Why is it needed? Name commonly used transfer learning models.</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Transfer learning is a technique where a model trained on one task (usually large-scale data) is reused for a different but related task.<br/></p><p>Instead of training a deep neural network from scratch, we take a pre-trained model and adapt it to our specific problem.<br/></p><p>Why it is needed:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Limited data<br/></div><div> Training deep networks from scratch requires very large datasets. Many real-world problems do not have enough labeled data.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Reduced training time<br/></div><div> Pre-trained models have already learned low-level and high-level features.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Better performance<br/></div><div> Models trained on massive datasets (like ImageNet) learn strong general features that transfer well.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Reduced computational cost<br/></div><div> Saves time and GPU resources.<br/></div><p></p></li></ol><p>How it works:<br/></p><ul><li><p style="margin-top: 0px">Load a pre-trained model.<br/></p></li><li><p style="margin-top: 0px">Freeze some early layers.<br/></p></li><li><p style="margin-top: 0px">Replace final classification layer.<br/></p></li><li><p style="margin-top: 0px">Train on new dataset.<br/></p></li></ul><p>Commonly used transfer learning models:<br/></p><p>For image tasks:<br/></p><ul><li><p style="margin-top: 0px">VGG16 / VGG19<br/></p></li><li><p style="margin-top: 0px">ResNet (ResNet50, ResNet101)<br/></p></li><li><p style="margin-top: 0px">Inception<br/></p></li><li><p style="margin-top: 0px">MobileNet<br/></p></li><li><p style="margin-top: 0px">EfficientNet<br/></p></li><li><p style="margin-top: 0px">DenseNet<br/></p></li></ul><p>For NLP:<br/></p><ul><li><p style="margin-top: 0px">BERT<br/></p></li><li><p style="margin-top: 0px">GPT<br/></p></li><li><p style="margin-top: 0px">RoBERTa<br/></p></li><li><p style="margin-top: 0px">T5<br/></p></li></ul><p>For vision transformers:<br/></p><ul><li><p style="margin-top: 0px">ViT<br/></p></li><li><p style="margin-top: 0px">Swin Transformer<br/></p></li></ul><p>Transfer learning is especially powerful in computer vision and NLP.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Define Fine-tuning. Why is it used in Deep Learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Fine-tuning is the process of taking a pre-trained model and training some or all of its layers on a new dataset.<br/></p><p>Difference between transfer learning and fine-tuning:<br/></p><p>Transfer learning:<br/></p><ul><li><p style="margin-top: 0px">Usually freeze most layers.<br/></p></li><li><p style="margin-top: 0px">Train only final layers.<br/></p></li></ul><p>Fine-tuning:<br/></p><ul><li><p style="margin-top: 0px">Unfreeze some deeper layers.<br/></p></li><li><p style="margin-top: 0px">Continue training entire or partial network with a small learning rate.<br/></p></li></ul><p>Why fine-tuning is used:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Adaptation to new domain<br/></div><div> Pre-trained model may not perfectly match target dataset.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Improve accuracy<br/></div><div> Allows model to adjust learned features to new task.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Domain-specific feature learning<br/></div><div> For example:<br/></div><p></p><ul><li><p style="margin-top: 0px">Pretrained on general objects.<br/></p></li><li><p style="margin-top: 0px">Fine-tuned for medical imaging.<br/></p></li></ul></li></ol><p>Important practice:<br/></p><ul><li><p style="margin-top: 0px">Use smaller learning rate during fine-tuning.<br/></p></li><li><p style="margin-top: 0px">Unfreeze layers gradually.<br/></p></li></ul><p>Fine-tuning allows the model to retain general knowledge while adapting to new data.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are hyperparameters? List the hyperparameters used in a neural network.</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Hyperparameters are configuration settings defined before training a model. They are not learned from data.<br/></p><p>They control the learning process and architecture.<br/></p><p>Common hyperparameters in neural networks:<br/></p><p>Model architecture hyperparameters:<br/></p><ul><li><p style="margin-top: 0px">Number of hidden layers<br/></p></li><li><p style="margin-top: 0px">Number of neurons per layer<br/></p></li><li><p style="margin-top: 0px">Type of activation function<br/></p></li><li><p style="margin-top: 0px">Kernel size (in CNN)<br/></p></li><li><p style="margin-top: 0px">Number of filters (in CNN)<br/></p></li></ul><p>Training hyperparameters:<br/></p><ul><li><p style="margin-top: 0px">Learning rate<br/></p></li><li><p style="margin-top: 0px">Batch size<br/></p></li><li><p style="margin-top: 0px">Number of epochs<br/></p></li><li><p style="margin-top: 0px">Optimizer (SGD, Adam, RMSProp)<br/></p></li><li><p style="margin-top: 0px">Momentum<br/></p></li><li><p style="margin-top: 0px">Weight initialization method<br/></p></li></ul><p>Regularization hyperparameters:<br/></p><ul><li><p style="margin-top: 0px">Dropout rate<br/></p></li><li><p style="margin-top: 0px">L1 or L2 regularization strength<br/></p></li><li><p style="margin-top: 0px">Early stopping patience<br/></p></li></ul><p>Learning rate scheduling hyperparameters:<br/></p><ul><li><p style="margin-top: 0px">Decay rate<br/></p></li><li><p style="margin-top: 0px">Step size<br/></p></li><li><p style="margin-top: 0px">Warmup steps<br/></p></li></ul><p>Hyperparameters significantly affect model performance and must be tuned carefully.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+        </div>
+      </section>
+        </div>
+      </div>
+      <details class="resources-panel" open>
+        <summary>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          Resources &mdash; 6 videos
+        </summary>
+        <div class="resources-grid">
+      <div class="resource-card" data-vid="aircAruvnKk">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/aircAruvnKk/mqdefault.jpg" alt="But what is a neural network? | Deep Learning Chapter 1" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/aircAruvnKk" target="_blank" rel="noopener">But what is a neural network? | Deep Learning Chapter 1</a></h4>
+          <p>The best visual introduction to neural networks — neurons, layers, activations, and how gradient descent teaches a network to learn.</p>
+          <div class="resource-meta">3Blue1Brown</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="S5AGN9XfPK4">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/S5AGN9XfPK4/mqdefault.jpg" alt="What is Back Propagation" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/S5AGN9XfPK4" target="_blank" rel="noopener">What is Back Propagation</a></h4>
+          <p>IBM&#x27;s clear explanation of backpropagation — the chain rule, gradient flow, and why it is the core training algorithm for all deep networks.</p>
+          <div class="resource-meta">IBM Technology</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="KuXjwB4LzSA">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/KuXjwB4LzSA/mqdefault.jpg" alt="But what is a convolution?" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/KuXjwB4LzSA" target="_blank" rel="noopener">But what is a convolution?</a></h4>
+          <p>Deep visual intuition for convolutions — from signal processing to CNNs, explaining why convolutional layers are so powerful for spatial data.</p>
+          <div class="resource-meta">3Blue1Brown</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="iQ9arr3TTMA">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/iQ9arr3TTMA/mqdefault.jpg" alt="How GPUs Work for Deep Learning" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/iQ9arr3TTMA" target="_blank" rel="noopener">How GPUs Work for Deep Learning</a></h4>
+          <p>Explains why GPUs are essential for deep learning — parallelism, CUDA cores, and how matrix operations map to GPU architecture.</p>
+          <div class="resource-meta">ByteMonk</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="l-OLgbdZ3kk">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/l-OLgbdZ3kk/mqdefault.jpg" alt="The Brain&#x27;s Learning Algorithm Isn&#x27;t Backpropagation" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/l-OLgbdZ3kk" target="_blank" rel="noopener">The Brain&#x27;s Learning Algorithm Isn&#x27;t Backpropagation</a></h4>
+          <p>Explores alternative theories of how biological neural networks learn and what this means for the future of AI architectures.</p>
+          <div class="resource-meta">Artem Kirsanov</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="_bqa_I5hNAo">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/_bqa_I5hNAo/mqdefault.jpg" alt="Generative Model That Won 2024 Nobel Prize" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/_bqa_I5hNAo" target="_blank" rel="noopener">Generative Model That Won 2024 Nobel Prize</a></h4>
+          <p>Explains diffusion models and energy-based generative models — the Nobel Prize-winning science behind modern image and text generation.</p>
+          <div class="resource-meta">Artem Kirsanov</div>
+        </div>
+      </div>
+        </div>
+      </details>
+    </main>
+  </div>
+</div>
+<script src="../../assets/main.js"></script>
+</body>
+</html>

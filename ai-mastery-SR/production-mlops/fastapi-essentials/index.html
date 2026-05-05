@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FastAPI Essentials | Production &amp; MLOps | AI Mastery by Siddharth Raja</title>
+<link rel="stylesheet" href="../../assets/main.css">
+<script>
+(function(){
+  var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.dataset.theme=t;
+  if(sessionStorage.getItem('am_auth')!=='1'){
+    document.documentElement.style.opacity='0';
+  }
+})();
+</script>
+</head>
+<body data-root="../../">
+<header class="site-header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">AI <span>Mastery</span> <span class="logo-by">by Siddharth Raja</span></a>
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+      <input type="search" id="search-input" placeholder="Search questions… (/)" autocomplete="off" spellcheck="false" aria-label="Search questions">
+      <div id="search-results" role="listbox" hidden></div>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+<div class="page-body">
+  <div class="layout">
+    <nav class="course-sidebar" aria-label="Course topics">
+      <a href="../../index.html" class="sidebar-back">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        All courses
+      </a>
+      <div class="sidebar-course-name">Production &amp; MLOps</div>
+      <ul class="topic-list">
+        <li class="active"><a href="../fastapi-essentials/index.html">FastAPI Essentials</a></li>
+        <li class=""><a href="../fine-tuning-for-llms/index.html">FINE TUNING for LLMs</a></li>
+        <li class=""><a href="../ai-safety-guardrails/index.html">AI Safety &amp; Guardrails</a></li>
+        <li class=""><a href="../llm-evaluation/index.html">LLM Evaluation</a></li>
+        <li class=""><a href="../live-coding-interview-prep/index.html">Live coding Interview Prep</a></li>
+        <li class=""><a href="../llmops-deployment/index.html">LLMOps &amp; Deployment</a></li>
+      </ul>
+    </nav>
+    <main class="topic-main" id="main-content">
+      <select class="topic-select" onchange="location.href=this.value" aria-label="Jump to topic">
+        <option value="../fastapi-essentials/index.html" selected>FastAPI Essentials</option>
+        <option value="../fine-tuning-for-llms/index.html">FINE TUNING for LLMs</option>
+        <option value="../ai-safety-guardrails/index.html">AI Safety &amp; Guardrails</option>
+        <option value="../llm-evaluation/index.html">LLM Evaluation</option>
+        <option value="../live-coding-interview-prep/index.html">Live coding Interview Prep</option>
+        <option value="../llmops-deployment/index.html">LLMOps &amp; Deployment</option>
+      </select>
+      <div class="topic-header">
+        <div class="topic-breadcrumb">
+          <a href="../../index.html">Home</a> /
+          <a href="../index.html">Production &amp; MLOps</a>
+        </div>
+        <h1>FastAPI Essentials</h1>
+        <div class="topic-meta">
+          <span class="topic-stats">32 questions</span>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-wrap">
+          <svg class="filter-icon" width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+          <input type="search" id="topic-filter" placeholder="Filter questions… (f)" autocomplete="off" spellcheck="false" aria-label="Filter questions on this page">
+        </div>
+        <span id="filter-count"></span>
+      </div>
+      <div id="filter-no-results" class="filter-no-results">No questions match your filter.</div>
+      <div class="qa-sections-full">
+
+        <div class="qa-sections">
+      <section id="fastapi" class="qa-section">
+        <div class="section-header">
+          <h2>FastAPI</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI is a modern, fast (high-performance), web framework for building APIs with Python 3.8+ based on standard Python type hints. It is designed to be easy to use, fast to develop with, and to provide efficient performance. FastAPI is built on top of Starlette and Pydantic.<br/></p><p>Key features of FastAPI include :<br/></p><ul><li>Fast : As the name suggests, FastAPI is designed to be fast. It leverages Python type hints and asynchronous programming to achieve high performance.<br/></li><li>Automatic Documentation : FastAPI generates OpenAPI and JSON Schema documentation automatically based on the Python type hints used in the code. This documentation is interactive and can be explored through Swagger UI and ReDoc.<br/></li><li>Type Checking : FastAPI uses Python type hints for request and response validation. This not only helps with automatic documentation but also enables the use of tools like Pydantic for data validation and serialization.<br/></li><li>Asynchronous Support : FastAPI fully supports asynchronous programming, allowing you to write asynchronous routes and take advantage of the performance benefits of asynchronous I/O operations.<br/></li><li>Dependency Injection System : FastAPI has a powerful dependency injection system that makes it easy to manage dependencies in a clean and organized way.<br/></li><li>Security Features : It includes features for handling security, including support for OAuth2, API key authentication, and more.<br/></li><li>WebSocket Support : FastAPI supports WebSocket communication, allowing real-time bidirectional communication between clients and the server.<br/></li><li>Compatibility with Standard Python Type Hints : FastAPI leverages Python type hints for request and response validation. This provides a clear contract for the API and allows for better tooling support.<br/></li><li>Compatibility with Other Web Frameworks : FastAPI is designed to be easy to integrate with other web frameworks, allowing you to use it alongside existing applications or services.<br/></li><li>Built-in Support for OAuth2 and JWT : FastAPI provides built-in support for OAuth2 and JSON Web Tokens (JWT) for handling authentication and authorization.<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you define a route in FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>In FastAPI, routes are defined using decorators. For example, to define a route that returns a list of users, you would use the @get decorator :<br/></p><pre><code class="language-python hljs"><span class="hljs-meta">@get(<span class="hljs-params"><span class="hljs-string">"/users"</span></span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">list_users</span>():
+    <span class="hljs-keyword">return</span> [{<span class="hljs-string">"username"</span>: <span class="hljs-string">"jane"</span>}, {<span class="hljs-string">"username"</span>: <span class="hljs-string">"joe"</span>}]
+</code><br/></pre><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Explain the asynchronous features of FastAPI</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI leverages asynchronous programming to provide high-performance web applications and APIs. Asynchronous programming allows tasks to be executed concurrently without waiting for each to complete, making better use of system resources and improving overall application responsiveness. Here are some key aspects of the asynchronous features in FastAPI:<br/></p><p>Async and Await Syntax : FastAPI uses Python's async and await syntax to define asynchronous functions. These functions can be used in route handlers, dependencies, and other parts of the application.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+
+app = FastAPI()
+
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/"</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">read_root</span>():
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"message"</span>: <span class="hljs-string">"Hello, World!"</span>}
+</code><br/></pre><p>Asynchronous Request Handlers : FastAPI allows you to define asynchronous request handlers using the async def syntax. This is particularly useful for handling requests concurrently, especially when dealing with I/O-bound operations such as database queries or external API calls.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+
+app = FastAPI()
+
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/async_endpoint"</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">async_endpoint</span>():
+    result = <span class="hljs-keyword">await</span> some_async_function()
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"result"</span>: result}
+</code><br/></pre><p>Dependency Injection with Async Dependencies : FastAPI's dependency injection system supports asynchronous dependencies. Dependencies marked with async def can perform asynchronous operations, such as fetching data from a database or making asynchronous API calls.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> Depends, FastAPI
+
+app = FastAPI()
+
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">get_some_data</span>():
+    <span class="hljs-comment"># Asynchronous operations here</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"data"</span>: <span class="hljs-string">"Some asynchronous data"</span>}
+
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/"</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">read_data</span>(<span class="hljs-params">data: <span class="hljs-built_in">dict</span> = Depends(<span class="hljs-params">get_some_data</span>)</span>):
+    <span class="hljs-keyword">return</span> data
+</code><br/></pre><p>Background Tasks : FastAPI provides a mechanism called BackgroundTasks that allows you to run asynchronous functions in the background after a response has been sent to the client. This is useful for performing non-blocking tasks after handling a request.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> BackgroundTasks, FastAPI
+
+app = FastAPI()
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">write_log</span>(<span class="hljs-params">message: <span class="hljs-built_in">str</span></span>):
+    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">"log.txt"</span>, mode=<span class="hljs-string">"a"</span>) <span class="hljs-keyword">as</span> log:
+        log.write(message)
+
+<span class="hljs-meta">@app.post(<span class="hljs-params"><span class="hljs-string">"/send-notification/{email}"</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">send_notification</span>(<span class="hljs-params">
+    email: <span class="hljs-built_in">str</span>, background_tasks: BackgroundTasks
+</span>):
+    message = <span class="hljs-string">f"message to <span class="hljs-subst">{email}</span>"</span>
+    background_tasks.add_task(write_log, message)
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"message"</span>: <span class="hljs-string">"Message sent in the background"</span>}
+</code><br/></pre><p>WebSocket Support : FastAPI supports asynchronous WebSocket communication. You can define WebSocket routes using asynchronous functions, enabling real-time bidirectional communication between clients and the server.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, WebSocket
+
+app = FastAPI()
+
+<span class="hljs-meta">@app.websocket(<span class="hljs-params"><span class="hljs-string">"/ws"</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">websocket_endpoint</span>(<span class="hljs-params">websocket: WebSocket</span>):
+    <span class="hljs-keyword">await</span> websocket.accept()
+    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:
+        data = <span class="hljs-keyword">await</span> websocket.receive_text()
+        <span class="hljs-keyword">await</span> websocket.send_text(<span class="hljs-string">f"Message text was: <span class="hljs-subst">{data}</span>"</span>)
+</code><br/></pre><p>By embracing asynchronous programming, FastAPI is able to handle a large number of simultaneous connections efficiently, making it suitable for building scalable and performant web applications and APIs.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the key differences between FastAPI and Flask, and why choose FastAPI for web development?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI and Flask are both Python web frameworks, but they differ significantly. FastAPI is built on Starlette for web routing and Pydantic for data validation, which allows it to offer high performance compared to Flask. It also supports modern functionalities like async and await keywords.<br/></p><p>FastAPI automatically generates interactive API documentation using OpenAPI and JSON Schema standards, a feature not present in Flask. This makes it easier to test and debug APIs during development.<br/></p><p>FastAPI’s use of Python type hints leads to better editor support, error checking, and refactoring capabilities. In contrast, Flask lacks this feature, making code maintenance more challenging.<br/></p><p>The choice between FastAPI and Flask depends on the project requirements. For applications requiring high performance, modern asynchronous features, automatic API documentation, or extensive use of data validation, FastAPI would be the preferred choice over Flask due to its advanced features and superior performance.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the role of Pydantic in FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Pydantic plays a crucial role in FastAPI by providing data validation and settings management using Python type annotations. It ensures that incoming data matches the expected types, reducing runtime errors. Pydantic models define how requests and responses should be structured, enabling automatic request body parsing, validation, serialization, and documentation.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are some advantages of using FastAPI over Flask?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI and Flask are both popular web frameworks for building web applications and APIs in Python, but they have different design philosophies and features. Here are some advantages of using FastAPI over Flask:<br/></p><ul><li>Performance : FastAPI is designed to be highly performant, thanks to its use of asynchronous programming. Asynchronous support allows FastAPI to handle a large number of concurrent requests efficiently, making it well-suited for applications with high performance requirements. Flask, on the other hand, is synchronous by default.<br/></li><li>Automatic API Documentation : FastAPI automatically generates interactive API documentation based on the Python type hints used in your code. This documentation is accessible through Swagger UI and ReDoc, making it easy for developers to understand and test the API without additional manual documentation efforts. Flask, while having documentation tools, may require more manual intervention for similar features.<br/></li><li>Type Hints and Validation : FastAPI leverages Python type hints to automatically validate requests and responses. This not only helps in catching errors early in the development process but also improves code readability. Flask, being a more traditional framework, doesn't enforce type hints as strictly.<br/></li><li>Dependency Injection : FastAPI provides a built-in dependency injection system that makes it easy to manage dependencies in a clean and organized way. This can be particularly useful for handling reusable components and ensuring proper separation of concerns. Flask, while having support for extensions, may not provide as built-in and structured a system for dependency injection.<br/></li><li>Asynchronous Database Operations : FastAPI's asynchronous support allows you to perform asynchronous database operations, which can significantly improve the efficiency of applications that involve database queries. Flask is synchronous by default, and while there are ways to integrate asynchronous code, it may not be as seamless as in FastAPI.<br/></li><li>WebSocket Support : FastAPI has built-in support for handling WebSocket communication, enabling real-time bidirectional communication between clients and the server. Flask, while having third-party extensions for WebSocket support, doesn't provide native support out of the box.<br/></li><li>Security Features : FastAPI includes features for handling security, such as built-in support for OAuth2, API key authentication, and other security-related functionalities. Flask, while having a robust ecosystem, may require additional third-party packages for certain security features.<br/></li><li>Data Validation with Pydantic : FastAPI encourages the use of Pydantic models for request and response data. Pydantic provides powerful data validation and serialization capabilities, ensuring that the data sent and received by your API is well-formed. While Flask has support for data validation, it may not be as integrated and based on Python type hints.<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does FastAPI leverage type hints for automatic API documentation?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI leverages Python type hints to automatically generate comprehensive and interactive API documentation. Here's how it works:<br/></p><ul><li>Type Hints in Function Signatures : When defining routes in FastAPI, you use Python type hints in the function signatures to declare the expected data types for request parameters, request bodies, and response objects.<br/></li><li>Pydantic Models for Request and Response Bodies : FastAPI encourages the use of Pydantic models, which are Python classes with type hints provided. These models define the structure and validation rules for request and response bodies.<br/></li><li>Automatic Validation and Documentation : FastAPI uses the provided type hints to automatically validate incoming requests and generate OpenAPI and JSON Schema documentation. This documentation includes details about the expected request parameters, request bodies, response objects, and their data types.<br/></li><li>Swagger UI and ReDoc Integration : FastAPI provides two interactive web interfaces, Swagger UI and ReDoc, that are automatically generated based on the OpenAPI documentation. These interfaces allow developers to explore and test the API interactively. Swagger UI is accessible at <a href="http://localhost:8000/docs" target="_blank">http://localhost:8000/docs</a>, and ReDoc at <a href="http://localhost:8000/redoc" target="_blank">http://localhost:8000/redoc</a>.<br/></li><li>Validation and Documentation for Query Parameters : Query parameters are also automatically documented based on the provided type hints. The documentation includes information about the parameter name, its type, whether it's required or optional, default values, etc.<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Can you explain how you would implement authentication and authorization in FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI provides a security module to implement authentication and authorization. For authentication, OAuth2PasswordBearer is used which requires a URL that the client will use for token retrieval. The get_current_user function uses Depends to inject dependencies, where it decodes the token and fetches user data. If invalid, HTTPException is raised.<br/></p><p>For authorization, FastAPI offers Security Scopes. Each route can have a list of scopes as dependencies. When a request comes in, FastAPI checks if the current user has required scopes. If not, an error is returned.<br/></p><p>Here’s a code snippet :<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> Depends, FastAPI, HTTPException, Security
+<span class="hljs-keyword">from</span> fastapi.security <span class="hljs-keyword">import</span> OAuth2PasswordBearer, SecurityScopes
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=<span class="hljs-string">"token"</span>)
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">get_current_user</span>(<span class="hljs-params">security_scopes: SecurityScopes, token: <span class="hljs-built_in">str</span> = Depends(<span class="hljs-params">oauth2_scheme</span>)</span>):
+    <span class="hljs-comment"># decode token and fetch user data here</span>
+    <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">403</span>, detail=<span class="hljs-string">"Not authenticated"</span>)
+
+app = FastAPI()
+
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/items/"</span>, dependencies=[Depends(<span class="hljs-params">Security(<span class="hljs-params">get_current_user, scopes=[<span class="hljs-string">"items:read"</span>]</span>)</span>)]</span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">read_items</span>():
+    <span class="hljs-keyword">return</span> [{<span class="hljs-string">"item"</span>: <span class="hljs-string">"Foo"</span>, <span class="hljs-string">"value"</span>: <span class="hljs-string">"Bar"</span>}]
+</code><br/></pre><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does FastAPI take advantage of Python 3.6 type declarations?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI utilizes Python 3.6 type declarations to provide several benefits. It uses these annotations for data validation, serialization, and documentation while reducing the amount of code required. FastAPI leverages Pydantic models that use type hints to perform automatic request body JSON parsing, form data handling, and query parameter handling. This results in cleaner, more maintainable code. Additionally, it generates interactive API documentation automatically using OpenAPI standards based on these type declarations.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How would you handle exception handling and custom error responses in FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI provides built-in exception handling. To handle exceptions, use the HTTPException class from fastapi.exceptions module. This class accepts status_code and detail parameters to define HTTP status code and error message respectively.<br/></p><p>For custom error responses, create a subclass of HTTPException and override its attributes. You can also customize the validation error response body by creating a route operation function that raises RequestValidationError from fastapi.exceptions and catch it in an exception handler.<br/></p><p>Here’s a coding example :<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, HTTPException
+<span class="hljs-keyword">from</span> fastapi.responses <span class="hljs-keyword">import</span> JSONResponse
+
+app = FastAPI()
+
+<span class="hljs-meta">@app.exception_handler(<span class="hljs-params">HTTPException</span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">http_exception_handler</span>(<span class="hljs-params">request, exc</span>):
+    <span class="hljs-keyword">return</span> JSONResponse(
+        status_code=exc.status_code,
+        content={<span class="hljs-string">"message"</span>: <span class="hljs-string">f"Oops! <span class="hljs-subst">{exc.detail}</span>"</span>},
+    )
+
+items = {<span class="hljs-string">"1"</span>: <span class="hljs-string">"Item One"</span>}
+
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/items/{item_id}"</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">read_item</span>(<span class="hljs-params">item_id: <span class="hljs-built_in">str</span></span>):
+    <span class="hljs-keyword">if</span> item_id <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> items:
+        <span class="hljs-keyword">raise</span> HTTPException(status_code=<span class="hljs-number">404</span>, detail=<span class="hljs-string">"Item not found"</span>)
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"item"</span>: items[item_id]}
+</code><br/></pre><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is dependency injection in FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Dependency injection in FastAPI is a mechanism that allows you to declare and manage the dependencies required by your route functions or other parts of your application. Dependencies are components or services that your application relies on, such as database connections, authentication services, or external API clients. FastAPI's dependency injection system helps organize and handle these dependencies in a clean and modular way.<br/></p><p>Here's how dependency injection works in FastAPI :<br/></p><p>Dependency Declaration : You declare dependencies using Python functions, which FastAPI refers to as "dependency functions." These functions can be asynchronous (async def) or synchronous (def), depending on the nature of the dependency.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> Depends, FastAPI
+
+app = FastAPI()
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">get_db</span>():
+    <span class="hljs-comment"># Function to get a database connection</span>
+    <span class="hljs-comment"># ...</span>
+    <span class="hljs-keyword">pass</span>
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">get_token</span>():
+    <span class="hljs-comment"># Function to retrieve token</span>
+    <span class="hljs-comment"># ...</span>
+    <span class="hljs-keyword">pass</span>
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">get_current_user</span>(<span class="hljs-params">token: <span class="hljs-built_in">str</span> = Depends(<span class="hljs-params">get_token</span>)</span>):
+    <span class="hljs-comment"># Function to get the current user based on the token</span>
+    <span class="hljs-comment"># ...</span>
+    <span class="hljs-keyword">pass</span>
+
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/items/"</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">read_items</span>(<span class="hljs-params">db = Depends(<span class="hljs-params">get_db</span>), current_user = Depends(<span class="hljs-params">get_current_user</span>)</span>):
+    <span class="hljs-comment"># Route function that depends on the database and current user</span>
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"message"</span>: <span class="hljs-string">"Dependencies injected"</span>}
+</code><br/></pre><p>Dependency Injection in Route Functions : In the example above, the read_items route function has dependencies on a database connection (db) and the current user (current_user). FastAPI automatically injects these dependencies into the function when it is called.<br/></p><p>Dependency Resolvers : FastAPI uses dependency resolvers to resolve and inject dependencies into route functions. Dependency resolvers are responsible for obtaining the required dependency instances before executing the route function.<br/></p><p>Order of Execution : Dependencies are executed in the order they are declared in the function signature. FastAPI ensures that dependencies with shared sub-dependencies are only executed once, and their results are reused.<br/></p><p>Reusable Components : By using dependency injection, you can create reusable components for common functionality. For example, you can define a get_db dependency that provides a database session, and then use it in multiple route functions.<br/></p><p>Automatic Validation of Dependencies : FastAPI automatically validates and handles the dependencies based on the type hints provided in the dependency functions. If a required dependency cannot be resolved, FastAPI will raise an exception and return an error response.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Explain the role of Pydantic in FastAPI</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Pydantic plays a crucial role in FastAPI as it is used for data validation, serialization, and the automatic generation of interactive API documentation.<br/></p><p>Here's an explanation of the key roles Pydantic plays in FastAPI :<br/></p><ul><li>Data Validation : Pydantic is a data validation library for Python that is heavily used in FastAPI. It allows you to define data models using Python classes with type hints. These models not only serve as documentation for your data structures but also automatically validate incoming request data.<br/></li><li>Automatic Documentation Generation : Pydantic models, being a part of the FastAPI application, are leveraged to automatically generate detailed and interactive API documentation. FastAPI uses the type hints and validation rules in the Pydantic models to produce OpenAPI and JSON Schema documentation.<br/></li><li>Data Serialization : Pydantic models also play a role in serializing data for responses. When you return an instance of a Pydantic model from a route function, FastAPI automatically serializes it to JSON, ensuring that the response adheres to the structure defined in the model.<br/></li><li>Validation Errors Handling : When validation fails (e.g., due to incorrect data types or missing required fields), Pydantic raises validation errors. FastAPI handles these errors and automatically generates appropriate error responses, making it easy to communicate validation issues back to the client.<br/></li></ul><p>Pydantic's integration with FastAPI enhances the development experience by providing a clear and consistent way to define, validate, and document data structures within your application. It ensures that your API documentation is always up-to-date and that data validation is applied consistently throughout your FastAPI application.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Can you give me an example of how to use HTTP methods with routes in FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>You can use HTTP methods with routes in FastAPI by specifying the methods argument with a list of methods when you add a route. For example, if you want to add a route that can be accessed with the GET and POST methods, you would do the following:<br/></p><pre><code class="language-python hljs"><span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/my-route"</span>, methods=[<span class="hljs-string">"GET"</span>, <span class="hljs-string">"POST"</span>]</span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">my_route</span>():
+    <span class="hljs-keyword">return</span> <span class="hljs-string">"Hello, world!"</span>
+</code><br/></pre><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does FastAPI integrate with SQLAlchemy for database connection and ORM?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI integrates with SQLAlchemy through the use of Pydantic models and dependency injection. First, a SQLAlchemy model is defined for the database structure. Then, a Pydantic model is created to handle data validation and serialization. FastAPI uses these models in route functions to interact with the database.<br/></p><p>Dependency injection allows for reusable dependencies that manage database sessions. A common pattern involves creating a function that yields a session, then closes it after request handling. This function can be included as a parameter in route functions, providing them with a session instance.<br/></p><p>For SQL queries, SQLAlchemy’s ORM is used directly within the route functions. The session provided by the dependency handles transactions, ensuring changes are committed or rolled back appropriately.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How would you handle file uploads in FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI provides a simple way to handle file uploads using the File and UploadFile classes. To upload a file, you would define an endpoint that includes a parameter of type UploadFile. This parameter will be treated as a “form data” parameter.<br/></p><p>Here’s a basic example :<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, UploadFile, File
+
+app = FastAPI()
+
+<span class="hljs-meta">@app.post(<span class="hljs-params"><span class="hljs-string">"/files/"</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">create_file</span>(<span class="hljs-params">file: UploadFile = File(<span class="hljs-params">...</span>)</span>):
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"filename"</span>: file.filename}
+</code><br/></pre><p>In this code, file: UploadFile = File(...) declares a new parameter of type UploadFile. The File function is a “special function” used to declare it.<br/></p><p>The uploaded file is stored in memory up to a limit, and then passed to a temporary file stored on disk. You can access the file with .file, get metadata like filename or content type with .filename and .content_type.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How would you implement rate limiting in FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Rate limiting in FastAPI can be implemented using a middleware, such as SlowApi. This is an ASGI middleware for rate limiting based on the standard Python library ratelimit. To use it, you need to install SlowApi and its dependencies, then import and add it to your FastAPI application.<br/></p><p>Here’s a basic example :<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, Depends, Request
+<span class="hljs-keyword">from</span> slowapi <span class="hljs-keyword">import</span> Limiter, _rate_limit_exceeded_handler
+<span class="hljs-keyword">from</span> slowapi.errors <span class="hljs-keyword">import</span> RateLimitExceeded
+<span class="hljs-keyword">from</span> slowapi.util <span class="hljs-keyword">import</span> get_remote_address
+
+app = FastAPI()
+
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/home"</span></span>)</span>
+<span class="hljs-meta">@limiter.limit(<span class="hljs-params"><span class="hljs-string">"5/minute"</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">home</span>(<span class="hljs-params">request: Request</span>):
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"Hello"</span>: <span class="hljs-string">"World"</span>}
+</code><br/></pre><p>In this code, we’re setting a limit of 5 requests per minute for the “/home” endpoint. The key_func parameter determines how to identify different clients, here we’re using the client’s IP address.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the purpose of the BackgroundTasks class in FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>The BackgroundTasks class in FastAPI is used to schedule background tasks that should be executed after a response has been sent to the client. This allows you to perform non-blocking or time-consuming operations without delaying the response to the client.<br/></p><p>The purpose of the BackgroundTasks class can be summarized as follows :<br/></p><p>Non-blocking Operations : When handling a request, there are situations where you want to perform additional operations in the background without blocking the response to the client. For example, you might want to log information, send emails, or perform other tasks that do not need to be completed before responding to the client.<br/></p><p>Usage in Route Functions : In a FastAPI route function, you can declare a parameter of type BackgroundTasks. FastAPI will automatically create an instance of the BackgroundTasks class and inject it into your route function.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, BackgroundTasks
+
+app = FastAPI()
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">write_log</span>(<span class="hljs-params">message: <span class="hljs-built_in">str</span></span>):
+    <span class="hljs-comment"># Simulate a time-consuming task (e.g., writing to a log file)</span>
+    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">"log.txt"</span>, mode=<span class="hljs-string">"a"</span>) <span class="hljs-keyword">as</span> log:
+        log.write(message)
+
+<span class="hljs-meta">@app.post(<span class="hljs-params"><span class="hljs-string">"/send-notification/{email}"</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">send_notification</span>(<span class="hljs-params">email: <span class="hljs-built_in">str</span>, background_tasks: BackgroundTasks</span>):
+    message = <span class="hljs-string">f"message to <span class="hljs-subst">{email}</span>"</span>
+    background_tasks.add_task(write_log, message)
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"message"</span>: <span class="hljs-string">"Message sent in the background"</span>}
+</code><br/></pre><p>In this example, the send_notification route function takes an email parameter and a background_tasks parameter of type BackgroundTasks. The function sends a message and schedules the write_log function to run in the background.<br/></p><p>Adding Tasks to the Background : You can add tasks to the background using the add_task method of the BackgroundTasks instance. Each task added will be executed asynchronously after the response has been sent to the client.<br/></p><p>Execution After Response : The tasks scheduled with BackgroundTasks are executed in the order they are added, and they are executed after the response to the client has been sent. This ensures that the client receives a quick response, and any additional, potentially time-consuming tasks are performed in the background.<br/></p><p>Here's an overview of how it works :<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, BackgroundTasks
+
+app = FastAPI()
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">write_log</span>(<span class="hljs-params">message: <span class="hljs-built_in">str</span></span>):
+    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">"log.txt"</span>, mode=<span class="hljs-string">"a"</span>) <span class="hljs-keyword">as</span> log:
+        log.write(message)
+
+<span class="hljs-meta">@app.post(<span class="hljs-params"><span class="hljs-string">"/send-notification/{email}"</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">send_notification</span>(<span class="hljs-params">email: <span class="hljs-built_in">str</span>, background_tasks: BackgroundTasks</span>):
+    message = <span class="hljs-string">f"message to <span class="hljs-subst">{email}</span>"</span>
+    background_tasks.add_task(write_log, message)
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"message"</span>: <span class="hljs-string">"Message sent in the background"</span>}
+</code><br/></pre><p>In this example, when a POST request is made to /send-notification/{email}, the response is sent immediately with the message "Message sent in the background", and the write_log function is executed in the background to write to a log file. This ensures a responsive API while still allowing for additional background processing.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Can you explain how you would set up unit tests for a FastAPI application?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>To set up unit tests for a FastAPI application, you would first install pytest and requests libraries. Then, create a test file in your project directory named ‘test_main.py’. In this file, import the necessary modules including FastAPI’s TestClient, pytest, and your main app.<br/></p><p>Next, instantiate the TestClient with your FastAPI application as an argument. This client will be used to simulate HTTP requests in your tests.<br/></p><p>For each endpoint in your application, write a function that sends a request to it using the TestClient and checks the response. Use pytest’s assert statements to verify the status code, headers, and body of the response match what is expected.<br/></p><p>Remember to isolate each test case by mocking external dependencies and resetting any changes made during the test. Pytest fixtures can help manage setup and teardown tasks.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>When would you use HTTP directly instead of FastAPI’s dependency injection system?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI’s dependency injection system is highly efficient for managing dependencies and reducing code repetition. However, there are cases where using HTTP protocol directly might be preferred. One such case could be when dealing with low-level network operations or custom protocols.<br/></p><p>For instance, if we need to implement a WebSocket server that communicates via a specific binary protocol, FastAPI’s dependency injection may not provide the necessary control over the raw data stream. In this scenario, it would be more appropriate to use an ASGI server like Uvicorn or Hypercorn directly along with Python’s built-in asyncio library for handling asynchronous I/O operations.<br/></p><p>Here’s a simplified example of how you might set up a WebSocket server using Uvicorn:<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">import</span> uvicorn
+<span class="hljs-keyword">from</span> starlette.websockets <span class="hljs-keyword">import</span> WebSocket
+
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">app</span>(<span class="hljs-params">scope, receive, send</span>):
+    websocket = WebSocket(scope, receive, send)
+    <span class="hljs-keyword">await</span> websocket.accept()
+    <span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:
+        data = <span class="hljs-keyword">await</span> websocket.receive_text()
+        <span class="hljs-comment"># Process data here...</span>
+        <span class="hljs-keyword">await</span> websocket.send_text(<span class="hljs-string">f"Processed: <span class="hljs-subst">{data}</span>"</span>)
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
+    uvicorn.run(app, host=<span class="hljs-string">"127.0.0.1"</span>, port=<span class="hljs-number">8000</span>)
+</code><br/></pre><p>In this example, we have direct access to the incoming data stream and can process it as needed without any abstraction layers introduced by FastAPI’s dependency injection system.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does FastAPI handle serialization and validation of data?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI uses Pydantic for data serialization and validation. Pydantic models define the shape of incoming or outgoing data, ensuring type correctness. When a request is received, FastAPI validates the data against the model’s schema using Python’s built-in typing system.<br/></p><p>If the data doesn’t match the schema, FastAPI automatically sends an error response detailing the issue. For valid data, it serializes into JSON format for HTTP responses. This process also works in reverse for incoming JSON data, deserializing it into Python objects.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Explain the concept of routers in FastAPI.</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>In FastAPI, routers are a way to organize and modularize your API by grouping related endpoints together. Routers allow you to create separate sets of routes that are logically grouped based on their functionality. This helps in maintaining a clean and organized codebase, making it easier to manage and scale your FastAPI application.<br/></p><p>Here are key concepts related to routers in FastAPI:<br/></p><p>Creating a Router : You create a router using the APIRouter class from FastAPI. This class allows you to define routes, dependencies, and other aspects of your API within a specific router instance.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> APIRouter
+
+router = APIRouter()
+</code><br/></pre><p>Defining Routes in a Router : You can define routes within a router using the same decorators (@app.get, @app.post, etc.) that you use at the application level. The difference is that you use the decorators on the router instance instead of the main FastAPI application instance.<br/></p><pre><code class="language-python hljs"><span class="hljs-meta">@router.get(<span class="hljs-params"><span class="hljs-string">"/items/"</span></span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">read_items</span>():
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"message"</span>: <span class="hljs-string">"Read items"</span>}
+</code><br/></pre><p>Mounting a Router : To include a router in your main FastAPI application, you use the app.include_router method. This mounts the routes defined in the router to a specific path in the application.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+
+app = FastAPI()
+
+app.include_router(router, prefix=<span class="hljs-string">"/v1"</span>)
+</code><br/></pre><p>In this example, all routes defined in the router will be accessible under the /v1 path.<br/></p><p>Dependency Injection in Routers : Routers support dependency injection in the same way as route functions. You can define dependencies within a router, and FastAPI will handle the injection of dependencies when processing requests to routes in that router.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> APIRouter, Depends
+
+router = APIRouter()
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">get_db</span>():
+    <span class="hljs-comment"># Function to get a database connection</span>
+    <span class="hljs-comment"># ...</span>
+    <span class="hljs-keyword">pass</span>
+
+<span class="hljs-meta">@router.get(<span class="hljs-params"><span class="hljs-string">"/items/"</span></span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">read_items</span>(<span class="hljs-params">db = Depends(<span class="hljs-params">get_db</span>)</span>):
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"message"</span>: <span class="hljs-string">"Read items"</span>}
+</code><br/></pre><p>Organizing Code : Routers help in organizing your code by allowing you to group related endpoints together. This is particularly useful as your application grows, and you have multiple sets of functionalities.<br/></p><p>Sub-routers : You can create sub-routers by instantiating additional APIRouter instances within a router. This allows for hierarchical organization of routes within your application.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> APIRouter
+
+parent_router = APIRouter()
+child_router = APIRouter()
+
+<span class="hljs-meta">@parent_router.get(<span class="hljs-params"><span class="hljs-string">"/parent/"</span></span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">parent_route</span>():
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"message"</span>: <span class="hljs-string">"Parent route"</span>}
+
+<span class="hljs-meta">@child_router.get(<span class="hljs-params"><span class="hljs-string">"/child/"</span></span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">child_route</span>():
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"message"</span>: <span class="hljs-string">"Child route"</span>}
+
+parent_router.include_router(child_router, prefix=<span class="hljs-string">"/child"</span>)
+</code><br/></pre><p>In this example, the /child/ route is a sub-route of the /parent/ route.<br/></p><p>Using routers helps in creating modular and maintainable APIs by allowing you to separate concerns and organize your code in a structured manner. It's especially useful when building larger applications with multiple sets of functionality.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the advantages of using FastAPI over Django for building APIs?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Both FastAPI and Django are powerful Python web frameworks, but they have different design philosophies and are suited for different use cases. Here are some advantages of using FastAPI over Django for building APIs:<br/></p><ul><li>Performance : FastAPI is designed to be high-performance, leveraging asynchronous programming to handle a large number of concurrent requests efficiently. This makes it well-suited for applications with high performance requirements. Django, while powerful, may have more overhead and is traditionally synchronous.<br/></li><li>Automatic API Documentation : FastAPI automatically generates interactive API documentation based on the Python type hints used in the code. This documentation is accessible through Swagger UI and ReDoc, providing developers with an easy way to understand and test the API. Django requires additional tools or manual documentation efforts.<br/></li><li>Type Hints and Validation : FastAPI uses Python type hints for request and response validation. This not only helps in catching errors early in the development process but also improves code readability. Django typically relies on serializers and forms for data validation.<br/></li><li>Asynchronous Support : FastAPI fully supports asynchronous programming, allowing you to write asynchronous routes and take advantage of the performance benefits of asynchronous I/O operations. Django supports asynchronous views as of version 3.1, but its core design is synchronous.<br/></li><li>Dependency Injection System : FastAPI has a built-in dependency injection system that makes it easy to manage and inject dependencies in a clean and organized way. Django, while having support for dependency injection, may not have it as seamlessly integrated as FastAPI.<br/></li><li>Minimal Boilerplate Code : FastAPI reduces the amount of boilerplate code required to build APIs, especially with automatic data validation and documentation. This can lead to faster development cycles and cleaner, more maintainable code.<br/></li><li>WebSocket Support : FastAPI has built-in support for handling WebSocket communication, enabling real-time bidirectional communication between clients and the server. Django channels provides WebSocket support for Django but may involve additional configuration and setup.<br/></li><li>Single-File Mode : FastAPI supports a "single-file" mode, allowing you to define routes directly in the main application file without the need for separate views, serializers, and other components. This can be convenient for small projects or quick prototyping.<br/></li><li>Simplicity and Explicitness : FastAPI is designed to be simple, explicit, and easy to use. It encourages the use of Python type hints and follows the principle of least surprise. Django, being a full-fledged web framework, may come with more features and abstractions, which could be overkill for API-focused projects.<br/></li><li>No ORM (Object-Relational Mapping) : FastAPI does not come with its own ORM. While Django's ORM is powerful and feature-rich, in certain scenarios, using an ORM may be unnecessary or overcomplicated for API-only projects. FastAPI allows developers to choose their preferred database tools.<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is UTF8JSONResponse?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>UTF8JSONResponse is a class used in FastAPI to return responses that are encoded in UTF-8 and formatted as JSON. This is useful for APIs that need to support international characters, as UTF-8 is a widely used encoding that can represent most languages.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are OpenAPI specifications and why are they important?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<div>OpenAPI specifications are important because they provide a standard, language-agnostic way of describing REST APIs. This allows developers to more easily understand how an API works, and also allows for tools to be built that can automatically generate code or documentation based on the OpenAPI specification.<br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Do clients need to support JSON schema or OpenAPI specifications to interact with your API?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>No, clients do not need to support JSON schema or OpenAPI specifications to interact with your API. However, doing so would certainly make things easier, as it would allow them to automatically generate code to interact with your API.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are some common error codes returned by FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Some common error codes that may be returned by FastAPI include :<br/></p><ul><li>400 : Bad Request<br/></li><li>401 : Unauthorized<br/></li><li>403 : Forbidden<br/></li><li>404 : Not Found<br/></li><li>405 : Method Not Allowed<br/></li><li>500 : Internal Server Error<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Explain the difference between path parameters and query parameters in FastAPI.</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>In FastAPI, both path parameters and query parameters are used to extract information from the URL, but they serve different purposes and have distinct syntax. Here's an explanation of the differences between path parameters and query parameters:<br/></p><p>Path Parameters :<br/></p><ol><li>Positional in the URL : Path parameters are part of the URL path itself and are specified by enclosing them in curly braces {} within the route path. They are positional and must be included in the order they appear in the route definition.<br/></li></ol><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+
+app = FastAPI()
+
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/items/{item_id}"</span></span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">read_item</span>(<span class="hljs-params">item_id: <span class="hljs-built_in">int</span></span>):
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"item_id"</span>: item_id}
+</code><br/></pre><p>In this example, the item_id is a path parameter that is part of the URL path /items/{item_id}.<br/></p><ol><li>Required by Default : Path parameters are required by default. If a path parameter is defined in the route, it must be provided in the URL, and its type is automatically validated based on the type hint in the route function.<br/></li></ol><p>Query Parameters :<br/></p><ol><li>Appended to the URL : Query parameters are appended to the URL after a question mark ? and are usually in the form of key=value pairs. They are optional and can be provided in any order.<br/></li></ol><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+
+app = FastAPI()
+
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/items/"</span></span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">read_item</span>(<span class="hljs-params">query_param: <span class="hljs-built_in">str</span></span>):
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"query_param"</span>: query_param}
+</code><br/></pre><p>In this example, query_param is a query parameter that can be provided in the URL, e.g., /items/?query_param=value.<br/></p><ol><li>Optional and Specified with Defaults : Query parameters are optional by default. You can provide default values for query parameters in the route function to indicate a default value if the parameter is not provided in the URL.<br/></li></ol><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+
+app = FastAPI()
+
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/items/"</span></span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">read_item</span>(<span class="hljs-params">query_param: <span class="hljs-built_in">str</span> = <span class="hljs-string">"default_value"</span></span>):
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"query_param"</span>: query_param}
+</code><br/></pre><p>If the client does not provide a value for query_param, the default value "default_value" will be used.<br/></p><p>Example :<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+
+app = FastAPI()
+
+<span class="hljs-comment"># Path parameter</span>
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/items/{item_id}"</span></span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">read_item_by_id</span>(<span class="hljs-params">item_id: <span class="hljs-built_in">int</span></span>):
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"item_id"</span>: item_id}
+
+<span class="hljs-comment"># Query parameter with a default value</span>
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/items/"</span></span>)</span>
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">read_items_with_query_param</span>(<span class="hljs-params">query_param: <span class="hljs-built_in">str</span> = <span class="hljs-string">"default_value"</span></span>):
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"query_param"</span>: query_param}
+</code><br/></pre><p>In the example above, /items/{item_id} expects a path parameter (item_id) in the URL path, while /items/ expects an optional query parameter (query_param) with a default value.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Can you describe how you would handle CORS (Cross-Origin Resource Sharing) in FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI has a built-in middleware for managing CORS, which can be added to the application instance. To enable it, import CORSMiddleware from fastapi.middleware.cors and add it to your FastAPI app using the .add_middleware() method. You need to specify parameters like allow_origins (a list of origins that are allowed), allow_credentials (whether cookies can be supported), allow_methods (HTTP methods allowed), and allow_headers (which HTTP headers are permitted). Here’s an example:<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> fastapi.middleware.cors <span class="hljs-keyword">import</span> CORSMiddleware
+
+app = FastAPI()
+origins = [<span class="hljs-string">"&lt;http://localhost:3000&gt;"</span>]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=<span class="hljs-literal">True</span>,
+    allow_methods=[<span class="hljs-string">"*"</span>],
+    allow_headers=[<span class="hljs-string">"*"</span>],
+)
+
+<span class="hljs-meta">@app.get(<span class="hljs-params"><span class="hljs-string">"/"</span></span>)</span>
+<span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">main</span>():
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"message"</span>: <span class="hljs-string">"Hello World"</span>}
+</code><br/></pre><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What features does FastAPI provide for form handling?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI provides robust form handling features. It uses Python type hints to validate incoming data, ensuring that it matches the expected format. This includes checking for required fields and validating field types. FastAPI also supports nested models for complex forms with sub-forms or lists of sub-forms.<br/></p><p>Additionally, it allows for custom validation using Pydantic’s @validator decorator, enabling more complex checks beyond simple type validation. Furthermore, FastAPI can automatically generate interactive documentation for your API including form parameters, making it easier for users to understand how to interact with your endpoints.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How can you serve static files with FastAPI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI can serve static files using the StaticFiles class from starlette.staticfiles. First, import FastAPI and StaticFiles from fastapi and starlette.staticfiles respectively. Then create an instance of FastAPI and mount a new instance of StaticFiles to it. The directory parameter in StaticFiles should point to your static files’ location. For example :<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI
+<span class="hljs-keyword">from</span> starlette.staticfiles <span class="hljs-keyword">import</span> StaticFiles
+
+app = FastAPI()
+app.mount(<span class="hljs-string">"/static"</span>, StaticFiles(directory=<span class="hljs-string">"static"</span>), name=<span class="hljs-string">"static"</span>)
+</code><br/></pre><p>In this code, “/static” is the path where your app will look for static files. “directory” is the folder with your static files.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How would you deploy a FastAPI application to a production environment?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>FastAPI deployment involves several steps. First, develop the FastAPI application locally and ensure it’s functioning as expected. Next, containerize your app using Docker for consistency across environments. Create a Dockerfile in your project directory that includes instructions to build an image of your app.<br/></p><p>Here is a basic example :<br/></p><pre><code class="language-docker">FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7
+COPY ./app /app
+</code><br/></pre><p>Then, build the Docker image with docker build -t myimage . and run it with docker run -d --name mycontainer -p 80:80 myimage.<br/></p><p>For production, consider deploying on a cloud platform like AWS or Google Cloud. Use their respective services (ECS/Fargate for AWS, Kubernetes Engine for GCP) to manage your containers. Ensure you have set up proper logging and monitoring for your deployed application.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Discuss the role of middleware in FastAPI.</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Middleware in FastAPI plays a crucial role in request and response handling, allowing you to perform additional processing before and after route execution. Middleware functions intercept incoming requests and outgoing responses, providing a way to modify or augment them as they pass through the application.<br/></p><p>Here's a discussion on the role and functionality of middleware in FastAPI:<br/></p><ol><li>Request Middleware :<br/></li></ol><ul><li>Pre-Processing Requests : Request middleware functions are executed before the route handler functions. They can inspect, modify, or validate incoming requests before they are passed to the corresponding route.<br/></li><li>Authentication and Authorization : Middleware can handle authentication and authorization tasks by validating tokens, checking user permissions, or enforcing access controls before allowing access to protected routes.<br/></li><li>Logging and Metrics : Middleware functions can log incoming requests, capture request metrics, or perform any other pre-processing tasks such as rate limiting or request filtering.<br/></li></ul><ol><li>Response Middleware :<br/></li></ol><ul><li>Post-Processing Responses : Response middleware functions are executed after the route handler functions. They can modify or augment the response data generated by the route handlers before sending it back to the client.<br/></li><li>Error Handling : Middleware can handle errors and exceptions that occur during route execution, allowing you to customize error responses or perform additional error logging or recovery actions.<br/></li><li>Response Compression or Transformation : Middleware can compress response payloads, transform response data into different formats (e.g., JSON to XML), or add additional headers or metadata to the response before it's sent back to the client.<br/></li></ul><ol><li>Implementing Middleware in FastAPI :<br/></li></ol><ul><li>Using Request and Response Hooks : FastAPI provides hooks for registering middleware functions that are executed before and after route handlers. You can use the app.middleware decorator to register middleware functions for request and response processing.<br/></li><li>Custom Middleware Classes : You can implement custom middleware classes by subclassing starlette.middleware.base.BaseHTTPMiddleware. This gives you more control over the middleware behavior and allows for more complex middleware logic.<br/></li></ul><p>Example :<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> fastapi <span class="hljs-keyword">import</span> FastAPI, Request, Response
+<span class="hljs-keyword">from</span> starlette.middleware.base <span class="hljs-keyword">import</span> BaseHTTPMiddleware
+
+app = FastAPI()
+
+<span class="hljs-keyword">class</span> <span class="hljs-title class_">CustomMiddleware</span>(<span class="hljs-title class_ inherited__">BaseHTTPMiddleware</span>):
+    <span class="hljs-keyword">async</span> <span class="hljs-keyword">def</span> <span class="hljs-title function_">dispatch</span>(<span class="hljs-params">self, request: Request, call_next</span>):
+        <span class="hljs-comment"># Pre-processing logic</span>
+        <span class="hljs-comment"># e.g., Authentication, Logging, Metrics</span>
+
+        response = <span class="hljs-keyword">await</span> call_next(request)
+
+        <span class="hljs-comment"># Post-processing logic</span>
+        <span class="hljs-comment"># e.g., Error Handling, Response Transformation</span>
+
+        <span class="hljs-keyword">return</span> response
+
+app.add_middleware(CustomMiddleware)
+</code><br/></pre><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+        </div>
+      </section>
+        </div>
+      </div>
+      <details class="resources-panel" open>
+        <summary>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          Resources &mdash; 3 videos
+        </summary>
+        <div class="resources-grid">
+      <div class="resource-card" data-vid="ZZQz8h1rCNA">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/ZZQz8h1rCNA/mqdefault.jpg" alt="FastAPI Speed Test! Sync vs Async Database Calls" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/ZZQz8h1rCNA" target="_blank" rel="noopener">FastAPI Speed Test! Sync vs Async Database Calls</a></h4>
+          <p>Benchmark comparing sync vs async database operations in FastAPI — real performance differences and when async is worth the added complexity.</p>
+          <div class="resource-meta">MLWorks</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="sO9B0Jps3sg">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/sO9B0Jps3sg/mqdefault.jpg" alt="Master CRUD Operations in FastAPI" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/sO9B0Jps3sg" target="_blank" rel="noopener">Master CRUD Operations in FastAPI</a></h4>
+          <p>Build a complete CRUD API in FastAPI from scratch — route handlers, Pydantic models, dependency injection, and SQLAlchemy database integration.</p>
+          <div class="resource-meta">MLWorks</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="19x8pKiaQVU">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/19x8pKiaQVU/mqdefault.jpg" alt="Redis Isn&#x27;t Just for Caching Anymore" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/19x8pKiaQVU" target="_blank" rel="noopener">Redis Isn&#x27;t Just for Caching Anymore</a></h4>
+          <p>Explores advanced Redis patterns — pub/sub, streams, vector search, and how Redis integrates with FastAPI for high-performance AI applications.</p>
+          <div class="resource-meta">ByteMonk</div>
+        </div>
+      </div>
+        </div>
+      </details>
+    </main>
+  </div>
+</div>
+<script src="../../assets/main.js"></script>
+</body>
+</html>

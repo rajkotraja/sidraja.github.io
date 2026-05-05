@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Python Essentials for AI Engineer | Foundations | AI Mastery by Siddharth Raja</title>
+<link rel="stylesheet" href="../../assets/main.css">
+<script>
+(function(){
+  var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.dataset.theme=t;
+  if(sessionStorage.getItem('am_auth')!=='1'){
+    document.documentElement.style.opacity='0';
+  }
+})();
+</script>
+</head>
+<body data-root="../../">
+<header class="site-header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">AI <span>Mastery</span> <span class="logo-by">by Siddharth Raja</span></a>
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+      <input type="search" id="search-input" placeholder="Search questions… (/)" autocomplete="off" spellcheck="false" aria-label="Search questions">
+      <div id="search-results" role="listbox" hidden></div>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+<div class="page-body">
+  <div class="layout">
+    <nav class="course-sidebar" aria-label="Course topics">
+      <a href="../../index.html" class="sidebar-back">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        All courses
+      </a>
+      <div class="sidebar-course-name">Foundations</div>
+      <ul class="topic-list">
+        <li class="active"><a href="../python-essentials-for-ai-engineer/index.html">Python Essentials for AI Engineer</a></li>
+        <li class=""><a href="../statistics-math-for-aiml-interviews/index.html">Statistics &amp; Math for AI/ML Interviews</a></li>
+        <li class=""><a href="../machine-learning-foundations/index.html">Machine Learning Foundations</a></li>
+        <li class=""><a href="../deep-learning-essentials/index.html">Deep Learning Essentials</a></li>
+      </ul>
+    </nav>
+    <main class="topic-main" id="main-content">
+      <select class="topic-select" onchange="location.href=this.value" aria-label="Jump to topic">
+        <option value="../python-essentials-for-ai-engineer/index.html" selected>Python Essentials for AI Engineer</option>
+        <option value="../statistics-math-for-aiml-interviews/index.html">Statistics &amp; Math for AI/ML Interviews</option>
+        <option value="../machine-learning-foundations/index.html">Machine Learning Foundations</option>
+        <option value="../deep-learning-essentials/index.html">Deep Learning Essentials</option>
+      </select>
+      <div class="topic-header">
+        <div class="topic-breadcrumb">
+          <a href="../../index.html">Home</a> /
+          <a href="../index.html">Foundations</a>
+        </div>
+        <h1>Python Essentials for AI Engineer</h1>
+        <div class="topic-meta">
+          <span class="topic-stats">48 questions</span>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-wrap">
+          <svg class="filter-icon" width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+          <input type="search" id="topic-filter" placeholder="Filter questions… (f)" autocomplete="off" spellcheck="false" aria-label="Filter questions on this page">
+        </div>
+        <span id="filter-count"></span>
+      </div>
+      <div id="filter-no-results" class="filter-no-results">No questions match your filter.</div>
+      <div class="qa-sections-full">
+
+        <div class="qa-sections">
+      <section id="python-basics-core-data-types" class="qa-section">
+        <div class="section-header">
+          <h2>Python Basics &amp; Core Data Types</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Python? Why is it widely used in AI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<div class="ui-rte-editor-div ui-rte-editor" style="overflow-wrap: break-word; font-variant-ligatures: none"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Python is a programming language used to give instructions to a computer.<br/></p><p style="margin: 0px; tab-size: 4; box-sizing: border-box">You can think of it as a language that helps humans communicate with machines in a clear and readable way. It is called a high-level language because its syntax is close to human language and easy to understand.<br/></p><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Example:<br/></p><pre style="white-space: pre-wrap"><code class="hljs language-bash"><span class="hljs-built_in">print</span>(<span class="hljs-string">"Hello AI"</span>)
+
+</code></pre><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Python is widely used in AI because:<br/></p><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">It has powerful libraries like NumPy, Pandas, PyTorch, TensorFlow.<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">It allows fast development and experimentation.<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">It has excellent support for data handling.<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">It integrates easily with APIs and external tools.<br/></p></li></ul><p style="margin: 0px; tab-size: 4; box-sizing: border-box">In AI engineering, Python is used for:<br/></p><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Data preprocessing<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Model training<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Model deployment<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">API integration<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Automation<br/></p></li></ul><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Interviewers expect you to understand that Python is not just easy — it is powerful enough for production systems.<br/></p><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><br/></p></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are Python’s built-in data types?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<div class="ui-rte-editor-div ui-rte-editor" style="overflow-wrap: break-word; font-variant-ligatures: none"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">A data type defines what kind of value a variable stores.<br/></p><p style="margin: 0px; tab-size: 4; box-sizing: border-box">For example:<br/></p><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Age → number<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Name → text<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Is active → True/False<br/></p></li></ul><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Main built-in data types:<br/></p><h3 style="margin: 0px; box-sizing: border-box">int (Integer)<br/></h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Stores whole numbers.<br/></p><pre style="white-space: pre-wrap"><code>age = 25
+
+</code></pre><h3 style="margin: 0px; box-sizing: border-box">float<br/></h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Stores decimal numbers.<br/></p><pre style="white-space: pre-wrap"><code>price = 19.99
+
+</code></pre><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Floats are extremely important in AI because model weights and calculations use decimal values.<br/></p><h3 style="margin: 0px; box-sizing: border-box">str (String)<br/></h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Stores text.<br/></p><pre style="white-space: pre-wrap"><code>name = "Chandra"
+
+</code></pre><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Strings are used in:<br/></p><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">NLP<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Prompts<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Chat systems<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">API communication<br/></p></li></ul><h3 style="margin: 0px; box-sizing: border-box">bool (Boolean)<br/></h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Stores True or False.<br/></p><pre style="white-space: pre-wrap"><code>is_logged_in = True
+
+</code></pre><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Used in conditions and logic control.<br/></p><h3 style="margin: 0px; box-sizing: border-box">list<br/></h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Ordered collection of items.<br/></p><pre style="white-space: pre-wrap"><code>numbers = [1, 2, 3]
+
+</code></pre><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Used in AI for storing:<br/></p><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Dataset values<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Predictions<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Token lists<br/></p></li></ul><h3 style="margin: 0px; box-sizing: border-box">tuple<br/></h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Ordered but cannot be modified after creation.<br/></p><pre style="white-space: pre-wrap"><code>coordinates = (10, 20)
+
+</code></pre><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Useful when data should remain constant.<br/></p><h3 style="margin: 0px; box-sizing: border-box">set<br/></h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Unordered collection with no duplicates.<br/></p><pre style="white-space: pre-wrap"><code>unique_ids = {1, 2, 3}
+
+</code></pre><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Useful for removing duplicate values.<br/></p><h3 style="margin: 0px; box-sizing: border-box">dict (Dictionary)<br/></h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Stores key-value pairs.<br/></p><pre style="white-space: pre-wrap"><code>student = {
+    "name": "Chandra",
+    "score": 95
+}
+
+</code></pre><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Dictionaries are heavily used in AI APIs and JSON responses.<br/></p><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><br/></p></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is dynamic typing?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<div class="ui-rte-editor-div ui-rte-editor" style="overflow-wrap: break-word; font-variant-ligatures: none"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Python is dynamically typed, meaning you do not need to declare the data type of a variable.<br/></p><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Example:<br/></p><pre style="white-space: pre-wrap"><code>x = 10
+x = "AI"
+
+</code></pre><p style="margin: 0px; tab-size: 4; box-sizing: border-box">The same variable can hold different types at different times.<br/></p><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Python decides the type during runtime.<br/></p><p style="margin: 0px; tab-size: 4; box-sizing: border-box">This flexibility makes Python very convenient for:<br/></p><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Rapid development<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Data processing<br/></p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Handling different input types in AI systems<br/></p></li></ul><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><br/></p></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between int and float?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>An int stores whole numbers.<br/></p><pre><code class="language-python">a = 5
+</code><br/></pre><p>A float stores decimal numbers.<br/></p><pre><code class="language-python">b = 5.0
+</code><br/></pre><p>You can check the type:<br/></p><pre><code class="language-python">print(type(5))   # int
+print(type(5.0)) # float
+</code><br/></pre><p>In AI systems, float values are used in:<br/></p><ul><li>Neural network weights<br/></li><li>Probabilities<br/></li><li>Loss calculations<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between List and Tuple?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Both store multiple values, but they differ in mutability.<br/></p><p>A list is mutable. That means it can be changed after creation.<br/></p><pre><code class="language-python">my_list = [1, 2, 3]
+my_list.append(4)
+</code><br/></pre><p>Now the list becomes:<br/></p><pre><code>[1, 2, 3, 4]
+</code><br/></pre><p>A tuple is immutable. That means it cannot be changed after creation.<br/></p><pre><code class="language-python">my_tuple = (1, 2, 3)
+</code><br/></pre><p>Trying to modify it will result in an error.<br/></p><p>Lists are used when data may change.<br/></p><p>Tuples are used when data should remain fixed.<br/></p><p>In AI, configuration values are sometimes stored as tuples because they should not change accidentally.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a Dictionary?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A dictionary stores data in key-value format.<br/></p><p>It works like a real dictionary:<br/></p><p>You look up a word (key) to get its meaning (value).<br/></p><p>Example:<br/></p><pre><code class="language-python">student = {
+    "name": "Chandra",
+    "score": 95
+}
+</code><br/></pre><p>Accessing value:<br/></p><pre><code class="language-python">print(student["name"])
+</code><br/></pre><p>Dictionaries are extremely important in AI because:<br/></p><ul><li>JSON responses are dictionaries.<br/></li><li>Model outputs are often dictionaries.<br/></li><li>API responses are dictionaries.<br/></li></ul><p>Understanding dictionaries is essential for AI engineers.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a Set and when should we use it?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A set is an unordered collection that does not allow duplicate values.<br/></p><p>Example:<br/></p><pre><code class="language-python">words = {"ai", "ml", "ai"}
+print(words)
+</code><br/></pre><p>Output:<br/></p><pre><code>{"ai", "ml"}
+</code><br/></pre><p>Sets are useful when:<br/></p><ul><li>Removing duplicates<br/></li><li>Tracking unique values<br/></li><li>Cleaning datasets in NLP<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Mutability?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Mutability refers to whether an object can change after it is created.<br/></p><p>Mutable objects:<br/></p><ul><li>list<br/></li><li>dict<br/></li><li>set<br/></li></ul><p>Example:<br/></p><pre><code class="language-python">a = [1, 2]
+b = a
+a.append(3)
+print(b)
+</code><br/></pre><p>Output:<br/></p><pre><code>[1, 2, 3]
+</code><br/></pre><p>Because both variables point to the same object in memory.<br/></p><p>Immutable objects:<br/></p><ul><li>int<br/></li><li>float<br/></li><li>str<br/></li><li>tuple<br/></li></ul><p>Example:<br/></p><pre><code class="language-python">x = 10
+y = x
+x = 20
+</code><br/></pre><p>Here, y is still 10 because integers are immutable.<br/></p><p>Understanding mutability helps prevent unintended side effects in AI systems.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Type Casting?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Type casting means converting one data type to another.<br/></p><p>Example:<br/></p><pre><code class="language-python">x = "10"
+y = int(x)
+</code><br/></pre><p>Now y is an integer.<br/></p><p>Common conversions:<br/></p><pre><code class="language-python">int()
+float()
+str()
+list()
+tuple()
+</code><br/></pre><p>In AI systems, type casting is used when:<br/></p><ul><li>Converting user input<br/></li><li>Parsing API responses<br/></li><li>Preparing data before feeding it to models<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between == and is?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>The operator <code>==</code> compares values.<br/></p><pre><code class="language-python">a = [1, 2]
+b = [1, 2]
+
+print(a == b)  # True
+</code><br/></pre><p>Because both lists contain the same values.<br/></p><p>The operator <code>is</code> compares memory locations.<br/></p><pre><code class="language-python">print(a is b)  # False
+</code><br/></pre><p>Because they are two different objects in memory.<br/></p><p>This distinction is often tested in interviews because many developers confuse value comparison with identity comparison.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a function in Python? Why do we use it?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A function is a reusable block of code that performs a specific task.<br/></p><p>Instead of writing the same code again and again, we define it once and reuse it.<br/></p><p>Example:<br/></p><pre><code class="language-python">def greet(name):
+    return "Hello " + name
+</code><br/></pre><p>Calling the function:<br/></p><pre><code class="language-python">print(greet("Chandra"))
+</code><br/></pre><p>Output:<br/></p><pre><code>Hello Chandra
+</code><br/></pre><p>Why functions are important in AI:<br/></p><ul><li>Breaking large systems into small reusable parts<br/></li><li>Creating model pipelines<br/></li><li>Writing reusable preprocessing logic<br/></li><li>Building modular AI systems<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between parameters and arguments?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Parameters are variables defined in the function definition.<br/></p><p>Arguments are actual values passed when calling the function.<br/></p><p>Example:<br/></p><pre><code class="language-python">def add(a, b):   # a and b are parameters
+    return a + b
+
+add(2, 3)        # 2 and 3 are arguments
+</code><br/></pre><p>This distinction is commonly tested in interviews.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between return and print?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><code>print()</code> displays output on the screen.<br/></p><p><code>return</code> sends the result back to the caller.<br/></p><p>Example:<br/></p><pre><code class="language-python">def add(a, b):
+    print(a + b)
+</code><br/></pre><p>This only prints.<br/></p><p>Now:<br/></p><pre><code class="language-python">def add(a, b):
+    return a + b
+</code><br/></pre><p>This allows:<br/></p><pre><code class="language-python">result = add(2, 3)
+print(result)
+</code><br/></pre><p>In AI systems:<br/></p><p>You must use <code>return</code> because functions are chained together in pipelines.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are default arguments in Python?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Default arguments allow a function to work even if no value is passed.<br/></p><p>Example:<br/></p><pre><code class="language-python">def greet(name="User"):
+    return "Hello " + name
+</code><br/></pre><p>Calling:<br/></p><pre><code class="language-python">print(greet())
+</code><br/></pre><p>Output:<br/></p><pre><code>Hello User
+</code><br/></pre><p>Used in AI:<br/></p><p>When building flexible model functions with optional parameters.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is variable scope?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Scope defines where a variable is accessible.<br/></p><p>There are mainly two types:<br/></p><h3>Local Scope<br/></h3><p>Defined inside a function.<br/></p><pre><code class="language-python">def test():
+    x = 5
+</code><br/></pre><p><code>x</code> cannot be accessed outside.<br/></p><h3>Global Scope<br/></h3><p>Defined outside functions.<br/></p><pre><code class="language-python">x = 10
+</code><br/></pre><p>Accessible everywhere.<br/></p><p>Understanding scope prevents bugs in AI pipelines.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the global keyword?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>If you want to modify a global variable inside a function, you must use <code>global</code>.<br/></p><p>Example:<br/></p><pre><code class="language-python">x = 10
+
+def change():
+    global x
+    x = 20
+</code><br/></pre><p>Without <code>global</code>, Python creates a new local variable.<br/></p><p>Interview trap: Many beginners forget this and create bugs.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are *args and **kwargs?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>They allow flexible number of inputs.<br/></p><h3>args (multiple positional arguments)<br/></h3><pre><code class="language-python">def add(*args):
+    return sum(args)
+
+print(add(1, 2, 3))
+</code><br/></pre><h3>*kwargs (multiple keyword arguments)<br/></h3><pre><code class="language-python">def print_details(**kwargs):
+    return kwargs
+
+print(print_details(name="AI", level="Beginner"))
+</code><br/></pre><p>Used in AI:<br/></p><p>When writing flexible APIs or model wrappers.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a lambda function?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A lambda function is a small anonymous function written in one line.<br/></p><p>Example:<br/></p><pre><code class="language-python">square = lambda x: x * x
+print(square(4))
+</code><br/></pre><p>Output:<br/></p><pre><code>16
+</code><br/></pre><p>Equivalent to:<br/></p><pre><code class="language-python">def square(x):
+    return x * x
+</code><br/></pre><p>Used in:<br/></p><ul><li>Sorting<br/></li><li>Data transformations<br/></li><li>Small utility functions<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between mutable default argument and safe default argument?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>This is a very common interview question.<br/></p><p>Problem example:<br/></p><pre><code class="language-python">def add_item(item, my_list=[]):
+    my_list.append(item)
+    return my_list
+</code><br/></pre><p>Calling multiple times:<br/></p><pre><code class="language-python">print(add_item(1))
+print(add_item(2))
+</code><br/></pre><p>Output:<br/></p><pre><code>[1]
+[1, 2]
+</code><br/></pre><p>Because the default list is shared across calls.<br/></p><p>Safe version:<br/></p><pre><code class="language-python">def add_item(item, my_list=None):
+    if my_list is None:
+        my_list = []
+    my_list.append(item)
+    return my_list
+</code><br/></pre><p>This avoids unexpected behavior.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are some commonly used list methods?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Lists come with built-in methods that help manipulate data.<br/></p><p>Example list:<br/></p><pre><code class="language-python">numbers = [1, 2, 3]
+</code><br/></pre><h3>Common methods:<br/></h3><p><b>append()</b> → adds item at end<br/></p><pre><code class="language-python">numbers.append(4)
+</code><br/></pre><p><b>insert()</b> → adds at specific position<br/></p><pre><code class="language-python">numbers.insert(1, 10)
+</code><br/></pre><p><b>remove()</b> → removes first matching value<br/></p><pre><code class="language-python">numbers.remove(2)
+</code><br/></pre><p><b>pop()</b> → removes item by index (default last)<br/></p><pre><code class="language-python">numbers.pop()
+</code><br/></pre><p><b>sort()</b> → sorts list<br/></p><pre><code class="language-python">numbers.sort()
+</code><br/></pre><p>In AI:<br/></p><p>Lists are used for storing predictions, tokens, batches of data.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between append() and extend()?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><code>append()</code> adds entire object as one element.<br/></p><pre><code class="language-python">a = [1, 2]
+a.append([3, 4])
+print(a)
+</code><br/></pre><p>Output:<br/></p><pre><code>[1, 2, [3, 4]]
+</code><br/></pre><p><code>extend()</code> adds elements individually.<br/></p><pre><code class="language-python">a = [1, 2]
+a.extend([3, 4])
+print(a)
+</code><br/></pre><p>Output:<br/></p><pre><code>[1, 2, 3, 4]
+</code><br/></pre><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is enumerate()?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><code>enumerate()</code> gives both index and value while iterating.<br/></p><p>Example:<br/></p><pre><code class="language-python">names = ["AI", "ML", "DL"]
+
+for index, value in enumerate(names):
+    print(index, value)
+</code><br/></pre><p>Output:<br/></p><pre><code>0 AI
+1 ML
+2 DL
+</code><br/></pre><p>Very useful in data preprocessing tasks.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are dictionary methods?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Example dictionary:<br/></p><pre><code class="language-python">student = {"name": "Chandra", "score": 95}
+</code><br/></pre><p>Common methods:<br/></p><p><b>keys()</b><br/></p><pre><code class="language-python">student.keys()
+</code><br/></pre><p><b>values()</b><br/></p><pre><code class="language-python">student.values()
+</code><br/></pre><p><b>items()</b><br/></p><pre><code class="language-python">student.items()
+</code><br/></pre><p>Used for looping:<br/></p><pre><code class="language-python">for key, value in student.items():
+    print(key, value)
+</code><br/></pre><p>In AI:<br/></p><p>We often loop through API responses which are dictionaries.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is get() method in dictionary?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><code>get()</code> safely retrieves a value.<br/></p><pre><code class="language-python">student.get("name")
+</code><br/></pre><p>If key does not exist:<br/></p><pre><code class="language-python">student.get("age", "Not Found")
+</code><br/></pre><p>It avoids error.<br/></p><p>Without get():<br/></p><pre><code class="language-python">student["age"]  # ❌ KeyError
+</code><br/></pre><p>Very important in AI when parsing unpredictable API responses.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a List Comprehension?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Short way to create lists.<br/></p><p>Normal way:<br/></p><pre><code class="language-python">squares = []
+for i in range(5):
+    squares.append(i*i)
+</code><br/></pre><p>List comprehension:<br/></p><pre><code class="language-python">squares = [i*i for i in range(5)]
+</code><br/></pre><p>More readable and efficient.<br/></p><p>In AI:<br/></p><p>Used for quick data transformations.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between iterable and iterator?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Iterable:<br/></p><p>An object that can be looped over.<br/></p><p>Examples:<br/></p><ul><li>list<br/></li><li>tuple<br/></li><li>string<br/></li><li>dictionary<br/></li></ul><p>Iterator:<br/></p><p>An object with <code>__next__()</code> method that produces next value.<br/></p><p>Example:<br/></p><pre><code class="language-python">numbers = [1,2,3]
+it = iter(numbers)
+</code><br/></pre><p><code>numbers</code> → iterable<br/></p><p><code>it</code> → iterator<br/></p><p>This concept becomes important when learning:<br/></p><ul><li>Generators<br/></li><li>Streaming large data<br/></li><li>Batch processing in AI<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Object-Oriented Programming (OOP)?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>OOP is a programming style where we organize code using <b>classes and objects</b>.<br/></p><p>Instead of writing everything as separate functions, we group related data and behavior together.<br/></p><p>Think of it like this:<br/></p><p>If you are building an AI Model system:<br/></p><ul><li>Model name<br/></li><li>Model version<br/></li><li>Prediction function<br/></li><li>Training function<br/></li></ul><p>All these belong together.<br/></p><p>So we create a class.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a Class?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A class groups <b>two things</b> in one place:<br/></p><ol><li><p style="margin-top: 0px"></p><div><b>Data (attributes / properties)</b><br/></div><div> → what the object <i>has</i><br/></div><div> Examples: <code>name</code>, <code>age</code>, <code>balance</code>, <code>color</code><br/></div><p></p></li><li><p style="margin-top: 0px"></p><div><b>Behavior (methods / functions inside a class)</b><br/></div><div> → what the object <i>can do</i><br/></div><div> Examples: <code>deposit()</code>, <code>withdraw()</code>, <code>start_engine()</code>, <code>apply_discount()</code><br/></div><p></p></li></ol><p>So, a class is a way to model real-world entities in code.<br/></p><div><hr/><br/></div><h2>Why Do We Need Classes?<br/></h2><p>Without classes, we usually store data in separate variables:<br/></p><pre class="overflow-visible! px-0!"><div class="contain-inline-size rounded-2xl corner-superellipse/1.1 relative bg-token-sidebar-surface-primary"><div class="sticky top-[calc(var(--sticky-padding-top)+9*var(--spacing))]"><div class="absolute end-0 bottom-0 flex h-9 items-center pe-2"><div class="bg-token-bg-elevated-secondary text-token-text-secondary flex items-center gap-4 rounded-sm px-2 font-sans text-xs"><br/></div></div></div><div class="overflow-y-auto p-4" dir="ltr"><code class="whitespace-pre! language-python"><span><span>name1 = </span><span><span class="hljs-string">"Ravi"</span></span><span>
+age1 = </span><span><span class="hljs-number">22</span></span><span>
+
+name2 = </span><span><span class="hljs-string">"Meena"</span></span><span>
+age2 = </span><span><span class="hljs-number">24</span></span><span>
+</span></span></code><br/></div></div></pre><p>This becomes messy when you have many records and behaviors.<br/></p><p>With a class, you create a proper structure:<br/></p><ul><li><p style="margin-top: 0px">One blueprint: <code>Student</code><br/></p></li><li><p style="margin-top: 0px"><br/></p></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the init method?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><code>__init__</code> is a special method (constructor).<br/></p><p>It runs automatically when an object is created.<br/></p><p>Example:<br/></p><pre><code class="language-python">class Model:
+    def __init__(self, name):
+        self.name = name
+
+model1 = Model("Resume Screener")
+print(model1.name)
+</code><br/></pre><p>Output:<br/></p><pre><code>Resume Screener
+</code><br/></pre><p><code>__init__</code> is used to initialize object data.<br/></p><p>In AI:<br/></p><ul><li>Store model name<br/></li><li>Store configuration<br/></li><li>Store API keys<br/></li><li>Store model parameters<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is self in Python?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><code>self</code> refers to the current object.<br/></p><p>When we write:<br/></p><pre><code class="language-python">class Model:
+    def __init__(self, name):
+        self.name = name
+</code><br/></pre><p><code>self.name</code> means:<br/></p><p>Store this value inside this object.<br/></p><p>If you create two objects:<br/></p><pre><code class="language-python">model1 = Model("A")
+model2 = Model("B")
+</code><br/></pre><p>Each object has its own <code>name</code>.<br/></p><p>Without <code>self</code>, Python cannot differentiate between objects.<br/></p><p>This is one of the most common beginner confusions in interviews.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are Instance Variables and Methods?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<h3>Instance Variables<br/></h3><p>Variables that belong to an object.<br/></p><p>Example:<br/></p><pre><code class="language-python">class Student:
+    def __init__(self, name):
+        self.name = name
+</code><br/></pre><p>Here:<br/></p><p><code>name</code> is instance variable.<br/></p><div><hr/><br/></div><h3>Instance Methods<br/></h3><p>Functions inside a class.<br/></p><p>Example:<br/></p><pre><code class="language-python">class Model:
+    def __init__(self, name):
+        self.name = name
+
+    def predict(self):
+        return "Prediction from " + self.name
+</code><br/></pre><p>Calling:<br/></p><pre><code class="language-python">model = Model("AI Model")
+print(model.predict())
+</code><br/></pre><p>Used in AI:<br/></p><ul><li>predict()<br/></li><li>train()<br/></li><li>evaluate()<br/></li><li>load_model()<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Inheritance?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Inheritance allows one class to reuse another class.<br/></p><p>Example:<br/></p><pre><code class="language-python">class BaseModel:
+    def train(self):
+        return "Training"
+
+class AIModel(BaseModel):
+    def predict(self):
+        return "Predicting"
+</code><br/></pre><p>Here:<br/></p><p><code>AIModel</code> inherits from <code>BaseModel</code>.<br/></p><p>Now:<br/></p><pre><code class="language-python">model = AIModel()
+print(model.train())
+</code><br/></pre><p>Output:<br/></p><pre><code>Training
+</code><br/></pre><p>Used in AI:<br/></p><ul><li>Base model class<br/></li><li>Specialized models<br/></li><li>Custom retrievers<br/></li><li>Custom agents<br/></li></ul><p>Inheritance reduces code duplication.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Polymorphism?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Polymorphism means:<br/></p><p>Same method name behaves differently for different objects.<br/></p><p>Example:<br/></p><pre><code class="language-python">class Cat:
+    def sound(self):
+        return "Meow"
+
+class Dog:
+    def sound(self):
+        return "Bark"
+</code><br/></pre><p>Both have <code>sound()</code> method, but behavior is different.<br/></p><p>In AI:<br/></p><p>Different models may have same method:<br/></p><pre><code class="language-python">model.predict()
+</code><br/></pre><p>But internal logic differs.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Encapsulation?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Encapsulation means hiding internal details and exposing only what is necessary.<br/></p><p>Example:<br/></p><pre><code class="language-python">class BankAccount:
+    def __init__(self, balance):
+        self.__balance = balance
+
+    def get_balance(self):
+        return self.__balance
+</code><br/></pre><p><code>__balance</code> is private.<br/></p><p>You cannot access:<br/></p><pre><code class="language-python">account.__balance  ❌
+</code><br/></pre><p>This protects internal data.<br/></p><p>In AI:<br/></p><ul><li>Protect model internals<br/></li><li>Protect API keys<br/></li><li>Protect sensitive configuration<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are Dunder (Magic) Methods?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Dunder means "double underscore".<br/></p><p>Examples:<br/></p><ul><li><code>__init__</code><br/></li><li><code>__str__</code><br/></li><li><code>__len__</code><br/></li><li><code>__repr__</code><br/></li></ul><p>Example:<br/></p><pre><code class="language-python">class Model:
+    def __init__(self, name):
+        self.name = name
+
+    def __str__(self):
+        return f"Model: {self.name}"
+
+model = Model("AI")
+print(model)
+</code><br/></pre><p>Output:<br/></p><pre><code>Model: AI
+</code><br/></pre><p>These methods allow you to customize object behavior.<br/></p><p>In AI systems:<br/></p><ul><li>Custom logging<br/></li><li>Debug printing<br/></li><li>Object comparison<br/></li><li>Overloading operators<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the different file modes in Python?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>When opening a file, we specify a mode:<br/></p><table><thead><tr><th>Mode<br/></th><th>Meaning<br/></th></tr></thead><tbody><tr><td>"r"<br/></td><td>Read<br/></td></tr><tr><td>"w"<br/></td><td>Write (overwrites file)<br/></td></tr><tr><td>"a"<br/></td><td>Append<br/></td></tr><tr><td>"r+"<br/></td><td>Read + Write<br/></td></tr><tr><td>"b"<br/></td><td>Binary mode<br/></td></tr></tbody></table><p>Example:<br/></p><pre><code class="language-python">file = open("data.txt", "w")
+</code><br/></pre><p>Interview tip:<br/></p><p>Always mention that <code>"w"</code> overwrites existing content.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the recommended way to open files?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>We use the <code>with</code> statement.<br/></p><p>Example:<br/></p><pre><code class="language-python">with open("example.txt", "r") as file:
+    content = file.read()
+</code><br/></pre><p>Why is this better?<br/></p><p>Because:<br/></p><ul><li>It automatically closes the file.<br/></li><li>Prevents memory leaks.<br/></li><li>Cleaner and safer.<br/></li></ul><p>In AI systems:<br/></p><p>Always use <code>with</code> for file handling.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you read a file line by line?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Example:<br/></p><pre><code class="language-python">with open("example.txt", "r") as file:
+    for line in file:
+        print(line.strip())
+</code><br/></pre><p>Useful when:<br/></p><ul><li>Reading large datasets<br/></li><li>Processing logs<br/></li><li>Processing training data<br/></li></ul><p>Reading line by line saves memory.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you write data to a file?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Example:<br/></p><pre><code class="language-python">with open("output.txt", "w") as file:
+    file.write("Hello AI")
+</code><br/></pre><p>Append mode:<br/></p><pre><code class="language-python">with open("output.txt", "a") as file:
+    file.write("\\nNew Line")
+</code><br/></pre><p>Used in AI:<br/></p><ul><li>Saving predictions<br/></li><li>Writing experiment results<br/></li><li>Logging outputs<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you work with JSON files?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>JSON is extremely important in AI because:<br/></p><ul><li>API responses are JSON<br/></li><li>Configuration files are JSON<br/></li><li>Model outputs are JSON<br/></li></ul><p>Import JSON module:<br/></p><pre><code class="language-python">import json
+</code><br/></pre><h3>Writing JSON:<br/></h3><pre><code class="language-python">data = {"name": "AI", "score": 95}
+
+with open("data.json", "w") as file:
+    json.dump(data, file)
+</code><br/></pre><h3>Reading JSON:<br/></h3><pre><code class="language-python">with open("data.json", "r") as file:
+    data = json.load(file)
+
+print(data["name"])
+</code><br/></pre><p>Interview tip:<br/></p><p>Always differentiate between:<br/></p><ul><li><code>json.dump()</code> → write to file<br/></li><li><code>json.dumps()</code> → convert to string<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a Module in Python?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A module is a Python file containing functions, classes, or variables.<br/></p><p>Example:<br/></p><p>Create file: <code>math_utils.py</code><br/></p><pre><code class="language-python">def add(a, b):
+    return a + b
+</code><br/></pre><p>Import it:<br/></p><pre><code class="language-python">import math_utils
+
+print(math_utils.add(2, 3))
+</code><br/></pre><p>Modules help in:<br/></p><ul><li>Organizing large AI projects<br/></li><li>Reusing code<br/></li><li>Maintaining clean structure<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the different import styles?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>There are multiple ways to import.<br/></p><h3>Basic import<br/></h3><pre><code class="language-python">import math
+</code><br/></pre><h3>Import specific function<br/></h3><pre><code class="language-python">from math import sqrt
+</code><br/></pre><h3>Import with alias<br/></h3><pre><code class="language-python">import numpy as np
+</code><br/></pre><p>Aliasing is common in AI:<br/></p><ul><li>numpy as np<br/></li><li>pandas as pd<br/></li><li>torch as torch<br/></li></ul><p>Interviewers expect you to know these styles.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is name == &quot;main&quot; ?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Every Python file has a built-in variable called <code>__name__</code>.<br/></p><p>If you run a file directly:<br/></p><pre><code class="language-python">print(__name__)
+</code><br/></pre><p>Output:<br/></p><pre><code>__main__
+</code><br/></pre><p>If you import it:<br/></p><p><code>__name__</code> becomes the module name.<br/></p><p>Example:<br/></p><pre><code class="language-python">if __name__ == "__main__":
+    print("This runs only when file is executed directly")
+</code><br/></pre><p>This prevents certain code from running during import.<br/></p><p>In AI systems:<br/></p><p>Useful when writing scripts that can be both:<br/></p><ul><li>Imported as module<br/></li><li>Run as standalone program<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is an Exception in Python?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>An exception is an error that occurs during program execution.<br/></p><p>There are two types of errors:<br/></p><h3>1. Syntax Error<br/></h3><p>Happens when code is written incorrectly.<br/></p><p>Example:<br/></p><pre><code class="language-python">print("Hello"
+</code><br/></pre><p>This will not even run.<br/></p><div><hr/><br/></div><h3>2. Exception (Runtime Error)<br/></h3><p>Happens while the program is running.<br/></p><p>Example:<br/></p><pre><code class="language-python">x = 10 / 0
+</code><br/></pre><p>This causes:<br/></p><pre><code>ZeroDivisionError
+</code><br/></pre><p>In AI systems, runtime errors are very common because:<br/></p><ul><li>User input may be wrong<br/></li><li>API may fail<br/></li><li>File may be missing<br/></li></ul><p>That is why exception handling is critical.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is try-except block?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>The <code>try-except</code> block allows you to handle errors gracefully.<br/></p><p>Basic syntax:<br/></p><pre><code class="language-python">try:
+    x = 10 / 0
+except ZeroDivisionError:
+    print("Cannot divide by zero")
+</code><br/></pre><p>Instead of crashing, the program continues safely.<br/></p><div><hr/><br/></div><h3>Real AI Example:<br/></h3><pre><code class="language-python">try:
+    response = call_openai_api()
+except Exception as e:
+    print("API failed:", e)
+</code><br/></pre><p>This prevents your application from crashing.<br/></p><p>Interview tip:<br/></p><p>Always mention that exception handling improves robustness and reliability.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between except and finally?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<h3>except<br/></h3><p>Runs only if an error occurs.<br/></p><h3>finally<br/></h3><p>Runs no matter what.<br/></p><p>Example:<br/></p><pre><code class="language-python">try:
+    file = open("data.txt", "r")
+except FileNotFoundError:
+    print("File not found")
+finally:
+    print("Execution finished")
+</code><br/></pre><p><code>finally</code> is useful for:<br/></p><ul><li>Closing files<br/></li><li>Releasing resources<br/></li><li>Cleaning up connections<br/></li></ul><p>In AI:<br/></p><p>You may close database connections or API sessions in finally.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is raise in Python?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>The <code>raise</code> keyword is used to manually trigger an exception.<br/></p><p>Example:<br/></p><pre><code class="language-python">def check_age(age):
+    if age &lt; 0:
+        raise ValueError("Age cannot be negative")
+</code><br/></pre><p>Why use raise?<br/></p><p>Because:<br/></p><ul><li>You want to enforce business rules<br/></li><li>You want to stop invalid data from entering system<br/></li></ul><p>In AI:<br/></p><p>You may raise error if:<br/></p><ul><li>Input format is invalid<br/></li><li>Required field is missing<br/></li><li>Model configuration is incorrect<br/></li></ul><p>Interviewers like candidates who understand defensive programming.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are Custom Exceptions?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>You can create your own exception class.<br/></p><p>Example:<br/></p><pre><code class="language-python">class InvalidModelError(Exception):
+    pass
+
+raise InvalidModelError("Model not supported")
+</code><br/></pre><p>Why useful?<br/></p><p>In large AI systems:<br/></p><ul><li>You want meaningful errors<br/></li><li>You want to differentiate between different failure types<br/></li><li>You want cleaner debugging<br/></li></ul><p>Example:<br/></p><pre><code class="language-python">try:
+    load_model("abc")
+except InvalidModelError as e:
+    print("Custom error:", e)
+</code><br/></pre><p>This makes production systems easier to debug.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+        </div>
+      </section>
+        </div>
+      </div>
+      <details class="resources-panel" open>
+        <summary>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          Resources &mdash; 3 videos
+        </summary>
+        <div class="resources-grid">
+      <div class="resource-card" data-vid="vrDPtxnSWos">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/vrDPtxnSWos/mqdefault.jpg" alt="NumPy in One Hour | Crash Course" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/vrDPtxnSWos" target="_blank" rel="noopener">NumPy in One Hour | Crash Course</a></h4>
+          <p>Hands-on NumPy crash course covering arrays, operations, broadcasting, and linear algebra — essential for AI/ML data manipulation.</p>
+          <div class="resource-meta">Keerti Purswani</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="KlN8xaeI-tg">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/KlN8xaeI-tg/mqdefault.jpg" alt="Python Pandas in One Hour | Crash Course" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/KlN8xaeI-tg" target="_blank" rel="noopener">Python Pandas in One Hour | Crash Course</a></h4>
+          <p>Complete Pandas walkthrough: DataFrames, filtering, groupby, merging, and data cleaning workflows used in real ML projects.</p>
+          <div class="resource-meta">Keerti Purswani</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="SyeQhJF4ny0">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/SyeQhJF4ny0/mqdefault.jpg" alt="Matplotlib in One Hour | Crash Course" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/SyeQhJF4ny0" target="_blank" rel="noopener">Matplotlib in One Hour | Crash Course</a></h4>
+          <p>Data visualization with Matplotlib — plotting, subplots, and chart types you&#x27;ll use when analyzing model outputs and training metrics.</p>
+          <div class="resource-meta">Keerti Purswani</div>
+        </div>
+      </div>
+        </div>
+      </details>
+    </main>
+  </div>
+</div>
+<script src="../../assets/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Mastery by Siddharth Raja</title>
+<link rel="stylesheet" href="assets/main.css">
+<script>
+(function(){
+  var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.dataset.theme=t;
+  if(sessionStorage.getItem('am_auth')!=='1'){
+    document.documentElement.style.opacity='0';
+  }
+})();
+</script>
+</head>
+<body data-root="./">
+<header class="site-header">
+  <div class="header-inner">
+    <a href="./index.html" class="logo">AI <span>Mastery</span> <span class="logo-by">by Siddharth Raja</span></a>
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+      <input type="search" id="search-input" placeholder="Search questions… (/)" autocomplete="off" spellcheck="false" aria-label="Search questions">
+      <div id="search-results" role="listbox" hidden></div>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+<div class="page-body">
+  <div class="landing-hero">
+    <h1>AI <span class="accent">Mastery</span></h1>
+    <div class="landing-stats">
+      <span class="stat-pill"><strong>22</strong> topics</span>
+      <span class="stat-pill"><strong>1109</strong> Q&amp;As</span>
+      <span class="stat-pill"><strong>6</strong> courses</span>
+    </div>
+  </div>
+  <div class="course-grid">
+    <a class="course-card" href="foundations/python-essentials-for-ai-engineer/index.html">
+      <div class="course-card-bar"></div>
+      <h2>Foundations</h2>
+      <p>Python, statistics, machine learning, and deep learning — the core technical bedrock every AI engineer needs.</p>
+      <div class="course-card-meta">
+        <span><strong>4</strong> topics</span>
+        <span><strong>209</strong> Q&amp;As</span>
+      </div>
+    </a>
+    <a class="course-card" href="llms-prompting/prompt-engineering-mastery/index.html">
+      <div class="course-card-bar"></div>
+      <h2>LLMs &amp; Prompting</h2>
+      <p>How large language models work, how to prompt them effectively, and transformer architecture internals.</p>
+      <div class="course-card-meta">
+        <span><strong>3</strong> topics</span>
+        <span><strong>132</strong> Q&amp;As</span>
+      </div>
+    </a>
+    <a class="course-card" href="rag-retrieval/rag-systems/index.html">
+      <div class="course-card-bar"></div>
+      <h2>RAG &amp; Retrieval</h2>
+      <p>Retrieval-augmented generation from fundamentals to advanced patterns — vector stores, chunking, re-ranking.</p>
+      <div class="course-card-meta">
+        <span><strong>2</strong> topics</span>
+        <span><strong>104</strong> Q&amp;As</span>
+      </div>
+    </a>
+    <a class="course-card" href="agentic-frameworks/langchain-mastery/index.html">
+      <div class="course-card-bar"></div>
+      <h2>Agentic Frameworks</h2>
+      <p>LangChain, LangGraph, CrewAI, AutoGen, and the patterns behind autonomous multi-agent systems.</p>
+      <div class="course-card-meta">
+        <span><strong>6</strong> topics</span>
+        <span><strong>328</strong> Q&amp;As</span>
+      </div>
+    </a>
+    <a class="course-card" href="production-mlops/fastapi-essentials/index.html">
+      <div class="course-card-bar"></div>
+      <h2>Production &amp; MLOps</h2>
+      <p>FastAPI, fine-tuning, AI safety, evaluation, live coding, and deploying LLMs to production.</p>
+      <div class="course-card-meta">
+        <span><strong>6</strong> topics</span>
+        <span><strong>274</strong> Q&amp;As</span>
+      </div>
+    </a>
+    <a class="course-card" href="interview-scenarios/scenerio-based-questions/index.html">
+      <div class="course-card-bar"></div>
+      <h2>Interview Scenarios</h2>
+      <p>Scenario-based questions that test real-world problem-solving and system design judgment.</p>
+      <div class="course-card-meta">
+        <span><strong>1</strong> topic</span>
+        <span><strong>62</strong> Q&amp;As</span>
+      </div>
+    </a>
+  </div>
+</div>
+<script src="assets/main.js"></script>
+</body>
+</html>

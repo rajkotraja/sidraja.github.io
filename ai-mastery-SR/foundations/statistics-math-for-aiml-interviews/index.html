@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Statistics &amp; Math for AI/ML Interviews | Foundations | AI Mastery by Siddharth Raja</title>
+<link rel="stylesheet" href="../../assets/main.css">
+<script>
+(function(){
+  var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.dataset.theme=t;
+  if(sessionStorage.getItem('am_auth')!=='1'){
+    document.documentElement.style.opacity='0';
+  }
+})();
+</script>
+</head>
+<body data-root="../../">
+<header class="site-header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">AI <span>Mastery</span> <span class="logo-by">by Siddharth Raja</span></a>
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+      <input type="search" id="search-input" placeholder="Search questions… (/)" autocomplete="off" spellcheck="false" aria-label="Search questions">
+      <div id="search-results" role="listbox" hidden></div>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+<div class="page-body">
+  <div class="layout">
+    <nav class="course-sidebar" aria-label="Course topics">
+      <a href="../../index.html" class="sidebar-back">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        All courses
+      </a>
+      <div class="sidebar-course-name">Foundations</div>
+      <ul class="topic-list">
+        <li class=""><a href="../python-essentials-for-ai-engineer/index.html">Python Essentials for AI Engineer</a></li>
+        <li class="active"><a href="../statistics-math-for-aiml-interviews/index.html">Statistics &amp; Math for AI/ML Interviews</a></li>
+        <li class=""><a href="../machine-learning-foundations/index.html">Machine Learning Foundations</a></li>
+        <li class=""><a href="../deep-learning-essentials/index.html">Deep Learning Essentials</a></li>
+      </ul>
+    </nav>
+    <main class="topic-main" id="main-content">
+      <select class="topic-select" onchange="location.href=this.value" aria-label="Jump to topic">
+        <option value="../python-essentials-for-ai-engineer/index.html">Python Essentials for AI Engineer</option>
+        <option value="../statistics-math-for-aiml-interviews/index.html" selected>Statistics &amp; Math for AI/ML Interviews</option>
+        <option value="../machine-learning-foundations/index.html">Machine Learning Foundations</option>
+        <option value="../deep-learning-essentials/index.html">Deep Learning Essentials</option>
+      </select>
+      <div class="topic-header">
+        <div class="topic-breadcrumb">
+          <a href="../../index.html">Home</a> /
+          <a href="../index.html">Foundations</a>
+        </div>
+        <h1>Statistics &amp; Math for AI/ML Interviews</h1>
+        <div class="topic-meta">
+          <span class="topic-stats">30 questions</span>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-wrap">
+          <svg class="filter-icon" width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+          <input type="search" id="topic-filter" placeholder="Filter questions… (f)" autocomplete="off" spellcheck="false" aria-label="Filter questions on this page">
+        </div>
+        <span id="filter-count"></span>
+      </div>
+      <div id="filter-no-results" class="filter-no-results">No questions match your filter.</div>
+      <div class="qa-sections-full">
+
+        <div class="qa-sections">
+      <section id="core-statistical-concepts-foundations-for-ai-models" class="qa-section">
+        <div class="section-header">
+          <h2>Core Statistical Concepts (Foundations for AI Models)</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the mean, and how is it used in model evaluation or dataset analysis?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020467">
+<!-- --> <p>The <b>mean</b> is the average value of a dataset. It is calculated by adding all values and dividing by the total number of values.<br/></p><p><b>Formula</b><br/></p><ul><li>Mean = (sum of all values) / (number of values)<br/></li></ul><p><b>Example (dataset analysis)</b><br/></p><p>Suppose you have the number of hours users spend daily on an app:<br/></p><ul><li><code>[2, 3, 3, 4, 8]</code><br/></li></ul><p>Mean = (2 + 3 + 3 + 4 + 8) / 5 = <b>4</b><br/></p><p>This tells you that, on average, users spend 4 hours per day.<br/></p><p><b>Use in ML</b><br/></p><ul><li>Used to <b>summarize feature values</b> (e.g., average age, average price)<br/></li><li>Used in <b>normalization/standardization</b><br/></li><li>Used in <b>evaluation metrics</b> (e.g., Mean Squared Error uses mean of squared errors)<br/></li></ul><p><b>Example (model evaluation)</b><br/></p><p>If prediction errors are:<br/></p><ul><li><code>[1, 2, 3, 4]</code><br/></li></ul><p>Mean error = (1 + 2 + 3 + 4) / 4 = <b>2.5</b><br/></p><p>This represents the average prediction error of the model.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>When is the median a better measure than the mean in real-world ML datasets?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020476">
+<!-- --> <p>The <b>median</b> is the middle value when data is sorted.<br/></p><p>Median is better when the data contains <b>outliers</b> or is <b>skewed</b>.<br/></p><p><b>Example</b><br/></p><p>User salaries in a dataset:<br/></p><ul><li><code>[20k, 25k, 30k, 35k, 500k]</code><br/></li></ul><p>Mean = (20 + 25 + 30 + 35 + 500) / 5 = <b>122k</b><br/></p><p>Median = <b>30k</b><br/></p><p>Most users earn around 30k, but one very high value pulls the mean upward.<br/></p><p>Median better represents a <b>typical user</b>.<br/></p><p><b>Use in ML</b><br/></p><ul><li>Feature analysis for skewed variables (salary, income, purchases)<br/></li><li>Used in <b>robust scaling</b><br/></li><li>Better indicator of central tendency when outliers exist<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the mode, and where does it appear in classification problems?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020485">
+<!-- --> <p>The <b>mode</b> is the value that appears most frequently in a dataset.<br/></p><p><b>Example</b><br/></p><p>User device types:<br/></p><ul><li><code>["mobile", "mobile", "desktop", "mobile", "tablet"]</code><br/></li></ul><p>Mode = <b>"mobile"</b><br/></p><p><b>Use in ML classification</b><br/></p><ul><li>Represents the <b>most common class</b><br/></li><li>Used as a <b>baseline model</b> (majority class predictor)<br/></li><li>Helps identify <b>class imbalance</b><br/></li></ul><p><b>Example</b><br/></p><p>Labels in a dataset:<br/></p><ul><li><code>[spam, not_spam, spam, spam, spam]</code><br/></li></ul><p>Mode = <b>spam</b><br/></p><p>A naive classifier could predict “spam” for every input and still achieve decent accuracy if the data is imbalanced.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do mean, median, and mode behave in skewed data commonly found in user-generated datasets?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020494">
+<!-- --> <p>User-generated data (clicks, likes, views, time spent) is often <b>skewed</b>, not symmetric.<br/></p><p><b>Right-skewed data example</b><br/></p><p>Time spent on a page (minutes):<br/></p><ul><li><code>[1, 2, 2, 3, 4, 30]</code><br/></li><li>Mean = pulls toward 30 → <b>7</b><br/></li><li>Median = middle value → <b>2.5</b><br/></li><li>Mode = most frequent → <b>2</b><br/></li></ul><p><b>Behavior</b><br/></p><ul><li>Mean shifts toward extreme values<br/></li><li>Median stays stable<br/></li><li>Mode shows most common behavior<br/></li></ul><p><b>Typical relationship</b><br/></p><ul><li>Right skew: Mean &gt; Median &gt; Mode<br/></li><li>Left skew: Mean &lt; Median &lt; Mode<br/></li></ul><p>In ML, median or mode often gives a better picture of user behavior than mean.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What does variance represent in a dataset used for training ML models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020509">
+<!-- --> <p><b>Variance</b> measures how much data points spread out from the mean.<br/></p><p>It answers:<br/></p><p>“How different are the values from the average?”<br/></p><p><b>Formula idea</b><br/></p><ul><li>Variance = average of squared differences from the mean<br/></li></ul><p><b>Example</b><br/></p><p>Feature values:<br/></p><ul><li><code>[10, 10, 10, 10]</code> → variance = <b>0</b><br/></li><li><code>[5, 10, 15, 20]</code> → variance = <b>high</b><br/></li></ul><p><b>Use in ML</b><br/></p><ul><li>Indicates <b>feature variability</b><br/></li><li>Helps detect noisy or unstable features<br/></li><li>Connected to the <b>bias–variance tradeoff</b><br/></li></ul><p>Low variance → data points are similar<br/></p><p>High variance → data points vary widely<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How is standard deviation interpreted in the context of feature distribution?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020518">
+<!-- --> <p><b>Standard deviation (SD)</b> is the square root of variance.<br/></p><p>It shows how far values typically deviate from the mean.<br/></p><p><b>Example</b><br/></p><p>Heights of users (cm):<br/></p><ul><li>Mean = 170<br/></li><li>SD = 5<br/></li></ul><p>Most users lie between:<br/></p><ul><li>165 and 175<br/></li></ul><p><b>In feature distribution</b><br/></p><ul><li>Small SD → feature values tightly clustered<br/></li><li>Large SD → feature values widely spread<br/></li></ul><p><b>ML usage</b><br/></p><ul><li><p style="margin-top: 0px">Used in <b>standardization</b>:<br/></p><p style="margin-top: 0px"><code>(value − mean) / standard deviation</code><br/></p></li><li><p style="margin-top: 0px">Helps compare spread across different features<br/></p></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why is standard deviation more commonly used than variance in ML analysis?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020527">
+<!-- --> <p>Variance uses <b>squared units</b>, which are hard to interpret.<br/></p><p><b>Example</b><br/></p><ul><li>Height variance = 25 (cm²)<br/></li><li>Height SD = 5 (cm)<br/></li></ul><p>Standard deviation:<br/></p><ul><li>Uses the <b>same unit as the feature</b><br/></li><li>Is easier to understand and communicate<br/></li><li>Is directly usable in scaling and thresholds<br/></li></ul><p>Most ML preprocessing techniques work with <b>standard deviation</b>, not variance.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does high variance in data affect model training and generalization?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020536">
+<!-- --> <p>High variance in data means:<br/></p><ul><li>Large spread<br/></li><li>High noise<br/></li><li>Many extreme values<br/></li></ul><p><b>Impact on training</b><br/></p><ul><li>Model may try to fit noise<br/></li><li>Leads to <b>overfitting</b><br/></li><li>Sensitive to small data changes<br/></li></ul><p><b>Example</b><br/></p><p>If user behavior data varies wildly:<br/></p><ul><li>Model memorizes specific users<br/></li><li>Performs well on training data<br/></li><li>Fails on new users<br/></li></ul><p><b>Practical effects</b><br/></p><ul><li>Unstable predictions<br/></li><li>Poor generalization<br/></li><li>Higher error on unseen data<br/></li></ul><p><b>Common solutions</b><br/></p><ul><li>Feature scaling<br/></li><li>Outlier handling<br/></li><li>Regularization<br/></li><li>Collecting more representative data<br/></li></ul><p>High variance in data often translates into high variance in the model if not controlled.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How is probability formally defined, and why is it fundamental to AI models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020551">
+<!-- --> <p><b>Probability</b> measures how likely an event is to occur.<br/></p><p>Its value always lies between <b>0 and 1</b>.<br/></p><ul><li>0 → impossible<br/></li><li>1 → certain<br/></li></ul><p><b>Formal view</b><br/></p><ul><li>Probability = (number of favorable outcomes) / (total possible outcomes), when outcomes are equally likely.<br/></li></ul><p><b>Example</b><br/></p><p>Rolling a fair die:<br/></p><ul><li>Probability of getting 4 = 1 / 6<br/></li></ul><p><b>Why AI models rely on probability</b><br/></p><p>AI systems work under <b>uncertainty</b>:<br/></p><ul><li>Data is incomplete<br/></li><li>Inputs are noisy<br/></li><li>Outputs are predictions, not guarantees<br/></li></ul><p><b>Examples in AI</b><br/></p><ul><li><div>Classification models output probabilities: <br/></div><ul><li>“Spam = 0.92, Not Spam = 0.08”<br/></li></ul></li><li>Language models predict the <b>probability of the next word</b><br/></li><li>Recommendation systems rank items by likelihood of user interest<br/></li></ul><p>Without probability, models could not express confidence or make ranked decisions.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between independent and dependent events in ML pipelines?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020560">
+<!-- --> <p>Two events are <b>independent</b> if the occurrence of one does not affect the other.<br/></p><p>They are <b>dependent</b> if one event changes the likelihood of the other.<br/></p><p><b>Independent events example</b><br/></p><ul><li>User clicking an ad today<br/></li><li>Coin toss result<br/></li></ul><p>Clicking the ad does not affect the coin toss outcome.<br/></p><p><b>Dependent events example</b><br/></p><ul><li>User visits a product page<br/></li><li>User adds the product to cart<br/></li></ul><p>Visiting the page increases the chance of adding to cart.<br/></p><p><b>In ML pipelines</b><br/></p><ul><li>Independent features: word order ignored in Bag-of-Words<br/></li><li>Dependent features: sequence of words in language models<br/></li></ul><p>Incorrect independence assumptions can lead to poor model performance.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you compute the joint probability of independent events?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020569">
+<!-- --> <p>For <b>independent events</b>, the joint probability is the product of individual probabilities.<br/></p><p><b>Formula</b><br/></p><ul><li>P(A and B) = P(A) × P(B)<br/></li></ul><p><b>Example</b><br/></p><ul><li>P(user logs in today) = 0.6<br/></li><li>P(user clicks notification) = 0.5<br/></li></ul><p>Joint probability:<br/></p><ul><li>P(login AND click) = 0.6 × 0.5 = <b>0.3</b><br/></li></ul><p>This rule is heavily used in models that assume independence, such as Naive Bayes.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do mutually exclusive and independent events differ, and why does it matter in modeling?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020578">
+<!-- --> <p><b>Mutually exclusive events</b><br/></p><ul><li>Cannot occur at the same time<br/></li></ul><p><b>Example</b><br/></p><ul><li>User clicks “Buy Now”<br/></li><li>User clicks “Cancel” on the same screen<br/></li></ul><p>Only one can happen.<br/></p><p><b>Independent events</b><br/></p><ul><li>Occurrence of one does not affect the other<br/></li></ul><p><b>Key difference</b><br/></p><ul><li>Mutually exclusive events cannot be independent (unless probability is zero).<br/></li></ul><p><b>Why it matters</b><br/></p><ul><li>Treating mutually exclusive events as independent leads to incorrect probability calculations.<br/></li><li>Many ML models rely on independence assumptions for simplicity.<br/></li></ul><p><b>Example</b><br/></p><p>In multi-class classification:<br/></p><ul><li>A data point cannot belong to two classes at once (mutually exclusive).<br/></li><li>Probabilities must sum to 1.<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is conditional probability, and how is it used in classification models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020588">
+<!-- --> <p><b>Conditional probability</b> is the probability of an event occurring <b>given that another event has already occurred</b>.<br/></p><p><b>Notation</b><br/></p><ul><li>P(A | B): probability of A given B<br/></li></ul><p><b>Example</b><br/></p><ul><li>Probability an email is spam <b>given</b> it contains the word “free”<br/></li></ul><p>Classification models estimate:<br/></p><ul><li>P(class | features)<br/></li></ul><p><b>Example</b><br/></p><ul><li>P(spam | “free”, “win”, “offer”)<br/></li></ul><p>The model predicts the class with the highest conditional probability.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How is conditional probability mathematically represented?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020597">
+<!-- --> <p><b>Formula</b><br/></p><ul><li>P(A | B) = P(A and B) / P(B)<br/></li></ul><p>This means:<br/></p><ul><li>Among all cases where B happens, how often does A also happen?<br/></li></ul><p><b>Example</b><br/></p><ul><li>100 emails contain the word “free”<br/></li><li>60 of those are spam<br/></li></ul><p>P(spam | free) = 60 / 100 = <b>0.6</b><br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Can conditional probability ever be greater than marginal probability? Explain with intuition.</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020606">
+<!-- --> <p>Yes, it can.<br/></p><p><b>Why</b><br/></p><ul><li>Knowing additional information can increase confidence.<br/></li></ul><p><b>Example</b><br/></p><ul><li>P(user buys product) = 0.1<br/></li><li>P(user buys product | user added to cart) = 0.7<br/></li></ul><p>The condition (“added to cart”) provides strong evidence.<br/></p><p><b>Intuition</b><br/></p><ul><li>Marginal probability is an overall average.<br/></li><li>Conditional probability focuses on a <b>specific context</b> where the event is more likely.<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does conditional probability relate to feature dependencies in ML models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020615">
+<!-- --> <p>Conditional probability captures how features influence outcomes <b>together</b>.<br/></p><p><b>Example</b><br/></p><ul><li><p style="margin-top: 0px">P(fraud | high amount, new device)<br/></p><p style="margin-top: 0px">is more informative than:<br/></p></li><li><p style="margin-top: 0px">P(fraud | high amount)<br/></p></li><li><p style="margin-top: 0px">P(fraud | new device)<br/></p></li></ul><p>Models like:<br/></p><ul><li>Logistic Regression<br/></li><li>Naive Bayes<br/></li><li>Bayesian Networks<br/></li></ul><p>explicitly or implicitly learn these dependencies.<br/></p><p>Ignoring dependencies can oversimplify the problem and reduce accuracy.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Bayes’ Theorem, and how would you explain it intuitively in an interview?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020625">
+<!-- --> <p>Bayes’ Theorem explains how to <b>update beliefs</b> when new evidence is observed.<br/></p><p><b>Intuition</b><br/></p><ul><li>Start with an initial belief.<br/></li><li>See new data.<br/></li><li>Adjust the belief accordingly.<br/></li></ul><p><b>Example</b><br/></p><ul><li>Initially, very few emails are spam.<br/></li><li>Seeing the word “lottery” increases the chance that an email is spam.<br/></li></ul><p>Bayes’ Theorem formalizes this update process.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What do prior, likelihood, and posterior represent in Bayesian models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020634">
+<!-- --> <p><b>Prior</b><br/></p><ul><li>Initial belief before seeing data<br/></li><li>Example: 5% of emails are spam<br/></li></ul><p><b>Likelihood</b><br/></p><ul><li>How likely the observed data is if the hypothesis is true<br/></li><li>Example: spam emails often contain “win”<br/></li></ul><p><b>Posterior</b><br/></p><ul><li>Updated belief after seeing data<br/></li><li>Example: probability that the email is spam after seeing the word “win”<br/></li></ul><p>Posterior = updated decision-making probability.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why is Bayes’ Theorem critical in probabilistic ML and NLP tasks?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020643">
+<!-- --> <p>Bayes’ Theorem allows models to:<br/></p><ul><li>Combine prior knowledge with observed data<br/></li><li>Handle uncertainty explicitly<br/></li><li>Update predictions continuously<br/></li></ul><p><b>Examples</b><br/></p><ul><li>Naive Bayes text classification<br/></li><li>Spam detection<br/></li><li>Medical diagnosis<br/></li><li>Speech recognition<br/></li><li>Information retrieval<br/></li></ul><p>It enables reasoning under uncertainty rather than fixed rules.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does Bayes’ Theorem help update beliefs when new data arrives?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020652">
+<!-- --> <p>Bayesian updating happens step by step.<br/></p><p><b>Example</b><br/></p><ul><li>Prior: P(spam) = 0.05<br/></li><li>Evidence: email contains “free”<br/></li></ul><p>After applying Bayes’ Theorem:<br/></p><ul><li>Posterior: P(spam | free) = higher than 0.05<br/></li></ul><p>If another word appears (“lottery”):<br/></p><ul><li>Posterior is updated again using the previous posterior as the new prior.<br/></li></ul><p>This continuous updating makes Bayesian models adaptable and data-driven.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a normal distribution, and why does it frequently appear in ML datasets?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020662">
+<!-- --> <p>A <b>normal distribution</b> is a symmetric, bell-shaped distribution where:<br/></p><ul><li>Most values are near the mean<br/></li><li>Fewer values appear as you move away from the center<br/></li><li>Mean = Median = Mode<br/></li></ul><p><b>Example</b><br/></p><p>Heights of people in a city:<br/></p><ul><li>Most people are near average height<br/></li><li>Very short or very tall people are rare<br/></li></ul><p>This pattern naturally forms a bell curve.<br/></p><p><b>Why it appears in ML</b><br/></p><ul><li>Many features are the result of <b>many small independent factors</b><br/></li><li>When multiple small effects combine, values tend to cluster around an average<br/></li></ul><p><b>ML examples</b><br/></p><ul><li>Measurement noise<br/></li><li>Sensor readings<br/></li><li>Model errors<br/></li><li>Aggregated user behavior after scaling<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why do many ML algorithms assume data is normally distributed?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020671">
+<!-- --> <p>Normal distribution simplifies math and makes models more stable.<br/></p><p><b>Reasons</b><br/></p><ul><li>Closed-form solutions exist<br/></li><li>Gradients behave smoothly<br/></li><li>Statistical assumptions become valid<br/></li></ul><p><b>Examples</b><br/></p><ul><li>Linear Regression assumes normally distributed errors<br/></li><li>PCA works best when data is centered and symmetric<br/></li><li>Gaussian Naive Bayes explicitly models features as normal<br/></li></ul><p>When data is approximately normal:<br/></p><ul><li>Optimization converges faster<br/></li><li>Predictions are more reliable<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the 68–95–99.7 rule, and where is it practically useful in ML?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020680">
+<!-- --> <p>The <b>68–95–99.7 rule</b> describes how data spreads in a normal distribution.<br/></p><ul><li>68% of values lie within <b>1 standard deviation</b> of the mean<br/></li><li>95% lie within <b>2 standard deviations</b><br/></li><li>99.7% lie within <b>3 standard deviations</b><br/></li></ul><p><b>Example</b><br/></p><p>Feature: user response time<br/></p><ul><li>Mean = 200 ms<br/></li><li>Std Dev = 20 ms<br/></li></ul><p>Then:<br/></p><ul><li>~68% responses: 180–220 ms<br/></li><li>~95% responses: 160–240 ms<br/></li></ul><p><b>Practical ML uses</b><br/></p><ul><li>Outlier detection<br/></li><li>Setting anomaly thresholds<br/></li><li>Monitoring model drift<br/></li><li>Feature sanity checks<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the consequences if training data does not follow a normal distribution?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020689">
+<!-- --> <p>Non-normal data can cause:<br/></p><ul><li>Poor model assumptions<br/></li><li>Unstable training<br/></li><li>Skewed predictions<br/></li></ul><p><b>Examples</b><br/></p><ul><li>Right-skewed income data<br/></li><li>Heavy-tailed click data<br/></li></ul><p><b>Effects</b><br/></p><ul><li>Mean becomes misleading<br/></li><li>Gradient updates become noisy<br/></li><li>Models overreact to extreme values<br/></li></ul><p><b>Common fixes</b><br/></p><ul><li>Log transformation<br/></li><li>Robust scaling<br/></li><li>Using distribution-free models (trees, boosting)<br/></li></ul><p>Normality helps, but it is not mandatory if handled correctly.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is correlation, and how is it quantified in ML workflows?Untitled</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020699">
+<!-- --> <p><b>Correlation</b> measures how strongly two variables move together.<br/></p><p><b>Range</b><br/></p><ul><li>+1 → strong positive relationship<br/></li><li>0 → no linear relationship<br/></li><li>−1 → strong negative relationship<br/></li></ul><p><b>Example</b><br/></p><ul><li>Temperature ↑ → Ice cream sales ↑ (positive correlation)<br/></li></ul><p><b>In ML</b><br/></p><ul><li>Used during feature analysis<br/></li><li>Helps detect redundancy<br/></li><li>Often measured using Pearson correlation<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What does a correlation coefficient close to zero imply for feature selection?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020708">
+<!-- --> <p>A correlation close to zero means:<br/></p><ul><li>No <b>linear</b> relationship<br/></li></ul><p><b>Important nuance</b><br/></p><ul><li>Non-linear relationships may still exist<br/></li></ul><p><b>Example</b><br/></p><ul><li>Feature: x<br/></li><li>Target: x²<br/></li></ul><p>Correlation ≈ 0, but feature is still useful.<br/></p><p><b>ML implication</b><br/></p><ul><li>Do not drop features only because correlation is low<br/></li><li>Check non-linear models or transformations first<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why is correlation not sufficient to establish causation in AI systems?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020717">
+<!-- --> <p>Correlation shows <b>association</b>, not <b>cause</b>.<br/></p><p><b>Reasons</b><br/></p><ul><li>Hidden variables may drive both<br/></li><li>Reverse causation is possible<br/></li><li>Coincidental patterns exist in large datasets<br/></li></ul><p><b>Example</b><br/></p><ul><li><p style="margin-top: 0px">Users who watch more ads buy more products<br/></p><p style="margin-top: 0px">This does not mean ads caused purchases.<br/></p></li></ul><p>Models that confuse correlation with causation:<br/></p><ul><li>Learn spurious patterns<br/></li><li>Fail in real-world deployment<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Can two features be highly correlated but have no causal relationship? Explain with an ML example.</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020726">
+<!-- --> <p>Yes.<br/></p><p><b>Example</b><br/></p><ul><li>Number of app downloads<br/></li><li>Number of customer support tickets<br/></li></ul><p>Both increase as user base grows.<br/></p><p>High correlation exists, but:<br/></p><ul><li>Downloads do not cause tickets<br/></li><li>User growth causes both<br/></li></ul><p>If user base changes, the learned relationship breaks.<br/></p><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why is sampling necessary when working with large-scale AI datasets?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020736">
+<!-- --> <p>Sampling allows:<br/></p><ul><li>Faster experimentation<br/></li><li>Lower compute cost<br/></li><li>Quicker feedback loops<br/></li></ul><p><b>Example</b><br/></p><p>Training on:<br/></p><ul><li>10 million rows → expensive<br/></li><li>200k representative rows → efficient<br/></li></ul><p>Sampling is used for:<br/></p><ul><li>Exploratory data analysis<br/></li><li>Hyperparameter tuning<br/></li><li>Model debugging<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What common sampling biases can negatively impact AI models and lead to misleading conclusions?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div id="text_23022000000020745">
+<!-- --> <p><b>Selection bias</b><br/></p><ul><li>Sample does not represent real population<br/></li><li>Example: training only on active users<br/></li></ul><p><b>Survivorship bias</b><br/></p><ul><li>Ignoring failed or missing cases<br/></li><li>Example: only successful transactions analyzed<br/></li></ul><p><b>Temporal bias</b><br/></p><ul><li>Old data does not reflect current behavior<br/></li></ul><p><b>Class imbalance bias</b><br/></p><ul><li>Rare classes underrepresented<br/></li></ul><p><b>Impact</b><br/></p><ul><li>Inflated accuracy<br/></li><li>Poor real-world performance<br/></li><li>Unfair or biased predictions<br/></li></ul><div><br/></div>
+</div>
+
+            </div>
+          </details>
+        </div>
+      </section>
+        </div>
+      </div>
+      <details class="resources-panel" open>
+        <summary>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          Resources &mdash; 2 videos
+        </summary>
+        <div class="resources-grid">
+      <div class="resource-card" data-vid="zeJD6dqJ5lo">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/zeJD6dqJ5lo/mqdefault.jpg" alt="But what is the Central Limit Theorem?" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/zeJD6dqJ5lo" target="_blank" rel="noopener">But what is the Central Limit Theorem?</a></h4>
+          <p>Visual explanation of the CLT — why it underpins statistical inference, confidence intervals, and why Gaussian distributions appear everywhere in ML.</p>
+          <div class="resource-meta">3Blue1Brown</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="ttN2OAKlDzM">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/ttN2OAKlDzM/mqdefault.jpg" alt="Master Linear Algebra &amp; Probability for Machine Learning" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/ttN2OAKlDzM" target="_blank" rel="noopener">Master Linear Algebra &amp; Probability for Machine Learning</a></h4>
+          <p>Covers the core linear algebra (matrices, eigenvalues) and probability theory you need to understand ML algorithms at a mathematical level.</p>
+          <div class="resource-meta">Keerti Purswani</div>
+        </div>
+      </div>
+        </div>
+      </details>
+    </main>
+  </div>
+</div>
+<script src="../../assets/main.js"></script>
+</body>
+</html>

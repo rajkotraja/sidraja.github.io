@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Machine Learning Foundations | Foundations | AI Mastery by Siddharth Raja</title>
+<link rel="stylesheet" href="../../assets/main.css">
+<script>
+(function(){
+  var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.dataset.theme=t;
+  if(sessionStorage.getItem('am_auth')!=='1'){
+    document.documentElement.style.opacity='0';
+  }
+})();
+</script>
+</head>
+<body data-root="../../">
+<header class="site-header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">AI <span>Mastery</span> <span class="logo-by">by Siddharth Raja</span></a>
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+      <input type="search" id="search-input" placeholder="Search questions… (/)" autocomplete="off" spellcheck="false" aria-label="Search questions">
+      <div id="search-results" role="listbox" hidden></div>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+<div class="page-body">
+  <div class="layout">
+    <nav class="course-sidebar" aria-label="Course topics">
+      <a href="../../index.html" class="sidebar-back">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        All courses
+      </a>
+      <div class="sidebar-course-name">Foundations</div>
+      <ul class="topic-list">
+        <li class=""><a href="../python-essentials-for-ai-engineer/index.html">Python Essentials for AI Engineer</a></li>
+        <li class=""><a href="../statistics-math-for-aiml-interviews/index.html">Statistics &amp; Math for AI/ML Interviews</a></li>
+        <li class="active"><a href="../machine-learning-foundations/index.html">Machine Learning Foundations</a></li>
+        <li class=""><a href="../deep-learning-essentials/index.html">Deep Learning Essentials</a></li>
+      </ul>
+    </nav>
+    <main class="topic-main" id="main-content">
+      <select class="topic-select" onchange="location.href=this.value" aria-label="Jump to topic">
+        <option value="../python-essentials-for-ai-engineer/index.html">Python Essentials for AI Engineer</option>
+        <option value="../statistics-math-for-aiml-interviews/index.html">Statistics &amp; Math for AI/ML Interviews</option>
+        <option value="../machine-learning-foundations/index.html" selected>Machine Learning Foundations</option>
+        <option value="../deep-learning-essentials/index.html">Deep Learning Essentials</option>
+      </select>
+      <div class="topic-header">
+        <div class="topic-breadcrumb">
+          <a href="../../index.html">Home</a> /
+          <a href="../index.html">Foundations</a>
+        </div>
+        <h1>Machine Learning Foundations</h1>
+        <div class="topic-meta">
+          <span class="topic-stats">70 questions</span>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-wrap">
+          <svg class="filter-icon" width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+          <input type="search" id="topic-filter" placeholder="Filter questions… (f)" autocomplete="off" spellcheck="false" aria-label="Filter questions on this page">
+        </div>
+        <span id="filter-count"></span>
+      </div>
+      <div id="filter-no-results" class="filter-no-results">No questions match your filter.</div>
+      <div class="qa-sections-full">
+
+        <div class="qa-sections">
+      <section id="machine-learning-basics-terminology" class="qa-section">
+        <div class="section-header">
+          <h2>Machine Learning Basics &amp; Terminology</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Machine Learning, and how is it different from traditional programming?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Machine Learning is a way of making computers learn patterns from data instead of writing exact rules for every situation.<br/></p><p>In traditional programming:<br/></p><ul><li>You write rules manually<br/></li><li>You give <b>input + rules</b><br/></li><li>The computer produces <b>output</b><br/></li></ul><p>Example (traditional programming):<br/></p><ul><li>Rule: If marks ≥ 40 → Pass, else Fail<br/></li><li>Input: 65<br/></li><li>Output: Pass<br/></li></ul><p>Here, the computer does not learn. It only follows rules written by a human.<br/></p><p>In Machine Learning:<br/></p><ul><li>You give <b>input data + output data</b><br/></li><li>The computer figures out the rules on its own<br/></li><li>These learned rules are used to predict future outputs<br/></li></ul><p>Example (Machine Learning):<br/></p><ul><li>Input data: marks of students<br/></li><li>Output data: Pass/Fail result<br/></li><li>The system studies many examples and learns <i>how</i> marks relate to results<br/></li><li>Later, when you give new marks (say 52), it predicts Pass or Fail without any hardcoded rule<br/></li></ul><p>So the main difference:<br/></p><ul><li>Traditional programming → rules first, data later<br/></li><li>Machine Learning → data first, rules are learned automatically<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the main types of Machine Learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>There are three commonly used types:<br/></p><p><b>Supervised Learning</b><br/></p><ul><li>Data comes with correct answers (labels)<br/></li><li>The model learns by comparing its prediction with the correct answer<br/></li></ul><p>Example:<br/></p><ul><li>Email text → Spam or Not Spam<br/></li><li>House size → House price<br/></li></ul><p><b>Unsupervised Learning</b><br/></p><ul><li>Data has no answers or labels<br/></li><li>The model tries to find patterns or groups on its own<br/></li></ul><p>Example:<br/></p><ul><li>Grouping customers based on shopping behavior<br/></li><li>Finding similar movies based on viewing patterns<br/></li></ul><p><b>Reinforcement Learning</b><br/></p><ul><li>The model learns by trial and error<br/></li><li>It gets rewards for correct actions and penalties for wrong ones<br/></li></ul><p>Example:<br/></p><ul><li>Teaching a game-playing bot to win a game<br/></li><li>Training a robot to walk without falling<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between AI, ML, and Deep Learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><b>Artificial Intelligence (AI)</b><br/></p><ul><li>A broad field<br/></li><li>Goal: Make machines behave like humans<br/></li><li>Includes rule-based systems, search algorithms, ML, etc.<br/></li></ul><p>Example:<br/></p><ul><li>A chess-playing program that follows predefined rules<br/></li></ul><p><b>Machine Learning (ML)</b><br/></p><ul><li>A subset of AI<br/></li><li>Focuses on learning from data<br/></li><li>Improves performance with experience<br/></li></ul><p>Example:<br/></p><ul><li>A recommendation system that improves as more users watch movies<br/></li></ul><p><b>Deep Learning</b><br/></p><ul><li>A subset of Machine Learning<br/></li><li>Uses neural networks with many layers<br/></li><li>Works very well with images, audio, and text<br/></li></ul><p>Example:<br/></p><ul><li>Face recognition in photos<br/></li><li>Voice assistants understanding speech<br/></li></ul><p>Relation:<br/></p><ul><li>AI → ML → Deep Learning<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What does a “model” mean in Machine Learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A model is the learned representation of patterns from data.<br/></p><p>During training:<br/></p><ul><li>The model studies input and output data<br/></li><li>It learns relationships between them<br/></li><li>These learned relationships are stored as numbers (parameters)<br/></li></ul><p>Example:<br/></p><ul><li><div>You train a model with: <br/></div><ul><li>Input: house size<br/></li><li>Output: house price<br/></li></ul></li><li>The model learns how size affects price<br/></li><li>That learned logic is called the <b>model</b><br/></li></ul><p>Later:<br/></p><ul><li>You give a new house size<br/></li><li>The model predicts the price using what it learned earlier<br/></li></ul><p>So, a model is basically:<br/></p><ul><li>The brain of a Machine Learning system<br/></li><li>Used to make predictions on new data<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is training data vs inference data?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><b>Training Data</b><br/></p><ul><li>Data used to teach the model<br/></li><li>Contains examples the model learns from<br/></li><li>Usually includes inputs and correct outputs<br/></li></ul><p>Example:<br/></p><ul><li>Past exam scores and final grades<br/></li><li>Old customer data and whether they bought a product<br/></li></ul><p><b>Inference Data</b><br/></p><ul><li>New, unseen data<br/></li><li>Used after training<br/></li><li>The model makes predictions on this data<br/></li></ul><p>Example:<br/></p><ul><li>A new student’s marks<br/></li><li>A new customer visiting a website<br/></li></ul><p>In short:<br/></p><ul><li>Training data → learning phase<br/></li><li>Inference data → prediction phase<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is supervised learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Supervised learning is a type of learning where the model is trained using data that already has correct answers.<br/></p><p>Each data point contains:<br/></p><ul><li>Input<br/></li><li>Correct output (label)<br/></li></ul><p>Example:<br/></p><ul><li>Input: email text<br/></li><li>Output: Spam or Not Spam<br/></li></ul><p>The model:<br/></p><ul><li>Makes a prediction<br/></li><li>Compares it with the correct answer<br/></li><li>Adjusts itself to reduce mistakes<br/></li></ul><p>Over time, predictions become more accurate.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is unsupervised learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Unsupervised learning works with data that has no labels or correct answers.<br/></p><p>The model:<br/></p><ul><li>Does not know what the output should be<br/></li><li>Looks for patterns, similarities, or groups<br/></li></ul><p>Example:<br/></p><ul><li>Customer data with age, spending, and location<br/></li><li>No information about customer types<br/></li><li>The model groups customers based on similarity<br/></li></ul><p>Common outcomes:<br/></p><ul><li>Clusters<br/></li><li>Patterns<br/></li><li>Relationships<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What kind of problems are best solved using supervised learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Supervised learning is best when:<br/></p><ul><li>You know the correct output<br/></li><li>You want accurate predictions<br/></li></ul><p>Examples:<br/></p><ul><li>Predicting house prices<br/></li><li>Detecting spam emails<br/></li><li>Predicting student pass or fail<br/></li><li>Identifying diseases from medical reports<br/></li></ul><p>These problems already have historical data with answers.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What kind of problems require unsupervised learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Unsupervised learning is useful when:<br/></p><ul><li>No labeled data is available<br/></li><li>You want to explore data<br/></li></ul><p>Examples:<br/></p><ul><li>Grouping customers for marketing<br/></li><li>Finding hidden patterns in sales data<br/></li><li>Organizing news articles by topic<br/></li><li>Detecting unusual behavior in transactions<br/></li></ul><p>Here, the goal is understanding data, not predicting exact values.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do labels change the learning process in ML?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Labels act like guidance for the model.<br/></p><p>With labels:<br/></p><ul><li>The model knows what the correct answer is<br/></li><li>It can measure how wrong it is<br/></li><li>It improves by correcting mistakes<br/></li></ul><p>Example:<br/></p><ul><li>Image with label “Cat”<br/></li><li>If the model predicts “Dog”, it knows it made a mistake<br/></li></ul><p>Without labels:<br/></p><ul><li>The model has no way to know right or wrong<br/></li><li>It only groups or analyzes data based on similarity<br/></li></ul><p>So:<br/></p><ul><li>Labels turn learning into a goal-oriented process<br/></li><li>Without labels, learning becomes exploratory<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is regression in Machine Learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Regression is used when the output you want to predict is a <b>number</b>.<br/></p><p>The model learns the relationship between input values and a continuous numeric output.<br/></p><p>Examples:<br/></p><ul><li>Input: house size → Output: house price<br/></li><li>Input: number of hours studied → Output: exam marks<br/></li><li>Input: temperature → Output: electricity consumption<br/></li></ul><p>Example explanation:<br/></p><ul><li>You collect data of house sizes (1000 sqft, 1200 sqft, 1500 sqft)<br/></li><li>Along with their prices (50 lakhs, 60 lakhs, 75 lakhs)<br/></li><li>The model learns how size affects price<br/></li><li>When you give a new size (1300 sqft), it predicts a price<br/></li></ul><p>Here, the output can be <b>any value</b>, not limited to fixed categories.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is classification in Machine Learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Classification is used when the output belongs to a <b>fixed set of categories or classes</b>.<br/></p><p>The model learns how inputs map to labels.<br/></p><p>Examples:<br/></p><ul><li>Email → Spam / Not Spam<br/></li><li>Student marks → Pass / Fail<br/></li><li>Image → Cat / Dog / Bird<br/></li></ul><p>Example explanation:<br/></p><ul><li>You give emails as input<br/></li><li>Each email has a label: Spam or Not Spam<br/></li><li>The model learns patterns like keywords, structure, sender<br/></li><li>For a new email, it predicts one class<br/></li></ul><p>Here, the output is <b>not a number</b>, but a category.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do regression and classification differ in output and loss functions?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><b>Output difference</b><br/></p><ul><li><div>Regression → numeric value <br/></div><ul><li>Example: 72.5, 120000, 3.8<br/></li></ul></li><li><div>Classification → class label or probability <br/></div><ul><li>Example: Spam, Pass, Cat<br/></li></ul></li></ul><p><b>Loss function difference</b><br/></p><p>Loss function measures how wrong the model is.<br/></p><p>Regression loss functions:<br/></p><ul><li>Mean Squared Error (MSE)<br/></li><li>Mean Absolute Error (MAE)<br/></li></ul><p>Example:<br/></p><ul><li>Actual price: 50<br/></li><li>Predicted price: 45<br/></li><li>Error = difference between numbers<br/></li></ul><p>Classification loss functions:<br/></p><ul><li>Cross-Entropy Loss<br/></li><li>Log Loss<br/></li></ul><p>Example:<br/></p><ul><li>Actual label: Cat<br/></li><li>Predicted label: Dog<br/></li><li>The loss penalizes wrong class prediction<br/></li></ul><p>So:<br/></p><ul><li>Regression measures <b>numeric distance</b><br/></li><li>Classification measures <b>class correctness</b><br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Can the same dataset be used for both regression and classification?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Yes, depending on <b>how you define the output</b>.<br/></p><p>Example dataset:<br/></p><ul><li>Student data: hours studied, attendance, assignments<br/></li><li>Marks scored: 78<br/></li></ul><p>Regression version:<br/></p><ul><li>Output: exact marks (78)<br/></li><li>Problem: Predict marks<br/></li></ul><p>Classification version:<br/></p><ul><li>Output: Pass / Fail<br/></li><li>Rule: Marks ≥ 40 → Pass, else Fail<br/></li><li>Problem: Predict result category<br/></li></ul><p>Another example:<br/></p><ul><li>Customer spending amount: 12,000<br/></li></ul><p>Regression:<br/></p><ul><li>Predict exact spending amount<br/></li></ul><p>Classification:<br/></p><ul><li>High spender / Low spender<br/></li></ul><p>Same data, different problem framing.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are real-world AI use cases for regression vs classification?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><b>Regression use cases</b><br/></p><ul><li>Predicting house prices<br/></li><li>Forecasting sales numbers<br/></li><li>Predicting delivery time<br/></li><li>Estimating temperature or rainfall<br/></li></ul><p><b>Classification use cases</b><br/></p><ul><li>Spam detection<br/></li><li>Disease diagnosis (Yes / No)<br/></li><li>Face recognition<br/></li><li>Fraud detection (Fraud / Not Fraud)<br/></li></ul><p>Simple way to remember:<br/></p><ul><li>“How much?” → Regression<br/></li><li>“Which type?” → Classification<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why do we split data into training and testing sets?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>The goal is to check whether the model works on <b>new data</b>, not just data it has already seen.<br/></p><p>Training set:<br/></p><ul><li>Used to teach the model<br/></li></ul><p>Testing set:<br/></p><ul><li>Used to evaluate performance on unseen data<br/></li></ul><p>Example:<br/></p><ul><li>You memorize answers before an exam → looks good<br/></li><li>You write a new exam → real test of understanding<br/></li></ul><p>If you test on training data:<br/></p><ul><li>The model may appear very accurate<br/></li><li>But fail on real-world data<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the purpose of a validation set?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>The validation set is used to <b>make decisions while training</b>, not for final evaluation.<br/></p><p>Used for:<br/></p><ul><li>Choosing model type<br/></li><li>Tuning hyperparameters (learning rate, depth, epochs)<br/></li></ul><p>Example:<br/></p><ul><li>You train multiple models<br/></li><li>Check performance on validation data<br/></li><li>Pick the best model<br/></li><li>Final performance is checked on test data<br/></li></ul><p>So:<br/></p><ul><li>Training → learning<br/></li><li>Validation → decision making<br/></li><li>Test → final evaluation<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What happens if you tune hyperparameters on the test set?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>The test set stops being “unseen”.<br/></p><p>Problems caused:<br/></p><ul><li>Model indirectly learns test data patterns<br/></li><li>Test accuracy becomes misleading<br/></li><li>Real-world performance drops<br/></li></ul><p>Example:<br/></p><ul><li>You adjust your study strategy after seeing exam questions<br/></li><li>Then claim high performance on the same exam<br/></li></ul><p>This gives false confidence.<br/></p><p>Correct approach:<br/></p><ul><li>Never touch the test set until the very end<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is data leakage, and how does improper splitting cause it?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Data leakage happens when information from the test set <b>leaks into training</b>.<br/></p><p>Common causes:<br/></p><ul><li>Splitting data after normalization<br/></li><li>Using future data to predict past events<br/></li><li>Duplicate records across splits<br/></li></ul><p>Example:<br/></p><ul><li>Predicting tomorrow’s sales<br/></li><li>Training data accidentally includes tomorrow’s value<br/></li><li>Model looks perfect but fails in real use<br/></li></ul><p>Improper splitting makes the model cheat without knowing it.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you split data when the dataset is very small?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>When data is limited, splitting must be careful.<br/></p><p>Common approaches:<br/></p><ul><li>Cross-validation<br/></li><li>K-fold validation<br/></li></ul><p>Example:<br/></p><ul><li>Dataset of 100 records<br/></li><li>Split into 5 parts<br/></li><li>Train on 4 parts, test on 1 part<br/></li><li>Repeat so each part becomes test once<br/></li></ul><p>Benefits:<br/></p><ul><li>Better use of limited data<br/></li><li>More reliable performance estimate<br/></li></ul><p>Another option:<br/></p><ul><li>Use larger training set<br/></li><li>Smaller test set<br/></li><li>Avoid too many splits<br/></li></ul><p>Goal:<br/></p><ul><li>Maximize learning<br/></li><li>Still test on unseen data<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is overfitting in Machine Learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Overfitting happens when a model learns the training data <b>too well</b>, including noise and random details that do not actually matter.<br/></p><p>What the model does:<br/></p><ul><li>Memorizes training examples<br/></li><li>Learns patterns that are specific only to training data<br/></li><li>Fails to perform well on new data<br/></li></ul><p>Example:<br/></p><ul><li>You train a model to predict exam marks<br/></li><li>Training accuracy: 99%<br/></li><li>Validation accuracy: 60%<br/></li></ul><p>This means the model is not learning general rules, it is memorizing.<br/></p><p>Real-life analogy:<br/></p><ul><li>A student memorizes answers to previous question papers<br/></li><li>Performs well on the same questions<br/></li><li>Fails when questions are slightly changed<br/></li></ul><p>Overfitting gives high training performance but poor real-world results.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is underfitting?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Underfitting happens when a model is <b>too simple</b> to capture the actual pattern in the data.<br/></p><p>What the model does:<br/></p><ul><li>Ignores important relationships<br/></li><li>Makes many mistakes even on training data<br/></li><li>Never learns properly<br/></li></ul><p>Example:<br/></p><ul><li>Predicting house price using only number of rooms<br/></li><li>Ignoring size, location, age of house<br/></li><li>Training accuracy: 50%<br/></li><li>Validation accuracy: 48%<br/></li></ul><p>Real-life analogy:<br/></p><ul><li>A student studies only headings without understanding concepts<br/></li><li>Performs poorly even on simple questions<br/></li></ul><p>Underfitting results in poor performance everywhere.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How can you identify overfitting from training and validation curves?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Training and validation curves show how error or accuracy changes over time.<br/></p><p>Overfitting pattern:<br/></p><ul><li>Training error keeps decreasing<br/></li><li>Validation error decreases initially<br/></li><li>Validation error starts increasing after some point<br/></li></ul><p>Example:<br/></p><ul><li>Epoch 1: Train error = 40%, Val error = 42%<br/></li><li>Epoch 10: Train error = 10%, Val error = 15%<br/></li><li>Epoch 50: Train error = 2%, Val error = 30%<br/></li></ul><p>This gap indicates:<br/></p><ul><li>Model is improving on training data<br/></li><li>But getting worse on unseen data<br/></li></ul><p>The growing gap between curves is a clear sign of overfitting.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why are complex models more prone to overfitting?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Complex models have:<br/></p><ul><li>Many parameters<br/></li><li>High flexibility<br/></li><li>Ability to fit almost any data<br/></li></ul><p>Examples of complex models:<br/></p><ul><li>Deep neural networks<br/></li><li>High-degree polynomial models<br/></li><li>Decision trees with many branches<br/></li></ul><p>Why this causes overfitting:<br/></p><ul><li>Model starts fitting noise<br/></li><li>Learns random fluctuations<br/></li><li>Treats noise as important patterns<br/></li></ul><p>Example:<br/></p><ul><li>A polynomial curve passing through every data point<br/></li><li>Fits training data perfectly<br/></li><li>Fails to predict new points correctly<br/></li></ul><p>More flexibility means more risk of memorization.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are common ways to reduce overfitting?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><b>Use more data</b><br/></p><ul><li>More examples reduce memorization<br/></li><li>Model learns general patterns<br/></li></ul><p><b>Simplify the model</b><br/></p><ul><li>Reduce depth, layers, or features<br/></li><li>Fewer parameters → less noise learning<br/></li></ul><p><b>Regularization</b><br/></p><ul><li>Penalizes overly complex solutions<br/></li><li>Keeps weights small<br/></li></ul><p>Example:<br/></p><ul><li>L1 or L2 regularization<br/></li></ul><p><b>Early stopping</b><br/></p><ul><li>Stop training when validation error starts increasing<br/></li></ul><p><b>Dropout (for neural networks)</b><br/></p><ul><li>Randomly ignores some neurons during training<br/></li><li>Prevents dependency on specific paths<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is bias in Machine Learning models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Bias refers to error caused by <b>wrong assumptions</b> made by the model.<br/></p><p>High bias means:<br/></p><ul><li>Model is too simple<br/></li><li>Cannot capture true patterns<br/></li><li>Makes systematic mistakes<br/></li></ul><p>Example:<br/></p><ul><li>Using a straight line to fit curved data<br/></li><li>No matter how much data you add, the line cannot fit well<br/></li></ul><p>Real-life analogy:<br/></p><ul><li>Assuming all students learn at the same pace<br/></li><li>Ignoring individual differences<br/></li></ul><p>High bias leads to underfitting.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is variance in Machine Learning models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Variance refers to how much a model’s predictions <b>change when the training data changes</b>.<br/></p><p>High variance means:<br/></p><ul><li>Model is very sensitive to training data<br/></li><li>Small data changes cause big prediction changes<br/></li></ul><p>Example:<br/></p><ul><li>Train model on Dataset A → high accuracy<br/></li><li>Train model on Dataset B → very different predictions<br/></li></ul><p>Real-life analogy:<br/></p><ul><li>A student who changes answers based on minor hints<br/></li><li>Lacks consistency<br/></li></ul><p>High variance leads to overfitting.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does bias differ from variance intuitively?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Bias:<br/></p><ul><li>Error from oversimplification<br/></li><li>Model misses important patterns<br/></li></ul><p>Variance:<br/></p><ul><li>Error from overcomplication<br/></li><li>Model reacts too much to small changes<br/></li></ul><p>Example:<br/></p><ul><li>Bias: Always predicting average house price<br/></li><li>Variance: Predicting wildly different prices for similar houses<br/></li></ul><p>One ignores data details, the other overreacts to them.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What happens when a model has high bias and low variance?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>High bias + low variance means:<br/></p><ul><li>Model is simple and stable<br/></li><li>Makes similar predictions everywhere<br/></li><li>Consistently wrong<br/></li></ul><p>Example:<br/></p><ul><li>Predicting all exam scores as 50<br/></li><li>Predictions don’t change much<br/></li><li>Always inaccurate<br/></li></ul><p>This is classic underfitting:<br/></p><ul><li>Poor training performance<br/></li><li>Poor validation performance<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does the bias–variance tradeoff affect model selection?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Increasing model complexity:<br/></p><ul><li>Decreases bias<br/></li><li>Increases variance<br/></li></ul><p>Decreasing complexity:<br/></p><ul><li>Increases bias<br/></li><li>Decreases variance<br/></li></ul><p>Goal:<br/></p><ul><li>Balance both to minimize total error<br/></li></ul><p>Example:<br/></p><ul><li>Very simple model → misses patterns<br/></li><li>Very complex model → memorizes data<br/></li><li>Optimal model → learns meaningful patterns without memorizing noise<br/></li></ul><p>Model selection involves finding this balance using validation data.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is feature scaling, and why is it important?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Feature scaling means converting numerical features to a similar range so that no single feature dominates the learning process.<br/></p><p>Problem without scaling:<br/></p><ul><li>One feature has values between 0–100000<br/></li><li>Another feature has values between 0–10<br/></li><li>The model gives more importance to the large-range feature<br/></li></ul><p>Example:<br/></p><ul><li><div>Features: <br/></div><ul><li>House size = 1200<br/></li><li>Number of bedrooms = 2<br/></li></ul></li><li>The size value is much larger<br/></li><li>The model focuses more on size, even if bedrooms are equally important<br/></li></ul><p>With scaling:<br/></p><ul><li>Both features are brought to comparable ranges<br/></li><li>The model learns fairly from all features<br/></li></ul><p>Scaling improves learning stability and prediction quality.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between normalization and standardization?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><b>Normalization</b><br/></p><ul><li><p style="margin-top: 0px">Scales values to a fixed range, usually 0 to 1<br/></p></li><li><p style="margin-top: 0px">Formula:<br/></p><p style="margin-top: 0px">(value − min) / (max − min)<br/></p></li></ul><p>Example:<br/></p><ul><li>Marks: 50, 75, 100<br/></li><li>Normalized: 0, 0.5, 1<br/></li></ul><p>Used when:<br/></p><ul><li>Feature values have known bounds<br/></li><li>Algorithms expect limited ranges<br/></li></ul><p><b>Standardization</b><br/></p><ul><li>Centers data around 0<br/></li><li>Scales using mean and standard deviation<br/></li><li>Resulting values can be negative or positive<br/></li></ul><p>Example:<br/></p><ul><li>Mean = 70, Std = 10<br/></li><li>Value 80 → (80 − 70) / 10 = 1<br/></li></ul><p>Used when:<br/></p><ul><li>Data follows roughly a normal distribution<br/></li><li>Algorithms depend on distance or gradients<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Which ML algorithms are sensitive to feature scaling?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Algorithms that rely on distance or gradient calculations are sensitive.<br/></p><p>Examples:<br/></p><ul><li>Linear Regression (with gradient descent)<br/></li><li>Logistic Regression<br/></li><li>K-Nearest Neighbors<br/></li><li>Support Vector Machines<br/></li><li>Neural Networks<br/></li><li>K-Means clustering<br/></li></ul><p>Example:<br/></p><ul><li>KNN calculates distance between points<br/></li><li>Larger-scale features dominate distance<br/></li><li>Wrong neighbors get selected<br/></li></ul><p>Tree-based models:<br/></p><ul><li>Decision Trees<br/></li><li>Random Forests<br/></li><li>XGBoost<br/></li></ul><p>These are <b>not</b> sensitive because they split based on conditions, not distances.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why does gradient descent converge faster with scaled features?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Gradient descent updates parameters step by step to reduce error.<br/></p><p>Without scaling:<br/></p><ul><li>Loss surface is stretched<br/></li><li>Gradient steps zig-zag<br/></li><li>Takes many steps to reach minimum<br/></li></ul><p>With scaling:<br/></p><ul><li>Loss surface becomes more balanced<br/></li><li>Gradients point more directly to minimum<br/></li><li>Fewer steps needed<br/></li></ul><p>Example:<br/></p><ul><li>Feature A range: 1–10<br/></li><li>Feature B range: 1–10000<br/></li><li>Gradient steps oscillate heavily<br/></li><li>Scaling removes this imbalance<br/></li></ul><p>This results in faster and more stable convergence.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>When should you not apply feature scaling?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Avoid scaling when:<br/></p><ul><li>Using tree-based models<br/></li><li>Features are already in the same range<br/></li><li>Feature values are categorical IDs<br/></li></ul><p>Example:<br/></p><ul><li>Customer ID = 10234<br/></li><li>Scaling this creates meaningless numbers<br/></li></ul><p>Also:<br/></p><ul><li>Never fit scaling on full dataset<br/></li><li>Fit only on training data, then apply to validation and test data<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is feature engineering, and why does it matter?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Feature engineering is the process of creating useful input features from raw data.<br/></p><p>Raw data often:<br/></p><ul><li>Contains noise<br/></li><li>Misses important patterns<br/></li><li>Is not directly useful<br/></li></ul><p>Example:<br/></p><ul><li>Raw feature: Date = 2025-01-15<br/></li><li><div>Engineered features: <br/></div><ul><li>Day of week<br/></li><li>Month<br/></li><li>Is weekend<br/></li></ul></li></ul><p>These new features help the model learn better patterns.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does good feature engineering improve model performance?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Good features:<br/></p><ul><li>Highlight important patterns<br/></li><li>Reduce noise<br/></li><li>Make learning easier<br/></li></ul><p>Example:<br/></p><ul><li>Predicting house prices<br/></li><li>Raw features: address text<br/></li><li><div>Engineered features: <br/></div><ul><li>City<br/></li><li>Distance to city center<br/></li><li>Nearby schools count<br/></li></ul></li></ul><p>Better features often improve results more than complex models.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between raw features and engineered features?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><b>Raw features</b><br/></p><ul><li>Directly collected<br/></li><li>Often unprocessed<br/></li></ul><p>Example:<br/></p><ul><li>Timestamp<br/></li><li>Text description<br/></li><li>Full address<br/></li></ul><p><b>Engineered features</b><br/></p><ul><li>Derived or transformed<br/></li><li>More informative<br/></li></ul><p>Example:<br/></p><ul><li>Hour of day from timestamp<br/></li><li>Word counts from text<br/></li><li>Area category from address<br/></li></ul><p>Engineered features are easier for models to understand.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you handle categorical features in ML models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Categorical features represent categories, not numbers.<br/></p><p>Examples:<br/></p><ul><li>Gender: Male / Female<br/></li><li>City: Delhi, Mumbai, Chennai<br/></li></ul><p>Common techniques:<br/></p><p><b>Label Encoding</b><br/></p><ul><li>Assigns numbers to categories<br/></li><li>Example: Male = 0, Female = 1<br/></li><li>Useful for tree models<br/></li></ul><p><b>One-Hot Encoding</b><br/></p><ul><li>Creates separate columns for each category<br/></li><li><div>Example: <br/></div><ul><li>City_Delhi<br/></li><li>City_Mumbai<br/></li><li>City_Chennai<br/></li></ul></li></ul><p><b>Target Encoding</b><br/></p><ul><li>Replaces category with average target value<br/></li><li>Used carefully to avoid leakage<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are common feature engineering mistakes in real-world ML projects?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Common mistakes:<br/></p><ul><li>Creating features using future information<br/></li><li>Encoding categories before splitting data<br/></li><li>Overengineering too many features<br/></li><li>Ignoring domain knowledge<br/></li><li>Scaling test data separately<br/></li></ul><p>Example mistake:<br/></p><ul><li>Using total monthly sales to predict mid-month demand<br/></li></ul><p>This leaks future information and inflates performance.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why is model evaluation critical in Machine Learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Model evaluation checks whether the model actually works on unseen data.<br/></p><p>Without evaluation:<br/></p><ul><li>Model may appear accurate<br/></li><li>But fail in real-world use<br/></li></ul><p>Example:<br/></p><ul><li>Training accuracy: 98%<br/></li><li>Test accuracy: 60%<br/></li></ul><p>Evaluation reveals real performance and reliability.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why is accuracy not always a good evaluation metric?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Accuracy fails when classes are imbalanced.<br/></p><p>Example:<br/></p><ul><li>95 normal transactions<br/></li><li>5 fraudulent transactions<br/></li></ul><p>Model predicts “normal” always:<br/></p><ul><li>Accuracy = 95%<br/></li><li>Fraud detection fails completely<br/></li></ul><p>So high accuracy does not always mean good performance.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What factors decide which evaluation metric to use?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Depends on:<br/></p><ul><li>Problem type (classification or regression)<br/></li><li>Business cost of errors<br/></li><li>Class balance<br/></li></ul><p>Examples:<br/></p><ul><li>Fraud detection → Precision, Recall<br/></li><li>Medical diagnosis → Recall<br/></li><li>House price prediction → MAE, RMSE<br/></li></ul><p>Metric choice depends on what errors matter most.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does class imbalance affect model evaluation?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Class imbalance causes:<br/></p><ul><li>Biased accuracy<br/></li><li>Model ignoring minority class<br/></li></ul><p>Example:<br/></p><ul><li>Disease cases: 1%<br/></li><li>Healthy cases: 99%<br/></li></ul><p>Accuracy hides poor disease detection.<br/></p><p>Metrics like:<br/></p><ul><li>Precision<br/></li><li>Recall<br/></li><li>F1-score<br/></li><li>ROC-AUC<br/></li></ul><p>Give a clearer picture.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between training performance and generalization performance?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Training performance:<br/></p><ul><li>How well the model fits training data<br/></li></ul><p>Generalization performance:<br/></p><ul><li>How well the model works on unseen data<br/></li></ul><p>Example:<br/></p><ul><li>Training accuracy: 99%<br/></li><li>Validation accuracy: 70%<br/></li></ul><p>This gap indicates overfitting.<br/></p><p>Good models:<br/></p><ul><li>Perform well on both<br/></li><li>Have small performance gaps<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a confusion matrix?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A confusion matrix is a table that shows how a classification model’s predictions compare with actual outcomes.<br/></p><p>It breaks predictions into four possible cases.<br/></p><p>Example (Fraud Detection):<br/></p><table><thead><tr><th><br/></th><th>Predicted Fraud<br/></th><th>Predicted Normal<br/></th></tr></thead><tbody><tr><td><b>Actual Fraud</b><br/></td><td>20<br/></td><td>5<br/></td></tr><tr><td><b>Actual Normal</b><br/></td><td>10<br/></td><td>65<br/></td></tr></tbody></table><p>This table helps you understand not just how many predictions were correct, but <b>what kinds of mistakes</b> the model is making.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are true positives, false positives, true negatives, and false negatives?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Using fraud detection as example:<br/></p><p><b>True Positive (TP)</b><br/></p><ul><li>Actual Fraud<br/></li><li>Predicted Fraud<br/></li><li>Example: Fraud transaction correctly detected<br/></li></ul><p><b>False Positive (FP)</b><br/></p><ul><li>Actual Normal<br/></li><li>Predicted Fraud<br/></li><li>Example: Normal transaction wrongly flagged as fraud<br/></li></ul><p><b>True Negative (TN)</b><br/></p><ul><li>Actual Normal<br/></li><li>Predicted Normal<br/></li><li>Example: Normal transaction correctly allowed<br/></li></ul><p><b>False Negative (FN)</b><br/></p><ul><li>Actual Fraud<br/></li><li>Predicted Normal<br/></li><li>Example: Fraud missed by the system<br/></li></ul><p>These four values form the foundation of all classification metrics.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is precision, and when is it more important than accuracy?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Precision measures how many predicted positives are actually correct.<br/></p><p>Formula:<br/></p><ul><li>Precision = TP / (TP + FP)<br/></li></ul><p>Example:<br/></p><ul><li>Predicted Fraud = 30<br/></li><li>Actual Fraud among them = 20<br/></li><li>Precision = 20 / 30 = 0.66<br/></li></ul><p>Precision is important when <b>false positives are costly</b>.<br/></p><p>Examples:<br/></p><ul><li>Spam filter wrongly blocking important emails<br/></li><li>Fraud system blocking genuine customer payments<br/></li><li>Content moderation wrongly removing valid posts<br/></li></ul><p>In such cases, accuracy can be misleading, but precision tells how trustworthy positive predictions are.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is recall, and when is it more important than precision?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Recall measures how many actual positives were correctly identified.<br/></p><p>Formula:<br/></p><ul><li>Recall = TP / (TP + FN)<br/></li></ul><p>Example:<br/></p><ul><li>Actual Fraud cases = 25<br/></li><li>Detected Fraud = 20<br/></li><li>Recall = 20 / 25 = 0.8<br/></li></ul><p>Recall is important when <b>missing a positive case is dangerous</b>.<br/></p><p>Examples:<br/></p><ul><li>Disease detection<br/></li><li>Fraud detection<br/></li><li>Fire or security alerts<br/></li></ul><p>Here, it is better to raise some false alarms than miss real problems.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What does F1-score represent, and why is it useful?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>F1-score combines precision and recall into a single value.<br/></p><p>Formula:<br/></p><ul><li>F1 = 2 × (Precision × Recall) / (Precision + Recall)<br/></li></ul><p>What it captures:<br/></p><ul><li>Penalizes extreme imbalance<br/></li><li>Requires both precision and recall to be reasonably high<br/></li></ul><p>Example:<br/></p><ul><li>Precision = 0.9<br/></li><li>Recall = 0.4<br/></li><li>F1-score becomes low because recall is poor<br/></li></ul><p>F1-score is useful when:<br/></p><ul><li>Classes are imbalanced<br/></li><li>Both false positives and false negatives matter<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a classification threshold?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>A classification threshold is the probability cutoff used to decide the predicted class.<br/></p><p>Example:<br/></p><ul><li>Model outputs probability = 0.72<br/></li><li>Threshold = 0.5<br/></li><li>Prediction = Positive<br/></li></ul><p>If threshold = 0.8:<br/></p><ul><li>Same probability → Negative<br/></li></ul><p>The threshold controls how strict or relaxed predictions are.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does changing the threshold affect precision and recall?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Lower threshold:<br/></p><ul><li>More positives predicted<br/></li><li>Recall increases<br/></li><li>Precision usually decreases<br/></li></ul><p>Higher threshold:<br/></p><ul><li>Fewer positives predicted<br/></li><li>Precision increases<br/></li><li>Recall usually decreases<br/></li></ul><p>Example:<br/></p><ul><li>Threshold = 0.3 → many fraud alerts<br/></li><li>Threshold = 0.9 → very few fraud alerts<br/></li></ul><p>Choosing threshold depends on business risk.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why is ROC–AUC considered a threshold-independent metric?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>ROC–AUC evaluates model performance across <b>all possible thresholds</b>.<br/></p><p>Instead of fixing one threshold:<br/></p><ul><li>It checks how well the model separates classes overall<br/></li><li>Measures ranking quality, not final labels<br/></li></ul><p>AUC value:<br/></p><ul><li>0.5 → random guessing<br/></li><li>1.0 → perfect separation<br/></li></ul><p>So ROC–AUC shows model strength regardless of threshold choice.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What does the ROC curve represent intuitively?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>ROC curve plots:<br/></p><ul><li>True Positive Rate (Recall)<br/></li><li>False Positive Rate<br/></li></ul><p>As threshold changes:<br/></p><ul><li>One point moves along the curve<br/></li><li>Shows tradeoff between catching positives and raising false alarms<br/></li></ul><p>Intuition:<br/></p><ul><li>Higher curve = better separation<br/></li><li>Curve near diagonal = weak model<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>When would you prefer ROC–AUC over accuracy or F1-score?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Use ROC–AUC when:<br/></p><ul><li>Class distribution is imbalanced<br/></li><li>You want to compare models fairly<br/></li><li>Threshold is not yet finalized<br/></li></ul><p>Examples:<br/></p><ul><li>Credit risk scoring<br/></li><li>Medical diagnosis models<br/></li><li>Early-stage model comparison<br/></li></ul><p>ROC–AUC focuses on ranking quality, not decision cutoffs.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is regularization in Machine Learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Regularization is a technique that discourages overly complex models.<br/></p><p>It works by:<br/></p><ul><li>Adding a penalty for large weights<br/></li><li>Preventing the model from fitting noise<br/></li></ul><p>Example:<br/></p><ul><li>Model fits every data point perfectly<br/></li><li>Regularization pushes it to prefer simpler patterns<br/></li></ul><p>This improves performance on unseen data.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does L2 regularization help prevent overfitting?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>L2 regularization adds a penalty based on squared weights.<br/></p><p>Effect:<br/></p><ul><li>Large weights become expensive<br/></li><li>Model spreads importance across features<br/></li><li>No single feature dominates<br/></li></ul><p>Example:<br/></p><ul><li>One feature weight = 100<br/></li><li>L2 penalty pushes it down<br/></li><li>Encourages balanced learning<br/></li></ul><p>L2 makes the model smoother and more stable.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is L1 regularization, and how is it different from L2?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>L1 regularization adds a penalty based on absolute weights.<br/></p><p>Effect:<br/></p><ul><li>Pushes some weights exactly to zero<br/></li><li>Removes unnecessary features<br/></li></ul><p>Difference:<br/></p><ul><li>L1 → feature selection<br/></li><li>L2 → weight shrinking<br/></li></ul><p>Example:<br/></p><ul><li>Dataset with many useless features<br/></li><li>L1 removes them automatically<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does regularization affect model complexity?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Stronger regularization:<br/></p><ul><li>Smaller weights<br/></li><li>Simpler model<br/></li><li>Less overfitting<br/></li></ul><p>Weaker regularization:<br/></p><ul><li>More flexible model<br/></li><li>Higher risk of overfitting<br/></li></ul><p>Regularization controls the balance between learning patterns and ignoring noise.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>When might regularization hurt model performance?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Regularization can hurt when:<br/></p><ul><li>Model is already too simple<br/></li><li>Data is very small<br/></li><li>Important features get overly penalized<br/></li></ul><p>Example:<br/></p><ul><li>Linear model with few features<br/></li><li>Strong regularization forces weights near zero<br/></li><li>Model underfits<br/></li></ul><p>So regularization must be tuned carefully using validation data.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between model parameters and hyperparameters?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p><b>Model parameters</b> are values the model learns automatically from data during training.<br/></p><p>Examples:<br/></p><ul><li>Weights in linear regression<br/></li><li>Weights and biases in neural networks<br/></li><li>Split thresholds in decision trees<br/></li></ul><p>These are adjusted by the learning algorithm itself.<br/></p><p><b>Hyperparameters</b> are values set <b>before training starts</b> and control how the learning process happens.<br/></p><p>Examples:<br/></p><ul><li>Learning rate<br/></li><li>Number of layers<br/></li><li>Tree depth<br/></li><li>Regularization strength<br/></li><li>Number of neighbors in KNN<br/></li></ul><p>Example:<br/></p><ul><li><div>In house price prediction: <br/></div><ul><li>Parameters = learned relationship between size and price<br/></li><li>Hyperparameters = how fast the model learns, how complex it can be<br/></li></ul></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why is hyperparameter tuning necessary?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Hyperparameters strongly influence:<br/></p><ul><li>Learning speed<br/></li><li>Model complexity<br/></li><li>Overfitting and underfitting<br/></li></ul><p>Bad choices:<br/></p><ul><li>Learning rate too high → unstable training<br/></li><li>Learning rate too low → very slow learning<br/></li><li>Tree depth too large → overfitting<br/></li><li>Tree depth too small → underfitting<br/></li></ul><p>Example:<br/></p><ul><li>Two models with same data and algorithm<br/></li><li>Different hyperparameters<br/></li><li>Very different performance<br/></li></ul><p>Tuning helps find a balance that generalizes well.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is grid search, and how does it work?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Grid search tries <b>all possible combinations</b> of given hyperparameter values.<br/></p><p>Example:<br/></p><ul><li>Learning rate: [0.01, 0.1]<br/></li><li>Depth: [3, 5]<br/></li></ul><p>Grid search tries:<br/></p><ul><li>(0.01, 3)<br/></li><li>(0.01, 5)<br/></li><li>(0.1, 3)<br/></li><li>(0.1, 5)<br/></li></ul><p>Each combination:<br/></p><ul><li>Trains a model<br/></li><li>Evaluates using validation data<br/></li><li>Best combination is selected<br/></li></ul><p>Drawback:<br/></p><ul><li>Expensive<br/></li><li>Grows rapidly with more parameters<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is random search, and why is it often preferred over grid search?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Random search samples <b>random combinations</b> instead of trying everything.<br/></p><p>Example:<br/></p><ul><li>Learning rate: any value between 0.001 and 1<br/></li><li>Depth: any value between 2 and 20<br/></li><li>Randomly pick 20 combinations<br/></li></ul><p>Why it works better:<br/></p><ul><li>Explores wider space<br/></li><li>Finds good values faster<br/></li><li>Avoids wasting time on unimportant parameters<br/></li></ul><p>In practice:<br/></p><ul><li>Few hyperparameters matter a lot<br/></li><li>Random search focuses more on them<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the risks of excessive hyperparameter tuning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Excessive tuning can:<br/></p><ul><li>Overfit validation data<br/></li><li>Give misleading performance<br/></li><li>Increase training cost<br/></li></ul><p>Example:<br/></p><ul><li>Trying hundreds of combinations<br/></li><li>Selecting model that works best only on validation set<br/></li><li>Fails on real-world data<br/></li></ul><p>Also:<br/></p><ul><li>High compute usage<br/></li><li>Slower development<br/></li><li>Harder reproducibility<br/></li></ul><p>Tuning should be controlled and validated carefully.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you debug a Machine Learning model with poor performance?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Start by checking basics step by step.<br/></p><p>Steps:<br/></p><ul><li>Check data quality<br/></li><li>Check target labels<br/></li><li>Check feature distributions<br/></li><li>Check evaluation metric<br/></li><li>Check baseline model<br/></li></ul><p>Example:<br/></p><ul><li>If simple baseline fails<br/></li><li>Complex model will also fail<br/></li></ul><p>Always isolate one issue at a time.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you decide whether the issue is data, features, or model choice?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Compare performance patterns.<br/></p><p>Data issue signs:<br/></p><ul><li>Noisy labels<br/></li><li>Missing values<br/></li><li>Inconsistent formats<br/></li></ul><p>Feature issue signs:<br/></p><ul><li>Important information missing<br/></li><li>Features weakly correlated with target<br/></li></ul><p>Model issue signs:<br/></p><ul><li>Underfitting → model too simple<br/></li><li>Overfitting → model too complex<br/></li></ul><p>Example:<br/></p><ul><li>High error on training data → model problem<br/></li><li>Low training error, high test error → data or feature problem<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What steps do you take when training accuracy is high but test accuracy is low?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>This indicates overfitting.<br/></p><p>Steps to fix:<br/></p><ul><li>Add more data<br/></li><li>Reduce model complexity<br/></li><li>Use regularization<br/></li><li>Use early stopping<br/></li><li>Improve feature quality<br/></li></ul><p>Example:<br/></p><ul><li>Decision tree depth too high<br/></li><li>Reduce depth and re-evaluate<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you debug an ML model that performs well offline but fails in production?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Common reasons:<br/></p><ul><li>Data distribution shift<br/></li><li>Feature mismatch<br/></li><li>Data leakage during training<br/></li></ul><p>Steps:<br/></p><ul><li>Compare training data vs production data<br/></li><li>Validate feature pipelines<br/></li><li>Monitor predictions after deployment<br/></li></ul><p>Example:<br/></p><ul><li>Model trained on historical data<br/></li><li>Production data comes from different source<br/></li><li>Performance drops suddenly<br/></li></ul><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are common real-world ML mistakes freshers make in interviews and projects?</summary>
+            <div class="qa-answer answer-inner">
+              
+<div class="reset-basic">
+<p>Common mistakes:<br/></p><ul><li>Relying only on accuracy<br/></li><li>Ignoring data leakage<br/></li><li>Not explaining evaluation choice<br/></li><li>Overusing complex models<br/></li><li>Not validating assumptions<br/></li></ul><p>Example:<br/></p><ul><li>Claiming 99% accuracy without discussing imbalance<br/></li><li>Using test data during tuning<br/></li></ul><p>Interviewers look for reasoning, not just results.<br/></p><div><br/></div>
+</div>
+<p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+        </div>
+      </section>
+        </div>
+      </div>
+      <details class="resources-panel" open>
+        <summary>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          Resources &mdash; 5 videos
+        </summary>
+        <div class="resources-grid">
+      <div class="resource-card" data-vid="xcECJgH8v0g">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/xcECJgH8v0g/mqdefault.jpg" alt="Machine Learning Concepts You Should Know About" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/xcECJgH8v0g" target="_blank" rel="noopener">Machine Learning Concepts You Should Know About</a></h4>
+          <p>Overview of all major ML categories — supervised, unsupervised, reinforcement learning — with simple visual explanations of each.</p>
+          <div class="resource-meta">Keerti Purswani</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="6VCnX0A0Gis">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/6VCnX0A0Gis/mqdefault.jpg" alt="Naive Bayes Clearly Explained: How AI Identifies Spam" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/6VCnX0A0Gis" target="_blank" rel="noopener">Naive Bayes Clearly Explained: How AI Identifies Spam</a></h4>
+          <p>Step-by-step walkthrough of Naive Bayes classification — conditional probability, Bayes theorem, and a real spam detection implementation.</p>
+          <div class="resource-meta">MLWorks</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="nzs8LB8Il-s">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/nzs8LB8Il-s/mqdefault.jpg" alt="Precision, Recall, Confusion Matrix | Model Evaluation" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/nzs8LB8Il-s" target="_blank" rel="noopener">Precision, Recall, Confusion Matrix | Model Evaluation</a></h4>
+          <p>The most critical model evaluation metrics with visual examples — precision, recall, F1 score, and when to prioritise each over the others.</p>
+          <div class="resource-meta">MLWorks</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="GQXn_1HONBY">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/GQXn_1HONBY/mqdefault.jpg" alt="Machine Learning: Features and Labels" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/GQXn_1HONBY" target="_blank" rel="noopener">Machine Learning: Features and Labels</a></h4>
+          <p>Explains the feature/label distinction, feature engineering basics, and how data representation affects model quality.</p>
+          <div class="resource-meta">MLWorks</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="mmguq4BHVCc">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/mmguq4BHVCc/mqdefault.jpg" alt="Mastering Laplace Smoothing in Naive Bayes" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/mmguq4BHVCc" target="_blank" rel="noopener">Mastering Laplace Smoothing in Naive Bayes</a></h4>
+          <p>Deep dive into Laplace smoothing — prevents zero-probability issues in probabilistic models, a key concept for ML interview questions.</p>
+          <div class="resource-meta">MLWorks</div>
+        </div>
+      </div>
+        </div>
+      </details>
+    </main>
+  </div>
+</div>
+<script src="../../assets/main.js"></script>
+</body>
+</html>
