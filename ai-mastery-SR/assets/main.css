@@ -213,12 +213,8 @@ mark { background: var(--accent-pale); color: var(--accent-2); border-radius: 2p
   color: var(--accent); font-weight: 600;
 }
 
-/* Mobile select */
-.topic-select {
-  display: none; width: 100%; margin-bottom: 1rem;
-  padding: 7px 10px; border: 1.5px solid var(--border); border-radius: var(--radius);
-  background: var(--bg); color: var(--text); font-family: var(--font); font-size: .845rem;
-}
+/* Mobile topic list — hidden on desktop, shown on mobile */
+.mobile-course-nav { display: none; }
 
 /* Main */
 .topic-main { flex: 1; min-width: 0; padding: 1.5rem 1.75rem 4rem; max-width: calc(var(--max-w) + var(--toc-w) + 3rem); }
@@ -387,11 +383,43 @@ mark { background: var(--accent-pale); color: var(--accent-2); border-radius: 2p
 }
 @media (max-width: 620px) {
   .course-sidebar { display: none; }
-  .topic-select   { display: block; }
   .topic-main     { padding: 1rem 1rem 3rem; }
   .header-inner   { padding: 0 10px; gap: 8px; }
   .logo           { font-size: .875rem; }
   .filter-bar     { flex-wrap: wrap; }
+
+  /* Mobile topic list */
+  .mobile-course-nav {
+    display: block;
+    margin-bottom: 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .mobile-course-nav-title {
+    padding: .45rem .9rem;
+    font-size: .7rem; font-weight: 700; letter-spacing: .07em;
+    text-transform: uppercase; color: var(--text-muted);
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+  }
+  .mobile-topic-list { list-style: none; }
+  .mobile-topic-list a {
+    display: block;
+    padding: .55rem .9rem;
+    font-size: .875rem; color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    border-left: 3px solid transparent;
+    transition: background .1s, color .1s;
+    line-height: 1.4;
+  }
+  .mobile-topic-list li:last-child a { border-bottom: none; }
+  .mobile-topic-list a:hover { background: var(--bg-alt); color: var(--text); text-decoration: none; }
+  .mobile-topic-list li.active a {
+    border-left-color: var(--accent);
+    color: var(--accent); font-weight: 600;
+    background: var(--accent-pale);
+  }
 }
 
 /* ── Scrollbar ──────────────────────────────────────────────────────────────── */
