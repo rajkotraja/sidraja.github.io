@@ -64,7 +64,7 @@
         </div>
         <h1>Statistics &amp; Math for AI/ML Interviews</h1>
         <div class="topic-meta">
-          <span class="topic-stats">30 questions</span>
+          <span class="topic-stats">49 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -75,8 +75,16 @@
         <span id="filter-count"></span>
       </div>
       <div id="filter-no-results" class="filter-no-results">No questions match your filter.</div>
-      <div class="qa-sections-full">
-
+      <div class="content-with-toc">
+        <nav class="toc-sidebar" aria-label="Page sections">
+          <p class="toc-title">Sections</p>
+          <ul class="toc-list">
+        <li><a href="#core-statistical-concepts-foundations-for-ai-models">Core Statistical Concepts (Foundations for AI Models)</a></li>
+        <li><a href="#linear-algebra-for-ml">Linear Algebra for ML</a></li>
+        <li><a href="#calculus-optimisation-for-ml">Calculus &amp; Optimisation for ML</a></li>
+        <li><a href="#information-theory-for-ai">Information Theory for AI</a></li>
+          </ul>
+        </nav>
         <div class="qa-sections">
       <section id="core-statistical-concepts-foundations-for-ai-models" class="qa-section">
         <div class="section-header">
@@ -381,6 +389,248 @@
 <div id="text_23022000000020745">
 <!-- --> <p><b>Selection bias</b><br/></p><ul><li>Sample does not represent real population<br/></li><li>Example: training only on active users<br/></li></ul><p><b>Survivorship bias</b><br/></p><ul><li>Ignoring failed or missing cases<br/></li><li>Example: only successful transactions analyzed<br/></li></ul><p><b>Temporal bias</b><br/></p><ul><li>Old data does not reflect current behavior<br/></li></ul><p><b>Class imbalance bias</b><br/></p><ul><li>Rare classes underrepresented<br/></li></ul><p><b>Impact</b><br/></p><ul><li>Inflated accuracy<br/></li><li>Poor real-world performance<br/></li><li>Unfair or biased predictions<br/></li></ul><div><br/></div>
 </div>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="linear-algebra-for-ml" class="qa-section">
+        <div class="section-header">
+          <h2>Linear Algebra for ML</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a vector and why are they central to machine learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>A vector is an ordered list of numbers — in ML, almost everything is a vector. A word embedding is a vector (e.g., [0.2, -0.5, 0.8, ...]). A row in a dataset is a vector of features. An image is a vector of pixel values (after flattening). A model's prediction is a vector of class probabilities.</p>
+<p>Vectors live in n-dimensional space. Two vectors are "similar" if they point in the same direction. This geometric intuition is the foundation of semantic similarity in embeddings, nearest-neighbor search in RAG, and attention in transformers.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a matrix and what does matrix multiplication mean in neural networks?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>A matrix is a 2D array of numbers (rows x columns). In a neural network, the weight matrix W transforms an input vector x into an output vector y via matrix multiplication: y = Wx. Each row of W represents a different linear combination of the input features — it's a learned projection from input space into output space.</p>
+<p>In a transformer attention head: Q = X x W_Q, K = X x W_K — these are matrix multiplications that project input tokens into query and key spaces. Matrix multiplication is the core computation in every forward pass.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the dot product and why does it measure similarity?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The dot product of two vectors a and b is: a · b = a₁b₁ + a₂b₂ + ... + aₙbₙ. It equals |a||b|cos(θ), where θ is the angle between them.</p>
+<ul>
+<li>When θ = 0 (vectors point the same direction), cos(θ) = 1 → maximum dot product</li>
+<li>When θ = 90° (orthogonal), cos(θ) = 0 → dot product = 0</li>
+</ul>
+<p>This is why dot product (and cosine similarity) measure semantic similarity: two embeddings for "happy" and "joyful" have a high dot product because they point in similar directions in embedding space. In attention: Attention(Q,K,V) = softmax(QKᵀ/√d)V — the QKᵀ term is a matrix of dot products between queries and keys.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a transpose and why do you see it everywhere in ML math?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The transpose of a matrix swaps its rows and columns: (A)ᵢⱼ = (Aᵀ)ⱼᵢ. In practice: if A is (m x n), then Aᵀ is (n x m).</p>
+<p>You see it in: attention (QKᵀ = query matrix multiplied by transposed key matrix), loss computation (yᵀŷ inner product), and gradient derivations. Mental model: transpose "rotates" a matrix so that row vectors become column vectors.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are eigenvalues and eigenvectors, and why do they matter for ML?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>For a square matrix A, eigenvector v satisfies Av = λv, where λ is the eigenvalue. In plain English: eigenvectors are the "special directions" that a transformation only stretches or shrinks (by factor λ), never rotates.</p>
+<p>Why it matters for ML:</p>
+<ul>
+<li>PCA (Principal Component Analysis) finds the eigenvectors of the data covariance matrix — they define the directions of maximum variance</li>
+<li>LoRA uses low-rank decomposition related to SVD (which generalises eigendecomposition) to approximate weight matrix updates efficiently</li>
+</ul>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Singular Value Decomposition (SVD) and how does LoRA use it?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>SVD decomposes any matrix M into M = UΣVᵀ, where U and V are orthogonal matrices and Σ is diagonal with singular values. The key insight: most matrices can be well approximated by keeping only the largest k singular values — a low-rank approximation.</p>
+<p>LoRA (Low-Rank Adaptation) exploits this: instead of updating the full weight matrix ΔW (which could be 4096x4096 = 16M parameters), it decomposes it as ΔW = AB where A is (4096xr) and B is (rx4096) with rank r much less than 4096. Training only A and B is r/2048 the parameters. This works because the meaningful changes to a pretrained weight matrix tend to have low intrinsic rank.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is cosine similarity and how does it differ from Euclidean distance?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Cosine similarity = (a · b) / (|a| × |b|). It measures the angle between vectors, not their distance.</p>
+<p>Euclidean distance = √(Σ(aᵢ - bᵢ)²). It measures the straight-line distance between endpoints.</p>
+<p>For embeddings: cosine similarity is preferred because two sentences with the same meaning but different lengths will have embeddings in the same direction but different magnitudes. Cosine similarity captures the "direction of meaning" regardless of magnitude.</p>
+<p>Practical range: 1.0 = identical direction, 0 = orthogonal (unrelated), -1 = opposite. Most embedding models output L2-normalised vectors, making cosine similarity equal to dot product (faster to compute).</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a tensor in the context of deep learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>A tensor is a generalisation of scalars, vectors, and matrices to any number of dimensions:</p>
+<ul>
+<li>A scalar is a 0D tensor</li>
+<li>A vector is a 1D tensor</li>
+<li>A matrix is a 2D tensor</li>
+<li>A batch of images is a 4D tensor: (batch_size x channels x height x width)</li>
+</ul>
+<p>In PyTorch and TensorFlow, all data and model weights are tensors. Operations like matrix multiplication, convolution, and attention are all tensor operations. Understanding tensor shapes is a core debugging skill: shape mismatches cause most deep learning errors. Always check .shape after every operation.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="calculus-optimisation-for-ml" class="qa-section">
+        <div class="section-header">
+          <h2>Calculus &amp; Optimisation for ML</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a gradient and why is it the engine of machine learning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>A gradient is the multi-variable generalisation of a derivative. For a function f(x₁, x₂, ..., xₙ), the gradient ∇f is a vector of partial derivatives: ∇f = (∂f/∂x₁, ∂f/∂x₂, ..., ∂f/∂xₙ). Each partial derivative measures: "how much does f change if I change xᵢ a little?"</p>
+<p>The gradient always points in the direction of steepest increase of f. To minimize f (like a loss function), move in the opposite direction: x = x - α∇f. This is gradient descent — the universal learning algorithm for neural networks. With millions of parameters, computing the gradient efficiently is why backpropagation exists.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is backpropagation and how does the chain rule make it work?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Backpropagation computes gradients of the loss with respect to every weight in a neural network. It uses the chain rule: d(f(g(x)))/dx = f'(g(x)) × g'(x).</p>
+<p>In a neural network: loss → output layer → hidden layers → input. The chain rule lets us "backpropagate" the loss gradient through each layer: ∂L/∂W₁ = (∂L/∂output) × (∂output/∂hidden) × (∂hidden/∂W₁).</p>
+<p>PyTorch's autograd does this automatically — every operation on a tensor records itself in a computational graph, then .backward() traverses the graph in reverse applying the chain rule at each node.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is gradient descent, and what are its variants (SGD, Adam)?</summary>
+            <div class="qa-answer answer-inner">
+              
+<ul>
+<li>Full-batch gradient descent: compute gradient over the entire dataset — slow for large datasets</li>
+<li>Stochastic Gradient Descent (SGD): compute gradient on a single sample — noisy but fast</li>
+<li>Mini-batch SGD: compute gradient on a batch of 32-512 samples — the standard</li>
+<li>Adam (Adaptive Moment Estimation): adapts the learning rate per parameter using running averages of gradients (momentum) and squared gradients (variance normalisation). Adam is the default optimizer for most LLMs and transformers.</li>
+</ul>
+<p>Key hyperparameters: learning rate (α), β₁ (momentum decay, default 0.9), β₂ (variance decay, default 0.999). AdamW = Adam with weight decay — used for most modern LLM training.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a learning rate and why is it so important?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Learning rate (α) controls the step size of each gradient update: W = W - α∇L.</p>
+<ul>
+<li>Too large: overshoots the minimum — loss diverges or oscillates</li>
+<li>Too small: extremely slow convergence — model barely learns</li>
+</ul>
+<p>Modern practice: use a learning rate schedule. Warmup: start small (prevents early instability). Cosine decay: reduce gradually following a cosine curve. For LLM fine-tuning: typical α ≈ 1e-4 to 1e-5. Too-large learning rates during fine-tuning cause "catastrophic forgetting" — overwriting pretrained knowledge.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the vanishing gradient problem and how do modern architectures solve it?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>In deep networks, gradients are multiplied together during backpropagation. If gradients are consistently less than 1.0, multiplying 50 of them together approaches 0 — early layers receive essentially no learning signal.</p>
+<p>Solutions:</p>
+<ul>
+<li>Residual connections (ResNet, Transformer): skip connections add the input directly to the output (y = F(x) + x), providing gradient highways that bypass layers. This is why transformers can be trained at arbitrary depth.</li>
+<li>Layer normalisation: normalises activations to prevent them from growing or shrinking across layers</li>
+<li>ReLU activations: don't saturate in the positive domain (unlike sigmoid/tanh), avoiding gradient saturation</li>
+</ul>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is cross-entropy loss and why is it used for language model training?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Cross-entropy loss = -Σ y_true × log(y_pred). For language models: y_true is a one-hot vector (the actual next token), y_pred is the model's probability distribution over all tokens. Cross-entropy = -log(probability assigned to the correct token).</p>
+<ul>
+<li>If the model assigns 0.9 probability to the correct token: loss = -log(0.9) = 0.105 (low loss, good prediction)</li>
+<li>If the model assigns 0.01 probability: loss = -log(0.01) = 4.6 (high loss, bad prediction)</li>
+</ul>
+<p>Minimizing cross-entropy is equivalent to maximizing the log-likelihood of the training data — that's the information-theoretic foundation of next-token prediction.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="information-theory-for-ai" class="qa-section">
+        <div class="section-header">
+          <h2>Information Theory for AI</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is entropy in information theory and why does it matter for AI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Entropy measures the average uncertainty (or information content) of a probability distribution: H(X) = -Σ p(x) log p(x).</p>
+<ul>
+<li>High entropy = high uncertainty = more information needed</li>
+<li>Low entropy = low uncertainty = predictable</li>
+</ul>
+<p>Example: a fair coin (p=0.5) has maximum entropy = 1 bit. A weighted coin (p=0.99 heads) has near-zero entropy — almost no uncertainty. For LLMs: perplexity = exp(H) — a language model's perplexity on text measures how "surprised" it is. Lower perplexity = better model.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is KL divergence and where is it used in ML?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>KL divergence (Kullback-Leibler) measures how different one probability distribution P is from another Q: DKL(P||Q) = Σ P(x) log(P(x)/Q(x)). Not symmetric: DKL(P||Q) ≠ DKL(Q||P). Always ≥ 0; equals 0 when P = Q.</p>
+<ul>
+<li>In RLHF: the PPO objective includes a KL penalty between the policy being trained and the reference (SFT) model: L = reward - β × DKL(policy || reference)</li>
+<li>In variational autoencoders (VAEs): KL divergence regularises the learned latent distribution toward a standard normal</li>
+<li>In knowledge distillation: minimise KL divergence between student and teacher output distributions</li>
+</ul>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is mutual information and how is it used for feature selection?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Mutual information I(X;Y) measures how much knowing X tells you about Y: I(X;Y) = H(X) - H(X|Y). H(X|Y) is the entropy of X given you know Y — if knowing Y reduces uncertainty about X, I(X;Y) &gt; 0.</p>
+<p>Used in feature selection: compute I(feature; label) for each feature — features with higher mutual information are more predictive of the label. More robust than correlation because it captures non-linear relationships.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is perplexity and why is it the standard evaluation metric for language models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Perplexity = exp(-1/N Σ log P(wᵢ|w₁...wᵢ₋₁)). In plain English: the geometric mean of the inverse probability the model assigns to each token. Lower is better.</p>
+<ul>
+<li>A perplexity of 10 means the model is about as confident as choosing randomly among 10 equally likely options</li>
+<li>A perplexity of 100 means the model finds the text very surprising</li>
+</ul>
+<p>Limitation: doesn't directly measure human-perceived quality. Modern evaluations supplement perplexity with task-based benchmarks.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the connection between information theory and compression, and why does it matter for LLMs?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Shannon's source coding theorem: the minimum average code length to represent symbols from distribution P is H(P) bits. A perfect compressor is equivalent to a perfect probability model.</p>
+<p>LLMs can be viewed as extremely powerful text compressors — by assigning high probability to natural language, they implicitly compress it efficiently. The compression rate of an LLM on a text corpus is a proxy for how well the LLM models that distribution. Researchers have used this framing to argue that large LLMs "understand" text in a meaningful sense: you cannot compress something well without understanding its structure.</p>
 
             </div>
           </details>

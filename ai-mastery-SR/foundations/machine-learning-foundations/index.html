@@ -64,7 +64,7 @@
         </div>
         <h1>Machine Learning Foundations</h1>
         <div class="topic-meta">
-          <span class="topic-stats">70 questions</span>
+          <span class="topic-stats">73 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -782,6 +782,51 @@
 <p>Common mistakes:<br/></p><ul><li>Relying only on accuracy<br/></li><li>Ignoring data leakage<br/></li><li>Not explaining evaluation choice<br/></li><li>Overusing complex models<br/></li><li>Not validating assumptions<br/></li></ul><p>Example:<br/></p><ul><li>Claiming 99% accuracy without discussing imbalance<br/></li><li>Using test data during tuning<br/></li></ul><p>Interviewers look for reasoning, not just results.<br/></p><div><br/></div>
 </div>
 <p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="the-bitter-lesson-data-centric-ai" class="qa-section">
+        <div class="section-header">
+          <h2>The Bitter Lesson &amp; Data-Centric AI</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Rich Sutton&#x27;s &quot;bitter lesson&quot; and what does it predict about AI research?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Rich Sutton's 2019 essay "The Bitter Lesson" argued that 70 years of AI research show one recurring pattern: methods that leverage computation at scale consistently outperform methods that encode human knowledge. Hand-designed features, expert systems, and domain-specific heuristics have repeatedly been surpassed by simple, general methods run on more compute.</p>
+<p>Examples: chess (deep search &gt; expert evaluation functions), speech recognition (deep learning &gt; phoneme models), computer vision (CNNs &gt; hand-crafted features), NLP (language models &gt; linguistics-informed models).</p>
+<p>The "bitter" part: ML researchers repeatedly invest years in clever domain-specific solutions that get swept away when compute scales up a general approach. The lesson for practitioners: don't over-invest in elaborate feature engineering or model-specific tricks when more data and compute may be the better path. The success of LLMs is the latest — and largest — vindication of this lesson.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is data-centric AI and how does it differ from model-centric AI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Model-centric AI: hold the dataset fixed, improve the model architecture and hyperparameters. Model-centric thinking dominated 2012-2020: most practitioners optimized architectures (ResNet vs. VGG, LSTM vs. GRU) while using standard benchmark datasets.</p>
+<p>Data-centric AI: hold the model fixed, improve the data — its quality, labeling consistency, coverage of edge cases, and representation of the problem. Andrew Ng popularised this framing around 2021, noting that in many production systems, the dataset is the bottleneck, not the model.</p>
+<p>Key data-centric practices:</p>
+<ul>
+<li>Systematic error analysis (find where the model fails, collect targeted data)</li>
+<li>Label quality auditing (inconsistent labels hurt more than insufficient labels)</li>
+<li>Data augmentation for underrepresented classes</li>
+</ul>
+<p>For LLMs: the quality of SFT and RLHF data often matters more than the model size — LIMA showed 1,000 carefully selected instruction examples matched models trained on more than 50,000 examples.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the scaling hypothesis and how does it explain the success of large language models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The scaling hypothesis: intelligence emerges from training sufficiently large models on sufficiently large datasets with sufficient compute. Formalised by Kaplan et al. (2020) and Hoffmann et al. (2022). The core claim: there is no fundamental barrier to scaling language models to human-level and beyond — just compute and data.</p>
+<p>Evidence for: GPT-2 could barely write coherent paragraphs (2019); GPT-4 solves complex math, writes code, and passes professional exams (2023). Same architecture, 1,000x more compute.</p>
+<p>Evidence against (or complicating): some capabilities (complex reasoning, factual precision) haven't scaled as cleanly as early scaling laws predicted, motivating test-time compute as a complement to pretraining scale.</p>
+<p>What it means for practitioners: incremental architecture improvements are less reliable than scaling; foundational capabilities of commercial models will continue to improve; the question is whether there are qualitative limits that compute alone cannot overcome.</p>
+
             </div>
           </details>
         </div>

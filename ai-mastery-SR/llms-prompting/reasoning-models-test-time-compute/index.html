@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reasoning Models &amp; Test-Time Compute | LLMs &amp; Prompting | AI Mastery by Siddharth Raja</title>
+<link rel="stylesheet" href="../../assets/main.css">
+<script>
+(function(){
+  var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.dataset.theme=t;
+  if(sessionStorage.getItem('am_auth')!=='1'){
+    document.documentElement.style.opacity='0';
+  }
+})();
+</script>
+</head>
+<body data-root="../../">
+<header class="site-header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">AI <span>Mastery</span> <span class="logo-by">by Siddharth Raja</span></a>
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+      <input type="search" id="search-input" placeholder="Search questions… (/)" autocomplete="off" spellcheck="false" aria-label="Search questions">
+      <div id="search-results" role="listbox" hidden></div>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+<div class="page-body">
+  <div class="layout">
+    <nav class="course-sidebar" aria-label="Course topics">
+      <a href="../../index.html" class="sidebar-back">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        All courses
+      </a>
+      <div class="sidebar-course-name">LLMs &amp; Prompting</div>
+      <ul class="topic-list">
+        <li class=""><a href="../llms-deep-dive/index.html">LLMs Deep Dive</a></li>
+        <li class=""><a href="../llm-pretraining-scaling-laws/index.html">LLM Pretraining &amp; Scaling Laws</a></li>
+        <li class="active"><a href="../reasoning-models-test-time-compute/index.html">Reasoning Models &amp; Test-Time Compute</a></li>
+        <li class=""><a href="../multimodal-llms/index.html">Multimodal LLMs</a></li>
+        <li class=""><a href="../tranformer-architecture-qa/index.html">Tranformer Architecture Q&amp;A</a></li>
+        <li class=""><a href="../prompt-engineering-mastery/index.html">Prompt Engineering Mastery</a></li>
+      </ul>
+    </nav>
+    <main class="topic-main" id="main-content">
+      <nav class="mobile-course-nav" aria-label="Topics in LLMs &amp; Prompting">
+        <div class="mobile-course-nav-title">LLMs &amp; Prompting</div>
+        <ul class="mobile-topic-list">
+          <li class=""><a href="../llms-deep-dive/index.html">LLMs Deep Dive</a></li>
+          <li class=""><a href="../llm-pretraining-scaling-laws/index.html">LLM Pretraining &amp; Scaling Laws</a></li>
+          <li class="active"><a href="../reasoning-models-test-time-compute/index.html">Reasoning Models &amp; Test-Time Compute</a></li>
+          <li class=""><a href="../multimodal-llms/index.html">Multimodal LLMs</a></li>
+          <li class=""><a href="../tranformer-architecture-qa/index.html">Tranformer Architecture Q&amp;A</a></li>
+          <li class=""><a href="../prompt-engineering-mastery/index.html">Prompt Engineering Mastery</a></li>
+        </ul>
+      </nav>
+      <div class="topic-header">
+        <div class="topic-breadcrumb">
+          <a href="../../index.html">Home</a> /
+          <a href="../index.html">LLMs &amp; Prompting</a>
+        </div>
+        <h1>Reasoning Models &amp; Test-Time Compute</h1>
+        <div class="topic-meta">
+          <span class="topic-stats">22 questions</span>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-wrap">
+          <svg class="filter-icon" width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+          <input type="search" id="topic-filter" placeholder="Filter questions… (f)" autocomplete="off" spellcheck="false" aria-label="Filter questions on this page">
+        </div>
+        <span id="filter-count"></span>
+      </div>
+      <div id="filter-no-results" class="filter-no-results">No questions match your filter.</div>
+      <div class="content-with-toc">
+        <nav class="toc-sidebar" aria-label="Page sections">
+          <p class="toc-title">Sections</p>
+          <ul class="toc-list">
+        <li><a href="#section-1-the-core-idea-what-are-reasoning-models">Section 1: The Core Idea — What Are Reasoning Models?</a></li>
+        <li><a href="#section-2-how-reasoning-models-are-trained">Section 2: How Reasoning Models Are Trained</a></li>
+        <li><a href="#section-3-specific-models-apis">Section 3: Specific Models &amp; APIs</a></li>
+        <li><a href="#section-4-cost-latency-trade-offs">Section 4: Cost, Latency &amp; Trade-offs</a></li>
+        <li><a href="#section-5-the-broader-implications">Section 5: The Broader Implications</a></li>
+          </ul>
+        </nav>
+        <div class="qa-sections">
+      <section id="section-1-the-core-idea-what-are-reasoning-models" class="qa-section">
+        <div class="section-header">
+          <h2>Section 1: The Core Idea — What Are Reasoning Models?</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q1. What is a reasoning model, and how does it differ from a standard chat LLM?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Think of two chess players. The first plays blitz chess — they glance at the board and move within seconds, pattern-matching from thousands of remembered games. The second is a grandmaster in a classical tournament. They sit still for five minutes, mentally simulating ten moves ahead, checking and discarding lines, then move with conviction. Both are playing the same game with the same rules. One is just spending far more time thinking.</p>
+<p>That is the core distinction between a standard chat LLM and a reasoning model.</p>
+<p>A standard LLM (GPT-4o, Claude 3.5 Sonnet, Llama 3) takes your prompt, runs it through the transformer once, and outputs the answer token by token immediately. This single forward pass has to pack all the reasoning into the generation itself — there is no scratch pad, no backtracking, no "wait, let me check that."</p>
+<p>A reasoning model — OpenAI o1/o3, DeepSeek-R1, Claude with Extended Thinking — generates an extended internal monologue <em>before</em> producing its final answer. This monologue is called the reasoning trace or thinking tokens. The model explores the problem, tries approaches, catches its own errors, and only then commits to an answer.</p>
+<p>Crucially, this is not necessarily a larger model. o1 is not dramatically bigger than GPT-4o. The difference is in what the model was <em>trained to do</em>: produce a problem-solving process, not just a response. The training objective shifted from "predict the next token of a good answer" to "generate a reasoning chain that leads to a correct answer." Same architecture, fundamentally different behavior.</p>
+<p>The result: on hard multi-step problems, reasoning models regularly outperform much larger standard models. On simple factual queries, they offer no advantage and cost more.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q2. What is &quot;inference-time compute&quot; and why is it a paradigm shift?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>For most of AI's recent history, the way to get a smarter model was to spend more compute at <em>training time</em>: train on more data, use more GPUs, run for more months. This is called pretraining compute scaling, and it gave us GPT-2 → GPT-3 → GPT-4 → Llama 3. The model's capability was baked in at training time. Once trained, it was fixed.</p>
+<p>Inference-time compute (also called test-time compute) is a different lever: spend more compute <em>when answering a specific question</em>, by generating more thinking tokens. The model's weights don't change — but you're letting it think longer, and longer thinking produces better answers on hard problems.</p>
+<p>Why is this a paradigm shift? Because it fundamentally changes the cost model of AI.</p>
+<p>Previously, your only option to get a better answer was to pay for a bigger model — a fixed, upfront decision. Now you can decide, query by query, how much thinking budget to spend. Use a $0.002 standard response for "summarize this email." Spend $0.15 on extended reasoning for "find the bug in this 200-line concurrent Python script."</p>
+<p>The consultant analogy is precise: a $500/hour consultant will give you a better answer if you let them think for two hours than if you demand an answer in five minutes. The same consultant, different compute budget, meaningfully different output quality.</p>
+<p>This also changes how we think about model size vs. quality. A smaller model running extended reasoning can sometimes match or exceed a larger model with a single-shot answer. That is new. And it implies a whole new engineering discipline around when to use which mode — which the rest of this file is about.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q3. What are &quot;thinking tokens&quot; and what does a reasoning trace actually look like?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Thinking tokens are the tokens the model generates as part of its internal reasoning process — before it outputs the final answer you see. They are real computation: each token attends to everything that came before it, building up a working memory of the reasoning so far.</p>
+<p>Here is what a reasoning trace looks like for a classic problem:</p>
+<p><strong>Question:</strong> "A train leaves Chicago at 60 mph and another leaves NYC at 80 mph. They are 900 miles apart and heading toward each other. When do they meet?"</p>
+<pre><code>[Thinking]
+Let me set up variables. Let t = time in hours after both trains depart.
+
+Train A (Chicago) travels at 60 mph → distance covered: 60t miles
+Train B (NYC) travels at 80 mph → distance covered: 80t miles
+
+They meet when the sum of distances equals the total gap:
+60t + 80t = 900
+140t = 900
+t = 900 / 140
+t = 6.4286 hours ≈ 6 hours 26 minutes
+
+Let me verify: 60 × 6.4286 = 385.7 miles, 80 × 6.4286 = 514.3 miles
+385.7 + 514.3 = 900.0 ✓
+
+Final answer: They meet approximately 6 hours and 26 minutes after departure.</code></pre>
+<p>Notice the trace explores, sets up equations, solves, then verifies. This mirrors how a careful human would solve it — not because it was prompted to, but because it was trained on this kind of process.</p>
+<p>Different models handle trace visibility differently:</p>
+<ul>
+<li><strong>Claude Extended Thinking:</strong> the thinking block is visible to the developer via the API — you can read exactly how the model reasoned.</li>
+<li><strong>DeepSeek-R1:</strong> the chain-of-thought is exposed between <code>&lt;think&gt;</code> tags.</li>
+<li><strong>OpenAI o1/o3:</strong> the internal reasoning is hidden — you see only the final answer, not the trace.</li>
+</ul>
+<p>Trace visibility matters for debugging: if you can read the thinking, you can catch where the reasoning went wrong, not just that the answer was wrong.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q4. Why does generating a longer reasoning trace improve performance?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The key is that each token in the reasoning trace is itself a computation step — and it can attend to everything in the trace so far. This means the model's "working memory" grows as it thinks.</p>
+<p>Consider the contrast with a standard LLM. When you ask it a multi-step problem, it has to compress all the intermediate reasoning into a single generation pass. This is like doing long multiplication entirely in your head, without being allowed to write anything down. You can probably get single-digit multiplication right, but a 12-digit problem requires paper.</p>
+<p>Extended reasoning is thinking on paper. Each step the model writes down becomes available for the next step to build on. A complex proof that requires 20 logical steps can be executed one step at a time, with each step checked against the previous ones.</p>
+<p>This mechanism helps specifically when:</p>
+<ul>
+<li>The problem requires multiple sequential steps where each step depends on previous results.</li>
+<li>Assumptions need to be checked or revised partway through.</li>
+<li>Multiple approaches should be explored and compared before committing to one.</li>
+<li>Verification of an answer requires working the problem a different way.</li>
+</ul>
+<p>And it does <em>not</em> help when:</p>
+<ul>
+<li>The answer is pure factual recall. "What year was the Eiffel Tower built?" No amount of thinking adds facts the model doesn't have.</li>
+<li>The task is open-ended creative generation. Extended reasoning doesn't improve a poem.</li>
+<li>The answer is unambiguous and simple. "What is the capital of France?" is not a reasoning problem.</li>
+</ul>
+<p>The improvement from longer traces is roughly logarithmic on most benchmarks: doubling the thinking budget gives a meaningful gain up to a point, then yields diminishing returns. That point varies by problem difficulty.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="section-2-how-reasoning-models-are-trained" class="qa-section">
+        <div class="section-header">
+          <h2>Section 2: How Reasoning Models Are Trained</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q5. How is a reasoning model trained differently from a standard chat model?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Standard chat model training has two main phases. First, supervised fine-tuning (SFT) on millions of (instruction, response) pairs teaches the model to be helpful and follow instructions. Then RLHF — reinforcement learning from human feedback — aligns the model with human preferences by training it to produce responses that human raters prefer.</p>
+<p>The critical thing: RLHF scores the <em>final response</em>. The model is rewarded for good answers, not for good reasoning. If a model happens to arrive at the right answer with sloppy thinking, it still gets rewarded.</p>
+<p>Reasoning model training shifts this. The training objective is: learn to generate a <em>process</em> that reliably leads to correct answers, not just to produce correct answers occasionally. This requires two changes:</p>
+<p><strong>1. Training data changes.</strong> Instead of (prompt, response) pairs, you need (prompt, reasoning_trace, answer) triples — or pairs where one reasoning trace is better than another. This is more expensive to collect and label.</p>
+<p><strong>2. The reward signal changes.</strong> Instead of asking "is this a good response?" the training asks "did the model arrive at the right answer, and did it reason correctly to get there?" For math and code, ground-truth answers make this automated. For other domains, you need human annotation of reasoning quality.</p>
+<p>The practical effect is that the model learns that "exploring, checking, and revising" is a behavior that gets rewarded. It internalizes the problem-solving process, not just the surface pattern of answers.</p>
+<p>One more difference: reasoning models are often trained with a much longer context window dedicated to the reasoning chain itself — sometimes 32K-100K tokens of thinking budget. This requires special infrastructure just to handle the training sequences.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q6. What are process reward models (PRMs) vs. outcome reward models (ORMs)?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>These are two fundamentally different philosophies for scoring how well a reasoning model reasons.</p>
+<p><strong>Outcome Reward Models (ORMs)</strong> are simple: check whether the final answer is correct. Right or wrong, binary signal. The reward is awarded only at the end of the reasoning chain. ORMs are cheap to build because you only need (problem, correct_answer) pairs — no need to read or annotate the reasoning itself.</p>
+<p>The problem: ORMs are noisy. A model can reason incorrectly but still land on the right answer by luck, especially on multiple-choice problems. The model gets rewarded for a broken reasoning process. Over time, training with ORMs alone can produce models that are good at guessing but not at actually reasoning.</p>
+<p><strong>Process Reward Models (PRMs)</strong> go deeper: they score each individual step in the reasoning chain. Is this algebraic step correct? Is this logical inference valid? Does this code snippet do what the comment says? The reward signal is distributed across the chain, not just collected at the end.</p>
+<p>PRMs produce better reasoning models because they:</p>
+<ul>
+<li>Catch errors in intermediate steps even when the final answer is accidentally right.</li>
+<li>Give denser training signal — thousands of step-level grades per reasoning chain instead of one final grade.</li>
+<li>Encourage models to reason carefully throughout, not just "try to get close to the answer."</li>
+</ul>
+<p>The catch: PRM data is expensive. You need human annotators to read each step of a reasoning chain and grade it. This is slow, expert-intensive work. OpenAI's reported approach for o1 combines RL with process rewards — a major reason o1 cost so much to train relative to GPT-4o. The trade-off is real: ORM data is cheap but noisy; PRM data is expensive but produces reliably better reasoning behavior.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q7. What is GRPO (Group Relative Policy Optimization) and how did DeepSeek-R1 use it?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Standard reinforcement learning for LLMs is heavyweight. It requires keeping a reference model (the original policy) in memory to avoid catastrophic reward hacking, plus a separate reward model trained to predict human preferences. For large language models, this means running 2-4 models simultaneously during training. Expensive.</p>
+<p>GRPO — Group Relative Policy Optimization — is an elegant simplification. Instead of comparing against a reference model, GRPO generates a <em>group</em> of responses to the same prompt (say, 8-16 answers), scores all of them using a reward function, and then updates the policy to move toward better responses relative to the group average. No separate reference model needed. The group provides its own baseline.</p>
+<p>DeepSeek-R1 used GRPO almost exclusively to train reasoning — and crucially, they used it on <em>verifiable</em> problems: math (where you can check the answer) and code (where you can run tests). For these domains, you don't even need a learned reward model — the ground truth is the reward signal.</p>
+<p>The results were remarkable:</p>
+<ul>
+<li>A 7B model trained with GRPO on math problems spontaneously developed structured reasoning chains — including self-checking behaviors like "let me verify" — without being explicitly told to reason step-by-step.</li>
+<li>The full DeepSeek-R1 671B model trained this way matched or exceeded OpenAI o1 on many reasoning benchmarks.</li>
+<li>The training recipe was published openly, proving that frontier-class reasoning models don't require secret training techniques.</li>
+</ul>
+<p>GRPO made reasoning model training accessible. Labs without the budget for massive RLHF infrastructure can now train strong reasoning models on math and code using publicly available datasets and verifiable rewards. This democratized the space considerably in early 2025.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q8. What is &quot;distillation&quot; in the context of reasoning models, and why is it important?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Knowledge distillation is the practice of training a small model to imitate the outputs of a larger model. Instead of learning from raw data, the small model learns from the large model's generations — benefiting from whatever quality the large model has already internalized.</p>
+<p>In the context of reasoning models, this takes a specific form: <strong>reasoning trace distillation</strong>. You use a large, powerful reasoning model (like DeepSeek-R1 671B) to generate reasoning traces for thousands of problems. Then you train a much smaller model (7B, 14B, 32B parameters) to reproduce those traces and final answers via standard supervised fine-tuning.</p>
+<p>The result is striking. The DeepSeek-R1-Distill family — particularly the 7B and 14B variants — performs competitively with much larger models on reasoning benchmarks, because it has learned from 671B-quality reasoning examples. You get near-frontier reasoning behavior in a model small enough to run on a single GPU.</p>
+<p>Why does this matter practically?</p>
+<ul>
+<li><strong>Self-hosting:</strong> Distilled reasoning models are small enough to run locally or on modest cloud instances — critical for privacy-sensitive applications.</li>
+<li><strong>Cost:</strong> Running a 7B model is roughly 50-100x cheaper per token than running a frontier API model.</li>
+<li><strong>Latency:</strong> Smaller models generate tokens faster, partially offsetting the latency cost of extended thinking.</li>
+</ul>
+<p>The limitation: distilled models inherit the knowledge boundaries of the teacher model. They can reason better than their size would suggest, but they don't surpass the teacher on tasks the teacher couldn't handle. Distillation transfers the <em>reasoning style</em> more reliably than it transfers factual knowledge depth.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q9. Why does reinforcement learning work so well for training reasoning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Several structural properties of reasoning make it a natural fit for RL.</p>
+<p><strong>Sequential generation is already a policy.</strong> When a model generates a chain of thought token by token, it's making a sequence of decisions — exactly the structure RL is designed to optimize. Each token is an action; the final answer correctness is the delayed reward. Policy gradient methods like GRPO can directly optimize this sequence.</p>
+<p><strong>Math and code provide ground-truth reward signals.</strong> The hardest part of applying RL to LLMs is defining a reliable reward function. For reasoning tasks in verifiable domains, this is solved: run the code, check the answer against the key, verify the proof step. No reward hacking on ambiguous preferences. The reward function is objective, cheap to compute, and impossible to game without actually solving the problem.</p>
+<p><strong>The model learns that exploration is rewarded.</strong> In RL, trying different approaches and checking which one works is exactly the behavior being reinforced. Over training, the model internalizes "when I try an approach, verify it, and correct it, I get better outcomes" — because that is literally what the reward function measures.</p>
+<p><strong>Emergent meta-cognitive behavior.</strong> A fascinating empirical finding from the DeepSeek-R1 and o1 training processes: models trained with RL on reasoning tasks begin to produce self-reflective language ("Let me double-check this," "Wait, that doesn't seem right") without being explicitly taught to do so. These phrases emerge because they are associated with producing correct answers — the model discovers that verbal verification correlates with reward. RL unlocks behaviors that supervised fine-tuning on human demonstrations cannot easily produce, because human demonstrations don't always show the failed attempts and corrections that make good reasoning visible.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="section-3-specific-models-apis" class="qa-section">
+        <div class="section-header">
+          <h2>Section 3: Specific Models &amp; APIs</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q10. What is OpenAI&#x27;s o1/o3 family and how does it differ from GPT-4o?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>OpenAI's o-series models are their dedicated reasoning model line, trained with reinforcement learning and process rewards specifically to excel at multi-step problem-solving.</p>
+<p><strong>o1</strong> (released September 2024) was the first public demonstration that a single model could dramatically outperform GPT-4o on hard reasoning tasks — competition math, PhD-level science questions, complex code generation — while using an internal chain of thought the user cannot see. The model "thinks" before answering, but the thinking is proprietary and hidden even in API responses.</p>
+<p><strong>o3</strong> went substantially further. On ARC-AGI (a benchmark designed to resist pattern-matching), o3 achieved around 87% — compared to o1's ~32% and GPT-4o's ~5%. On competition-level math (AIME), o3 solved problems that no previous AI system had reliably cracked. The jump from o1 to o3 in one year was larger than most expected.</p>
+<p><strong>o3-mini</strong> is particularly interesting: it outperforms o1 on most reasoning benchmarks at a significantly lower price per query, making it the practical default for cost-sensitive reasoning applications.</p>
+<p>Key API differences from GPT-4o:</p>
+<ul>
+<li>No <code>temperature</code> parameter — reasoning models use a fixed sampling strategy during thinking.</li>
+<li>Uses <code>reasoning_effort: low | medium | high</code> to control thinking budget.</li>
+<li>Longer latency — sometimes 30-120 seconds for hard problems.</li>
+<li>Hidden reasoning trace — billed but not accessible.</li>
+</ul>
+<p>When to prefer GPT-4o over o3: creative writing, long-context document tasks, multimodal reasoning (images), low-latency conversational use, or anything where the answer is simple enough that extended reasoning is wasteful.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q11. What is DeepSeek-R1 and why did its release matter?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>DeepSeek-R1 is a reasoning model developed by DeepSeek, a Chinese AI research company, and released in January 2025 with open weights. It is trained using GRPO on verifiable math and code problems, and it matches or exceeds OpenAI o1 performance on major reasoning benchmarks — including AIME 2024, MATH-500, and LiveCodeBench — at a fraction of the API cost.</p>
+<p>Why the release mattered goes beyond benchmark numbers:</p>
+<p><strong>It proved the recipe is reproducible.</strong> Before DeepSeek-R1, the prevailing assumption was that o1-class reasoning required secret training innovations, proprietary data, or massive RLHF infrastructure only OpenAI could build. DeepSeek published their full training methodology — GRPO on verifiable problems, chain-of-thought SFT, reward design — and the open-source community reproduced it within weeks. The technique was demystified.</p>
+<p><strong>Open weights changed the access model.</strong> The 671B full model requires significant GPU infrastructure, but DeepSeek released distilled variants: R1-Distill-Qwen at 1.5B, 7B, 14B, and 32B, plus R1-Distill-Llama at 8B and 70B. The 7B distill runs comfortably on a single consumer GPU and delivers reasoning quality that previously required frontier API access.</p>
+<p><strong>Community impact:</strong> DeepSeek-R1's release triggered a wave of open-source reasoning model development. Within two months, multiple groups had fine-tuned R1-class reasoning into their own base models, applied the GRPO recipe to new domains, and built tooling for reasoning model deployment. The democratization effect was immediate and substantial.</p>
+<p>The DeepSeek-R1 release is arguably the open-source moment for reasoning models — comparable to what Llama was for instruction-tuned chat models.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q12. What is Claude Extended Thinking and what does it expose via the API?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Claude Extended Thinking is Anthropic's implementation of inference-time reasoning, available via the Anthropic API using Claude 3.7 Sonnet and later models. Unlike OpenAI o1, Anthropic chose to expose the thinking process directly to developers — a meaningful design decision with practical consequences.</p>
+<p>When you enable Extended Thinking, the API response includes a separate <code>thinking</code> content block that precedes the final response. This block contains the model's actual reasoning trace — the exploration, the self-corrections, the verification steps — in plain text.</p>
+<pre><code># Python API example
+response = client.messages.create(
+    model="claude-sonnet-4-5",
+    max_tokens=16000,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 10000  # max tokens the model can use for thinking
+    },
+    messages=[{"role": "user", "content": "Solve this..."}]
+)
+
+# Access the thinking block
+for block in response.content:
+    if block.type == "thinking":
+        print("Reasoning:", block.thinking)
+    elif block.type == "text":
+        print("Answer:", block.text)</code></pre>
+<p>The <code>budget_tokens</code> parameter is the key control. Set it higher for harder problems; lower for simpler ones. The model will use up to that many tokens for thinking but often uses fewer on easy problems.</p>
+<p><strong>Why trace visibility matters for developers:</strong></p>
+<ul>
+<li>You can debug failures by reading where the reasoning went wrong — not just that the answer was wrong.</li>
+<li>You can validate that the model understood the problem correctly before acting on its answer.</li>
+<li>For high-stakes applications (medical, legal, financial), the reasoning trace is part of the audit trail.</li>
+</ul>
+<p><strong>Cost note:</strong> thinking tokens are billed at the same rate as output tokens. A 10,000-token thinking budget costs the same as a 10,000-token response. Budget accordingly.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q13. What is Gemini Thinking and how does it compare?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Google's reasoning capability ships as part of the Gemini 2.0 and 2.5 model families, under the "Thinking" label. The most accessible entry point is Gemini 2.0 Flash Thinking — an explicitly cost-optimized reasoning model that delivers competitive performance at a lower price per token than the full Gemini Pro series.</p>
+<p>Performance-wise, Gemini 2.5 Pro (with thinking enabled) is competitive with o1 and Claude Extended Thinking on standard reasoning benchmarks — math, science, code. On some science benchmarks (particularly chemistry and biology), Gemini's training on scientific literature gives it an edge. On pure mathematical competition problems, o3 and DeepSeek-R1 tend to lead.</p>
+<p><strong>Gemini's distinctive advantage: long context + thinking.</strong> Gemini 2.5 supports context windows of 1 million tokens or more. Combining that with extended thinking opens use cases that other reasoning models can't handle: reasoning over an entire codebase in a single context, analyzing a year's worth of legal documents before drawing conclusions, or reviewing a full clinical trial dataset. No other reasoning model family currently matches this combination.</p>
+<p>Access options:</p>
+<ul>
+<li><strong>Google AI Studio:</strong> easy API access, pay-per-use, good for experimentation.</li>
+<li><strong>Vertex AI:</strong> enterprise-grade access with VPC integration, data residency controls, and SLA guarantees.</li>
+<li><strong>Gemini API:</strong> direct access with generous free tier for developers.</li>
+</ul>
+<p>Flash Thinking is worth evaluating first for any cost-sensitive reasoning application — it is substantially cheaper than the flagship models and delivers surprisingly strong results on problems that don't require the full power of a frontier reasoner.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q14. When should you pick a reasoning model vs. a standard model for a production application?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The honest rule of thumb: if a smart human would need 10+ minutes of focused thinking to arrive at a confident answer, a reasoning model probably helps. If a smart human could answer in 30 seconds, it probably doesn't.</p>
+<p>Here is a practical decision matrix:</p>
+<table>
+<thead>
+<tr><th>Task</th><th>Reasoning model</th><th>Standard model</th></tr>
+</thead>
+<tbody>
+<tr><td>Competition math / formal proofs</td><td>Yes</td><td>No</td></tr>
+<tr><td>Complex code generation (&gt;100 lines, non-trivial logic)</td><td>Yes</td><td>Maybe</td></tr>
+<tr><td>Debugging subtle concurrency or type system issues</td><td>Yes</td><td>No</td></tr>
+<tr><td>Multi-step scientific analysis</td><td>Yes</td><td>No</td></tr>
+<tr><td>Legal document cross-referencing</td><td>Yes</td><td>Maybe</td></tr>
+<tr><td>Summarization</td><td>No</td><td>Yes</td></tr>
+<tr><td>Q&amp;A over documents (RAG)</td><td>No</td><td>Yes</td></tr>
+<tr><td>Classification / extraction</td><td>No</td><td>Yes</td></tr>
+<tr><td>Creative writing / brainstorming</td><td>No</td><td>Yes</td></tr>
+<tr><td>Chatbot responses</td><td>No</td><td>Yes</td></tr>
+<tr><td>Image captioning / OCR</td><td>No</td><td>Yes</td></tr>
+</tbody>
+</table>
+<p><strong>Cost reality check:</strong> a response using 5,000 thinking tokens plus 300 answer tokens costs roughly 17x more than a 300-token direct answer. That cost is justified when accuracy matters and mistakes are expensive — not when you're auto-tagging support tickets.</p>
+<p><strong>Latency reality check:</strong> reasoning models can take 30-120 seconds for hard problems. If your product requires sub-2-second responses, reasoning models are not suitable for the hot path. Use them for async workflows, batch processing, or background analysis instead.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="section-4-cost-latency-trade-offs" class="qa-section">
+        <div class="section-header">
+          <h2>Section 4: Cost, Latency &amp; Trade-offs</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q15. What is the cost structure of reasoning models compared to standard models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The fundamental pricing reality: reasoning (thinking) tokens are billed at the same per-token rate as output tokens. The model is generating them, so you pay for them. The only difference from standard output tokens is that thinking tokens don't appear in the response you send to users — but they appear on your bill.</p>
+<p>Let's make this concrete with approximate numbers (prices vary by provider and model version):</p>
+<pre><code>Standard GPT-4o response:
+  Input tokens: 500 → ~$0.0025
+  Output tokens: 300 → ~$0.0045
+  Total: ~$0.007 per query
+
+o3-mini with high reasoning effort:
+  Input tokens: 500 → ~$0.0005
+  Reasoning tokens: 4000 → ~$0.008
+  Output tokens: 300 → ~$0.0006
+  Total: ~$0.009 per query
+
+o3 (full) on hard math problem:
+  Input tokens: 500 → ~$0.005
+  Reasoning tokens: 15000 → ~$0.06
+  Output tokens: 500 → ~$0.01
+  Total: ~$0.075 per query — 10x the cost of a standard response</code></pre>
+<p>Key observations:</p>
+<ul>
+<li>For simple reasoning (few thousand thinking tokens), the cost premium is modest — 2-3x.</li>
+<li>For hard problems with long reasoning chains, cost can be 10-20x a direct answer.</li>
+<li>OpenAI bills o1/o3 thinking tokens even though you can't see them — this is a legitimate source of surprise bills for developers who don't monitor token usage.</li>
+<li>Claude Extended Thinking bills thinking tokens at the same rate as output tokens — visible and auditable.</li>
+</ul>
+<p>Cost optimization strategy: use the minimum budget that gives acceptable quality. Set <code>reasoning_effort: low</code> or a small thinking budget for moderately hard problems; reserve <code>high</code> / large budgets for genuinely difficult queries. Monitor p95 token usage, not just average.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q16. What are the latency implications of reasoning models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Latency is where reasoning models pay their most significant UX cost. The model must complete its entire thinking chain before it can begin generating the final answer, which means time-to-first-token (TTFT) is dramatically higher than standard models.</p>
+<p>Rough latency ranges in practice (these vary by provider infrastructure and problem difficulty):</p>
+<ul>
+<li><strong>Standard GPT-4o / Claude Sonnet:</strong> TTFT 0.5-2 seconds.</li>
+<li><strong>o3-mini with low reasoning:</strong> TTFT 3-8 seconds.</li>
+<li><strong>o3 with high reasoning on hard math:</strong> TTFT 30-120 seconds.</li>
+<li><strong>Claude Extended Thinking (large budget):</strong> TTFT 10-60 seconds.</li>
+</ul>
+<p>This latency profile makes reasoning models unsuitable for several common application patterns:</p>
+<ul>
+<li>Real-time chat interfaces where users expect &lt;2s responses.</li>
+<li>Interactive coding assistants with inline suggestions.</li>
+<li>Mobile apps where connection timeouts are short.</li>
+<li>High-frequency API calls (thousands per minute).</li>
+</ul>
+<p><strong>Where reasoning model latency is acceptable:</strong></p>
+<ul>
+<li>Batch processing pipelines that run overnight.</li>
+<li>Async background tasks (analyze this report and email me the summary).</li>
+<li>Developer tools where users expect to wait for a complex answer.</li>
+<li>One-time analysis tasks where quality trumps speed.</li>
+</ul>
+<p><strong>Streaming as a partial mitigation:</strong> Claude Extended Thinking and DeepSeek-R1 support streaming their thinking tokens. This doesn't reduce total latency, but users see the model "working" in real time, which dramatically improves perceived responsiveness. Showing a live thinking stream is much better UX than a blank loading spinner for 60 seconds.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q17. What is &quot;overthinking&quot; in reasoning models and how do you mitigate it?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Overthinking is when a reasoning model generates a long, elaborate chain of thought for a problem that doesn't need it. It's the equivalent of hiring your grandmaster chess consultant to decide whether to order pizza or pasta for dinner.</p>
+<p>A concrete example: asking Claude with Extended Thinking "What is 2 + 2?" might trigger a 400-600 token reasoning trace: "The user is asking a basic arithmetic question. 2 + 2 = 4 by definition of integer addition. Let me confirm: if we have two objects and add two more, we have four total. This is consistent with the Peano axioms for natural number addition…" All of that thinking, to produce the answer "4." You were billed for ~500 thinking tokens to confirm basic arithmetic.</p>
+<p>Mitigation strategies:</p>
+<p><strong>1. Use budget controls.</strong> Claude's <code>budget_tokens</code> and o1's <code>reasoning_effort: low</code> cap the thinking before it spirals. Setting a 500-token budget forces concise reasoning on simple problems.</p>
+<p><strong>2. Classify before routing.</strong> Use a cheap, fast model to estimate query complexity before deciding which model to invoke:</p>
+<pre><code># Pseudo-code for complexity-based routing
+difficulty = classify_query(user_query)  # fast, cheap classifier
+
+if difficulty == "simple":
+    response = call_gpt4o_mini(user_query)   # fast, cheap
+elif difficulty == "moderate":
+    response = call_gpt4o(user_query)         # mid-tier
+elif difficulty == "hard":
+    response = call_o3_reasoning(user_query)  # slow, expensive</code></pre>
+<p><strong>3. Match prompting to the model.</strong> Don't ask reasoning models to do tasks designed for standard models. If your workflow mixes both, route by task type — not all queries to the same reasoning model endpoint.</p>
+<p>The key engineering insight: <em>don't use a reasoning model for everything.</em> It is tempting to route all queries to the "smartest" model available. In practice, this is expensive, slow, and often produces no quality gain on simple tasks. The winning pattern is intelligent routing.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q18. How should you prompt a reasoning model differently from a standard LLM?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The most important shift: <strong>less is more</strong>. With a standard LLM, carefully guiding the reasoning process helps — "Step 1: identify the issue. Step 2: list constraints. Step 3: apply formula X." With a reasoning model, that approach actively hurts. You're constraining the model's exploration to your prescribed path, which may not be the optimal one.</p>
+<p>Reasoning models generate their <em>own</em> chain of thought. Your job is to give them the problem and the goal — not the process.</p>
+<p><strong>Wrong approach (over-specifying the reasoning):</strong></p>
+<pre><code>Prompt: "Step 1: Identify what type of problem this is.
+Step 2: List all relevant constraints.
+Step 3: Apply the quadratic formula.
+Step 4: Verify your answer by substitution.
+Now solve: 2x² + 5x - 3 = 0"</code></pre>
+<p><strong>Right approach (give the problem, set the goal):</strong></p>
+<pre><code>Prompt: "Solve this equation carefully and show your work:
+2x² + 5x - 3 = 0"</code></pre>
+<p>Or even more minimally: just the equation itself. The model knows how to approach it.</p>
+<p>Additional prompting principles for reasoning models:</p>
+<ul>
+<li><strong>Avoid few-shot examples with explicit reasoning steps.</strong> Showing "here is how I would solve a problem step by step" limits the model to your approach. It may be a worse approach than what the model would discover independently.</li>
+<li><strong>Few-shot examples of output format are fine.</strong> "Here is the format I want the final answer in: [example]" doesn't constrain the reasoning, only the presentation.</li>
+<li><strong>State constraints clearly upfront.</strong> "Your answer must be a single integer" or "Do not use external libraries" — these are constraints on the answer, not on the reasoning process. State them once, clearly.</li>
+<li><strong>Don't pad the prompt with reassurances.</strong> "Take your time and think carefully" is noise to a reasoning model that is already going to think carefully by design.</li>
+</ul>
+<p>Trust the model's training. Your job is problem definition and answer specification — not reasoning choreography.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="section-5-the-broader-implications" class="qa-section">
+        <div class="section-header">
+          <h2>Section 5: The Broader Implications</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q19. How does test-time compute change the relationship between model size and capability?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>This is one of the most significant conceptual shifts in the field. For years, the mental model was: bigger model = smarter model. The only way to get better reasoning was to train a model with more parameters on more data. Capability was fixed at training time and you got what you got at inference time.</p>
+<p>Test-time compute breaks this model in an important way. Now there is a second variable: how much compute you spend on a given query at inference time. This creates a two-dimensional capability space.</p>
+<p>The practical consequence: a Llama-3 8B model with a 10,000-token reasoning budget can sometimes match GPT-4o on specific reasoning tasks. Not because 8B is as capable as GPT-4o generally — it isn't — but because extended reasoning compensates for parameter-count limitations on problems where careful step-by-step analysis matters more than breadth of knowledge.</p>
+<p>This creates a new cost-quality frontier. For any given task, you can now ask: "Is it cheaper to run a large model with no thinking, or a small model with lots of thinking?" The answer depends on the task. For hard math problems, a distilled 7B reasoning model with 8,000 thinking tokens might give better results at lower cost than a 70B model with a direct answer.</p>
+<p>The broader implication for AI development: model selection is no longer just about "biggest available model." It is about optimizing the joint (model_size × inference_compute) product for your specific task and quality/cost target. This makes AI system design considerably more nuanced — and considerably more interesting. The new question is not "which model?" but "which model at what compute budget?"</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q20. What are the limits of reasoning models — when don&#x27;t they help?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Reasoning models are genuinely powerful, and it's tempting to treat them as a universal upgrade. They are not. There are well-defined categories where extended thinking provides no benefit — and a few where it actively creates new risks.</p>
+<p><strong>Where reasoning models don't help:</strong></p>
+<p><strong>Factual recall.</strong> If the model doesn't know what year the Treaty of Westphalia was signed, no amount of thinking will surface that fact. Thinking tokens generate computation; they don't inject knowledge the model lacks. For knowledge-intensive tasks, RAG (retrieval-augmented generation) is the right tool, not extended thinking.</p>
+<p><strong>Ambiguous or preference-based tasks.</strong> "Write a poem about autumn" has no verifiable correct answer. Extended reasoning doesn't converge on the "best" poem — it just generates more deliberation about an inherently subjective goal. The same applies to style choices, brand voice, and creative direction.</p>
+<p><strong>Open-ended generation.</strong> Fiction writing, brainstorming, and creative ideation benefit from fluency and diversity of output — not from systematic verification. A reasoning model writing a short story might over-optimize for "logical consistency" in ways that make it less imaginative.</p>
+<p><strong>Where reasoning models can make things worse:</strong></p>
+<p><strong>Confident wrong reasoning.</strong> This is the most dangerous failure mode. A reasoning model can generate a lengthy, internally consistent, plausible-sounding chain of thought that arrives at a wrong answer — and present it with high apparent confidence. The visible reasoning steps make the error harder to spot because each individual step looks reasonable. You can end up more deceived by a wrong reasoning chain than by a wrong direct answer. Always verify outputs against ground truth when the stakes are high.</p>
+<p><strong>Multi-modal grounding limits.</strong> Extended text reasoning doesn't improve a model's ability to accurately perceive images. Reasoning over what a chart says is still bounded by vision encoder quality.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q21. What is &quot;compute-aware routing&quot; and why is it an emerging engineering pattern?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Compute-aware routing is the practice of dynamically selecting which model (and at what thinking budget) to use for each incoming query, based on the estimated difficulty and cost tolerance of that query. Instead of routing everything to one model, you match the compute investment to the query's actual needs.</p>
+<p>The basic architecture:</p>
+<pre><code>User query
+    ↓
+Complexity classifier (fast, cheap — e.g., GPT-4o-mini)
+    ↓
+┌─────────────────────────────────────────────────────┐
+│ Simple (70% of queries)   → GPT-4o-mini / Llama 3  │
+│ Moderate (25% of queries) → GPT-4o / Claude Sonnet │
+│ Hard (5% of queries)      → o3 / Extended Thinking │
+└─────────────────────────────────────────────────────┘</code></pre>
+<p>Typical features the classifier uses to estimate difficulty:</p>
+<ul>
+<li>Query length and complexity of the question structure.</li>
+<li>Presence of mathematical notation, code, or technical terminology.</li>
+<li>Number of constraints or conditions specified.</li>
+<li>Whether the query requires a verifiable, precise answer vs. a qualitative one.</li>
+</ul>
+<p>Expected economics at scale:</p>
+<ul>
+<li>A naive "route everything to the best model" approach might cost $50,000/month at high volume.</li>
+<li>Compute-aware routing with 70/25/5 distribution might cost $8,000-15,000/month for equivalent quality.</li>
+<li>40-60% cost reduction with minimal measurable quality degradation is a realistic outcome.</li>
+</ul>
+<p>This pattern is increasingly standard in high-volume production AI systems. Companies processing millions of queries daily cannot afford to run every query through a frontier reasoning model. The sophistication of the routing layer — how accurately it classifies difficulty — largely determines how much cost savings can be captured without quality loss.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Q22. How do reasoning models affect the way we should think about agentic AI?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Agentic AI systems — models that use tools, execute multi-step plans, and interact with external systems — have a reliability problem that reasoning models directly address: agents that act immediately based on incomplete understanding make more errors than agents that think before they act.</p>
+<p>The key architectural insight is to separate <em>planning</em> from <em>execution</em>. Reasoning models are excellent planners — they can produce detailed, step-by-step action plans with contingency branches, validated against problem constraints, before any tool is actually called. Standard models (or even the same model without extended thinking) can then execute individual steps cheaply and quickly.</p>
+<p>A practical pattern for agentic reasoning:</p>
+<pre><code># Pseudo-code for reasoning-enhanced agent
+def solve_complex_task(task, tools):
+
+    # Phase 1: Planning (reasoning model, extended thinking)
+    plan = reasoning_model.think(
+        prompt=f"Plan how to accomplish: {task}. Available tools: {tools}",
+        budget_tokens=8000
+    )
+
+    # Phase 2: Execution (fast model, no thinking needed)
+    for step in plan.steps:
+        result = fast_model.execute(step, tools)
+        if result.failed:
+            # Phase 3: Recovery reasoning (back to reasoning model)
+            revised_plan = reasoning_model.think(
+                prompt=f"Step failed: {result.error}. Revise plan.",
+                budget_tokens=4000
+            )</code></pre>
+<p>The trade-off: each reasoning step adds latency. A 10-step agentic pipeline where each step uses extended thinking can take 10-30 minutes for complex tasks. This is acceptable for async background agents but unacceptable for real-time interactive agents.</p>
+<p><strong>Current best practice:</strong> use reasoning models for the initial task decomposition and final answer synthesis; use fast standard models for individual tool calls, data retrieval, and routine sub-tasks. The reasoning budget is precious — spend it on the decisions that most benefit from careful deliberation, not on boilerplate execution steps.</p>
+<p>Looking forward, reasoning-capable agents represent a qualitative shift in what agentic systems can reliably accomplish. The bottleneck for autonomous agents has always been decision quality, not execution speed. Reasoning models address the right constraint.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+        </div>
+      </div>
+      <details class="resources-panel" open>
+        <summary>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          Resources &mdash; 2 videos
+        </summary>
+        <div class="resources-grid">
+      <div class="resource-card" data-vid="2IfAVV7ewO0">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/2IfAVV7ewO0/mqdefault.jpg" alt="They Solved AI&#x27;s Memory Problem!" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/2IfAVV7ewO0" target="_blank" rel="noopener">They Solved AI&#x27;s Memory Problem!</a></h4>
+          <p>Covers how modern reasoning models maintain long reasoning chains and how the inference-time compute paradigm is reshaping AI capability.</p>
+          <div class="resource-meta">AI Search</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="mtiOK2QG9Q0">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/mtiOK2QG9Q0/mqdefault.jpg" alt="The 7 Skills You Need to Build AI Agents" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/mtiOK2QG9Q0" target="_blank" rel="noopener">The 7 Skills You Need to Build AI Agents</a></h4>
+          <p>IBM&#x27;s overview of AI agent capabilities — planning, multi-step reasoning, and tool use — which underpin how reasoning models are used in agentic systems.</p>
+          <div class="resource-meta">IBM Technology</div>
+        </div>
+      </div>
+        </div>
+      </details>
+    </main>
+  </div>
+</div>
+<script src="../../assets/main.js"></script>
+</body>
+</html>

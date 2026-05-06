@@ -43,7 +43,6 @@
         <li class=""><a href="../fine-tuning-for-llms/index.html">FINE TUNING for LLMs</a></li>
         <li class=""><a href="../ai-safety-guardrails/index.html">AI Safety &amp; Guardrails</a></li>
         <li class=""><a href="../llm-evaluation/index.html">LLM Evaluation</a></li>
-        <li class=""><a href="../live-coding-interview-prep/index.html">Live coding Interview Prep</a></li>
         <li class="active"><a href="../llmops-deployment/index.html">LLMOps &amp; Deployment</a></li>
       </ul>
     </nav>
@@ -55,7 +54,6 @@
           <li class=""><a href="../fine-tuning-for-llms/index.html">FINE TUNING for LLMs</a></li>
           <li class=""><a href="../ai-safety-guardrails/index.html">AI Safety &amp; Guardrails</a></li>
           <li class=""><a href="../llm-evaluation/index.html">LLM Evaluation</a></li>
-          <li class=""><a href="../live-coding-interview-prep/index.html">Live coding Interview Prep</a></li>
           <li class="active"><a href="../llmops-deployment/index.html">LLMOps &amp; Deployment</a></li>
         </ul>
       </nav>
@@ -66,7 +64,7 @@
         </div>
         <h1>LLMOps &amp; Deployment</h1>
         <div class="topic-meta">
-          <span class="topic-stats">40 questions</span>
+          <span class="topic-stats">47 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -489,6 +487,110 @@
 <div class="ui-rte-editor-div ui-rte-editor" style="overflow-wrap: break-word; font-variant-ligatures: none"><h2 style="margin: 0px; box-sizing: border-box">Definition</h2><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Vector databases</strong> store and search data as <strong>embeddings (numerical vectors)</strong> based on semantic meaning, while <strong>traditional databases</strong> store structured data (rows/columns) and retrieve it using exact matches or filters.</p><h2 style="margin: 0px; box-sizing: border-box">Why it is used</h2><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Enable semantic search (meaning-based, not keyword-based)</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Power Retrieval-Augmented Generation (RAG)</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Handle unstructured data like text, images, embeddings</p></li></ul><h2 style="margin: 0px; box-sizing: border-box">How it works (step-by-step)</h2><h3 style="margin: 0px; box-sizing: border-box">Vector database</h3><ol style="list-style-type: decimal; list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Convert text/data into embeddings (vectors)</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Store vectors in the database</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Convert user query into a vector</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Perform similarity search (e.g., cosine similarity)</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Return most relevant results</p></li></ol><h3 style="margin: 0px; box-sizing: border-box">Traditional database</h3><ol style="list-style-type: decimal; list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Store structured data (tables, rows)</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Query using SQL (filters, joins, exact match)</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Return matching records</p></li></ol><h2 style="margin: 0px; box-sizing: border-box">Key components</h2><h3 style="margin: 0px; box-sizing: border-box">Vector database</h3><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Embeddings</strong>: Vector representation of data</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Similarity search</strong>: Nearest neighbor search (ANN)</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Indexing</strong>: Optimized for fast vector search (HNSW, FAISS)</p></li></ul><h3 style="margin: 0px; box-sizing: border-box">Traditional database</h3><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Schema</strong>: Tables, columns, relationships</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Query engine</strong>: SQL-based queries</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Indexes</strong>: B-trees, hash indexes</p></li></ul><h2 style="margin: 0px; box-sizing: border-box">Key differences</h2><h3 style="margin: 0px; box-sizing: border-box">Search type</h3><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Vector DB</strong>: Semantic (meaning-based)</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Traditional DB</strong>: Exact match / rule-based</p></li></ul><h3 style="margin: 0px; box-sizing: border-box">Data type</h3><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Vector DB</strong>: Unstructured (text, images, embeddings)</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Traditional DB</strong>: Structured (rows, columns)</p></li></ul><h3 style="margin: 0px; box-sizing: border-box">Query method</h3><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Vector DB</strong>: Similarity search (distance metrics)</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Traditional DB</strong>: SQL queries</p></li></ul><h3 style="margin: 0px; box-sizing: border-box">Use case</h3><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Vector DB</strong>: RAG, recommendation, semantic search</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box"><strong>Traditional DB</strong>: Transactions, analytics, structured queries</p></li></ul><h2 style="margin: 0px; box-sizing: border-box">Advantages</h2><h3 style="margin: 0px; box-sizing: border-box">Vector database</h3><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Finds relevant results even without exact keywords</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Handles unstructured data</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Improves LLM response quality</p></li></ul><h3 style="margin: 0px; box-sizing: border-box">Traditional database</h3><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Strong consistency and transactions</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Efficient for structured data</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Mature ecosystem</p></li></ul><h2 style="margin: 0px; box-sizing: border-box">Disadvantages</h2><h3 style="margin: 0px; box-sizing: border-box">Vector database</h3><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Less suitable for exact queries</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Approximate results (ANN)</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Additional complexity</p></li></ul><h3 style="margin: 0px; box-sizing: border-box">Traditional database</h3><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Cannot understand semantic meaning</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Poor performance for similarity search</p></li></ul><h2 style="margin: 0px; box-sizing: border-box">Real-world example</h2><p style="margin: 0px; tab-size: 4; box-sizing: border-box">A chatbot using RAG:</p><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Vector DB retrieves relevant document chunks based on meaning</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Traditional DB stores user profiles and metadata</p></li></ul><h2 style="margin: 0px; box-sizing: border-box">Short interview-ready answer</h2><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Vector databases store and retrieve data using embeddings and similarity search, enabling semantic understanding, while traditional databases use structured schemas and exact queries. In LLM systems, vector databases are used for tasks like semantic search and RAG, whereas traditional databases handle structured data and transactions.</p></div>
 </div>
 <p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="open-weight-vs-closed-api-making-the-right-choice" class="qa-section">
+        <div class="section-header">
+          <h2>Open-Weight vs. Closed API — Making the Right Choice</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between open-weight and closed-API LLMs?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Open-weight models: the trained weights are publicly released and can be downloaded and run on your own hardware. Examples: Llama-3.1/3.3 (Meta), Mistral-7B/Mixtral (Mistral AI), Qwen-2.5 (Alibaba), Phi-4 (Microsoft), Gemma-3 (Google).</p>
+<p>Closed-API models: accessible only through an API; the weights are never released. Examples: GPT-4o (OpenAI), Claude 3.5/3.7 (Anthropic), Gemini 1.5/2.0 (Google).</p>
+<p>Important distinction: "open weights" does not mean "open source". Most open-weight models don't release training code or data, and many have usage restrictions. Truly open-source models include Mistral-7B (Apache 2.0), Qwen-2.5 (Apache 2.0 for most sizes), and Falcon.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the key factors to consider when choosing between open-weight and closed-API models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Decision framework across 5 dimensions:</p>
+<ul>
+<li>Data privacy — if your data is sensitive (medical, legal, financial) and cannot leave your infrastructure, open-weight + self-hosting is often required</li>
+<li>Cost at scale — at low volume, closed API is usually cheaper (no infrastructure). At high volume, self-hosting open-weight becomes cost-competitive</li>
+<li>Customisation — need full fine-tuning with your data? Open-weight. Need to stay on the API? Limited to provider-supported fine-tuning</li>
+<li>Latency control — dedicated hardware gives predictable latency; shared API has variable latency, rate limits, and potential outages</li>
+<li>Capability ceiling — as of 2026, frontier closed models still outperform the best open-weight models on complex reasoning tasks</li>
+</ul>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is quantization and how does it make open-weight models deployable?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Large models require enormous VRAM: Llama-3 70B in fp16 = ~140 GB — needs two A100 80GB GPUs. Quantization reduces precision to shrink the model:</p>
+<ul>
+<li>8-bit (int8) quantization: ~70 GB — fits on one A100</li>
+<li>4-bit (int4/NF4) quantization: ~35 GB — fits on one A100 80GB with room for KV cache</li>
+</ul>
+<p>Quality impact: 4-bit quantization loses ~1-3% on benchmarks vs. full precision for most tasks — acceptable for most applications. GGUF format: used by llama.cpp and Ollama — supports CPU inference with optional GPU offloading. Tool recommendation: Ollama for quick local deployment (one command, automatic quantization); vLLM for production serving (optimized throughput, OpenAI-compatible API).</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is vLLM and why is it the standard for open-weight LLM serving?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>vLLM (Kwon et al., 2023) is a high-throughput, memory-efficient inference engine for LLMs. The key innovation: PagedAttention — manages the KV cache like operating system virtual memory, eliminating memory waste from fragmentation.</p>
+<ul>
+<li>Without PagedAttention: typical KV cache utilization is 20-40%</li>
+<li>With PagedAttention: utilization above 96%</li>
+<li>Result: 2-24x higher throughput than naive HuggingFace Transformers inference on the same hardware</li>
+</ul>
+<p>Features: continuous batching, tensor parallelism, OpenAI-compatible API endpoint. Setup:</p>
+<pre><code>pip install vllm
+python -m vllm.entrypoints.openai.api_server --model meta-llama/Meta-Llama-3-8B-Instruct</code></pre>
+<p>Clients use the same code as for OpenAI API — drop-in replacement.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the cost economics of open-weight vs. closed-API at different scales?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Example: GPT-4o at $5/1M input tokens + $15/1M output tokens. At 100M output tokens/day: $1,500/day = $547K/year.</p>
+<p>Self-hosting Llama-3 70B: one A100 SXM 80GB instance on AWS: ~$3/hour = $2,628/month = ~$31K/year. Breakeven: at ~57M tokens/day, self-hosting becomes cheaper than GPT-4o. But add hidden costs of self-hosting: engineering time (2-4 weeks initial setup), on-call burden, model update cycles, hardware reliability.</p>
+<p>Rule of thumb: if you're spending more than $10K/month on API costs, seriously evaluate self-hosting. Below $10K/month, the engineering overhead usually exceeds the savings. Smarter approach: use cheap API models (GPT-4o-mini, Claude Haiku) for simple queries; reserve expensive frontier models for complex tasks.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the main open-weight model families to know in 2026?</summary>
+            <div class="qa-answer answer-inner">
+              
+<ul>
+<li>Llama-3.1/3.3 (Meta): 8B, 70B, 405B. Permissive license for most commercial use. Trained on 15T tokens — well-calibrated general purpose. The community standard.</li>
+<li>Mistral/Mixtral: Mistral-7B (Apache 2.0 — fully open commercial use), Mixtral-8x22B (MoE architecture — 141B total, 39B active). Strong coding and reasoning.</li>
+<li>Qwen-2.5 (Alibaba): 0.5B–72B range. Apache 2.0 license. Excellent multilingual (Chinese/English/35+ languages). Strong math and code.</li>
+<li>Phi-4 (Microsoft): 14B parameters with exceptional reasoning — outperforms models 5x larger on benchmarks. Distilled from synthetic data. MIT license.</li>
+<li>Gemma-3 (Google): 1B–27B range. Strong documentation and tooling. Available on Google AI Studio.</li>
+</ul>
+<p>Key principle: parameter count is not the primary selection criterion. Phi-4 14B beats Llama-3 70B on many reasoning tasks. Always benchmark on your specific use case.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is model routing and why is it an essential cost optimisation in production?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Model routing: automatically direct each request to the cheapest/fastest model that can handle it adequately.</p>
+<p>Implementation:</p>
+<ul>
+<li>Classify request complexity (simple factual, complex reasoning, creative)</li>
+<li>Route simple requests to small cheap models (GPT-4o-mini, Llama-3-8B)</li>
+<li>Route complex requests to frontier models (GPT-4o, Claude 3.7)</li>
+</ul>
+<p>Example: a customer support system routes "What are your business hours?" to GPT-4o-mini ($0.15/M tokens) and "Explain why my invoice calculation is wrong" to GPT-4o ($5/M tokens). Expected result: 60-80% of queries go to the cheap model → 60-75% cost reduction.</p>
+<p>Tools: RouteLLM (open source router), LiteLLM with model fallback, custom classifier-based routing.</p>
+
             </div>
           </details>
         </div>

@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LLM Pretraining &amp; Scaling Laws | LLMs &amp; Prompting | AI Mastery by Siddharth Raja</title>
+<link rel="stylesheet" href="../../assets/main.css">
+<script>
+(function(){
+  var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.dataset.theme=t;
+  if(sessionStorage.getItem('am_auth')!=='1'){
+    document.documentElement.style.opacity='0';
+  }
+})();
+</script>
+</head>
+<body data-root="../../">
+<header class="site-header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">AI <span>Mastery</span> <span class="logo-by">by Siddharth Raja</span></a>
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+      <input type="search" id="search-input" placeholder="Search questions… (/)" autocomplete="off" spellcheck="false" aria-label="Search questions">
+      <div id="search-results" role="listbox" hidden></div>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+<div class="page-body">
+  <div class="layout">
+    <nav class="course-sidebar" aria-label="Course topics">
+      <a href="../../index.html" class="sidebar-back">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        All courses
+      </a>
+      <div class="sidebar-course-name">LLMs &amp; Prompting</div>
+      <ul class="topic-list">
+        <li class=""><a href="../llms-deep-dive/index.html">LLMs Deep Dive</a></li>
+        <li class="active"><a href="../llm-pretraining-scaling-laws/index.html">LLM Pretraining &amp; Scaling Laws</a></li>
+        <li class=""><a href="../reasoning-models-test-time-compute/index.html">Reasoning Models &amp; Test-Time Compute</a></li>
+        <li class=""><a href="../multimodal-llms/index.html">Multimodal LLMs</a></li>
+        <li class=""><a href="../tranformer-architecture-qa/index.html">Tranformer Architecture Q&amp;A</a></li>
+        <li class=""><a href="../prompt-engineering-mastery/index.html">Prompt Engineering Mastery</a></li>
+      </ul>
+    </nav>
+    <main class="topic-main" id="main-content">
+      <nav class="mobile-course-nav" aria-label="Topics in LLMs &amp; Prompting">
+        <div class="mobile-course-nav-title">LLMs &amp; Prompting</div>
+        <ul class="mobile-topic-list">
+          <li class=""><a href="../llms-deep-dive/index.html">LLMs Deep Dive</a></li>
+          <li class="active"><a href="../llm-pretraining-scaling-laws/index.html">LLM Pretraining &amp; Scaling Laws</a></li>
+          <li class=""><a href="../reasoning-models-test-time-compute/index.html">Reasoning Models &amp; Test-Time Compute</a></li>
+          <li class=""><a href="../multimodal-llms/index.html">Multimodal LLMs</a></li>
+          <li class=""><a href="../tranformer-architecture-qa/index.html">Tranformer Architecture Q&amp;A</a></li>
+          <li class=""><a href="../prompt-engineering-mastery/index.html">Prompt Engineering Mastery</a></li>
+        </ul>
+      </nav>
+      <div class="topic-header">
+        <div class="topic-breadcrumb">
+          <a href="../../index.html">Home</a> /
+          <a href="../index.html">LLMs &amp; Prompting</a>
+        </div>
+        <h1>LLM Pretraining &amp; Scaling Laws</h1>
+        <div class="topic-meta">
+          <span class="topic-stats">33 questions</span>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-wrap">
+          <svg class="filter-icon" width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+          <input type="search" id="topic-filter" placeholder="Filter questions… (f)" autocomplete="off" spellcheck="false" aria-label="Filter questions on this page">
+        </div>
+        <span id="filter-count"></span>
+      </div>
+      <div id="filter-no-results" class="filter-no-results">No questions match your filter.</div>
+      <div class="content-with-toc">
+        <nav class="toc-sidebar" aria-label="Page sections">
+          <p class="toc-title">Sections</p>
+          <ul class="toc-list">
+        <li><a href="#section-1-the-pretraining-objective">Section 1: The Pretraining Objective</a></li>
+        <li><a href="#section-2-tokenization">Section 2: Tokenization</a></li>
+        <li><a href="#section-3-pretraining-data">Section 3: Pretraining Data</a></li>
+        <li><a href="#section-4-compute-flops">Section 4: Compute &amp; FLOPs</a></li>
+        <li><a href="#section-5-scaling-laws">Section 5: Scaling Laws</a></li>
+        <li><a href="#section-6-the-alignment-pipeline">Section 6: The Alignment Pipeline</a></li>
+        <li><a href="#section-7-open-vs-closed-model-landscape">Section 7: Open vs. Closed Model Landscape</a></li>
+          </ul>
+        </nav>
+        <div class="qa-sections">
+      <section id="section-1-the-pretraining-objective" class="qa-section">
+        <div class="section-header">
+          <h2>Section 1: The Pretraining Objective</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What does it mean to &quot;pretrain&quot; a language model, and why does next-token prediction produce general intelligence?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Think of pretraining like a student who reads millions of books, articles, and code repositories — not to answer a specific exam, but to absorb the structure of the world. The student's only exercise is to cover the last word of every sentence and try to guess it. Sounds trivial, right? It turns out this single exercise forces you to learn almost everything.</p>
+<p>That's pretraining. The model is fed a sequence of tokens — say, "The French Revolution began in" — and its only job is to predict what comes next: "1789." To do that well, it must implicitly learn:</p>
+<ul>
+<li><b>Grammar and syntax</b> — so it can form valid sentences</li>
+<li><b>Facts</b> — dates, names, relationships between entities</li>
+<li><b>Reasoning</b> — to follow multi-step arguments in text</li>
+<li><b>Style and register</b> — formal paper vs. casual tweet vs. Python code</li>
+</ul>
+<p>This is called <b>self-supervised learning</b>. There are no human-labelled examples. The text is its own label — the "answer" is always the next token in the corpus. This is the crucial difference from supervised learning, which requires expensive hand-labelling for every task.</p>
+<p>The result is a model whose weights are a compressed, distributed representation of everything in its training data. It doesn't "know" things in the way humans do — it has learned statistical patterns so deep and rich that knowledge, reasoning, and language understanding emerge as side effects.</p>
+<p>This is why one pretraining run can produce a model that writes poetry, debugs code, explains quantum mechanics, and translates languages — all without a single task-specific label.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What exactly happens during a forward pass in pretraining — what is the loss being minimized?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>During pretraining, the model processes a batch of token sequences and produces a probability distribution over its entire vocabulary at each position. The loss function measures how surprised the model was by the actual next token — this is <b>cross-entropy loss</b>.</p>
+<p>Concretely: the model reads "The capital of France is" and outputs ~50,000 numbers (one per vocabulary token), each representing a log-probability. Ideally, it should assign a high probability to "Paris" and near-zero to everything else. Cross-entropy loss is low when the true token gets high probability, and high when the model was confident about the wrong answer.</p>
+<pre><code># Pseudocode: what happens at each training step
+logits = model.forward(input_tokens)         # shape: [batch, seq_len, vocab_size]
+loss = cross_entropy(logits, target_tokens)  # compare predictions to actual next tokens
+loss.backward()                              # compute gradients through all layers
+optimizer.step()                             # update every weight in the network</code></pre>
+<p>The key insight is density of signal. Every single token in every document generates one gradient update. A document with 1,000 tokens contributes 1,000 training examples — all from unlabelled text. Across hundreds of billions of tokens, this is an enormous number of gradient signals shaping the model's weights.</p>
+<p>The loss landscape is high-dimensional (billions of parameters) and never fully converges during pretraining — frontier models are typically stopped before loss plateaus because the compute cost grows while marginal improvement shrinks.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How long does pretraining take, and what makes it so expensive?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Training a frontier LLM from scratch takes weeks to months and costs tens of millions of dollars. This surprises people who haven't seen the numbers.</p>
+<p>A rough example: training a GPT-4-class model likely involved roughly 10<sup>24</sup> to 10<sup>25</sup> floating-point operations. An NVIDIA A100 GPU peaks at ~312 teraflops/second. A cluster of 10,000 A100s running for 90 days at 50% utilization delivers about:</p>
+<pre><code>10,000 GPUs × 312e12 FLOP/s × 0.5 utilization
+× 90 days × 86,400 s/day
+≈ 1.2 × 10^22 FLOPs</code></pre>
+<p>Even that enormous cluster takes months to hit the required compute. The two cost drivers are <b>GPU-hours</b> (renting or running thousands of H100s at $2–4/hour each) and <b>energy</b> (large clusters consume megawatts continuously).</p>
+<p>Why can't you just train faster by adding more GPUs? Because of distributed training bottlenecks — GPUs must synchronize gradients after every step (all-reduce communication), and this communication overhead grows with cluster size. Additionally, each GPU has limited memory (80 GB for an A100), so large models must be split across many GPUs using model parallelism, adding coordination overhead.</p>
+<p>A rough industry rule: a single training run for a frontier model costs $10M–$100M+. This is why only a handful of organizations pretrain at the frontier. Most teams fine-tune existing pretrained models rather than starting from scratch.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between a base model and a chat/assistant model?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>This is one of the most commonly confused distinctions in LLM work, and it comes up in interviews constantly.</p>
+<p>A <b>base model</b> is the raw output of pretraining. It has learned to predict the next token across all kinds of text — news, fiction, code, forums, academic papers. If you feed it "The capital of France is", it might continue: <em>"Paris, which was founded by the Parisii tribe..."</em> or it might say <em>"Paris. The capital of Germany is Berlin."</em> — because both are plausible document continuations. It's a text predictor, not an assistant.</p>
+<p>It has no concept of "answer this question helpfully." It might complete a prompt that asks for a recipe by listing the ingredients, or it might just continue writing the question. It follows the distribution of text it was trained on.</p>
+<p>A <b>chat/assistant model</b> is a base model that has been through additional alignment training:</p>
+<ul>
+<li><b>Supervised Fine-Tuning (SFT)</b> — trained on high-quality instruction/response pairs to learn the format of being helpful</li>
+<li><b>RLHF or DPO</b> — optimized to produce responses humans prefer over alternatives</li>
+</ul>
+<p>GPT-4, Claude, Gemini — the models you interact with daily — are all fine-tuned derivatives of base models. The base models themselves (e.g., Llama-3 base) are rarely deployed directly but are the foundation everything else is built on.</p>
+<p>Why does this matter? If you're fine-tuning for a specific task, you almost always start from a base model or an instruct model depending on whether you're teaching format vs. domain knowledge.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why is next-token prediction considered such a powerful training signal compared to earlier NLP approaches?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Before transformer-based LLMs, NLP worked by training separate, specialized models: one for sentiment analysis, one for named entity recognition, one for machine translation. Each required its own labelled dataset, its own training pipeline, and its own evaluation harness. A team might spend months building a high-quality labelled dataset of 100,000 examples for one task.</p>
+<p>Next-token prediction breaks this paradigm. Consider the signal density:</p>
+<ul>
+<li>GPT-3 was trained on ~300 billion tokens of text</li>
+<li>Every single token is one training example — the input is all preceding tokens, the label is the current token</li>
+<li>That's 300 billion gradient signals from entirely unlabelled text</li>
+<li>A well-curated sentiment dataset has maybe 100,000 labelled examples — that's 3 million times less signal</li>
+</ul>
+<p>The signal is also <b>multitask by construction</b>. The same objective on the same data simultaneously teaches:</p>
+<ul>
+<li>Factual recall (completing "Einstein was born in ___")</li>
+<li>Syntax (completing "She walked to the ___" — must be a noun)</li>
+<li>Logical entailment (completing "If all birds can fly and a penguin is a bird, then ___")</li>
+<li>Stylistic imitation (completing in the style of the surrounding text)</li>
+</ul>
+<p>No human ever sat down and labelled these things. The labelling comes for free from the structure of language itself. This is what makes self-supervised pretraining such a leverage multiplier — you get thousands of implicit tasks for the cost of computing next-token prediction.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="section-2-tokenization" class="qa-section">
+        <div class="section-header">
+          <h2>Section 2: Tokenization</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is tokenization, and why don&#x27;t LLMs just work on raw characters or words?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Tokenization is the process of converting raw text into discrete units (tokens) that the model processes. Getting this right is more important than it might seem — the choice of tokenization scheme directly affects what the model can and can't do well.</p>
+<p>Why not characters? Character-level models face a sequence length explosion. The sentence "The quick brown fox" is 18 characters but perhaps 5 tokens under modern BPE tokenization. Longer sequences are more expensive (attention is quadratic in sequence length) and harder to learn long-range dependencies across. Characters also carry less information per unit — the model must work harder to learn that "t-h-e" means the definite article.</p>
+<p>Why not full words? English alone has 170,000+ words, and that ignores rare words, misspellings, proper nouns, technical jargon, and every other language. A fixed word vocabulary can't handle new words at all — "ChatGPT" didn't exist in 2019 vocabulary lists. And code has an enormous vocabulary of identifiers, symbols, and operators that explode any word-level scheme.</p>
+<p><b>Subword tokenization</b> is the practical middle ground. It learns a vocabulary of common subword pieces from the training corpus:</p>
+<pre><code>"unbelievable" → ["un", "believ", "able"]   # 3 tokens, not 12 chars or 1 word
+"ChatGPT"      → ["Chat", "G", "PT"]         # handles novel compound words
+"def forward"  → ["def", " forward"]         # handles code naturally</code></pre>
+<p>The vocabulary is typically 50,000–100,000 tokens, chosen to minimize the average number of tokens per document while keeping the vocabulary manageable. Common words like "the" and "is" get their own token; rare words are decomposed into pieces.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does Byte-Pair Encoding (BPE) work?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>BPE is the tokenization algorithm used by GPT-2, GPT-3, GPT-4, and most modern LLMs. The intuition is elegant: start from individual characters, then repeatedly merge the most frequent pair of adjacent tokens until you reach your target vocabulary size.</p>
+<p>Here's how the algorithm works step by step:</p>
+<pre><code># Start with character-level vocabulary
+# Corpus (simplified): ["low", "lowest", "newer", "wider"]
+
+# Step 1: Character frequency count
+l-o-w: 2,  l-o-w-e-s-t: 1,  n-e-w-e-r: 1,  w-i-d-e-r: 1
+
+# Step 2: Find most frequent adjacent pair
+# "e-r" appears in both "newer" and "wider" → merge it
+Vocabulary now includes: "er" as a single token
+
+# Step 3: Repeat
+# "lo" is frequent → merge to "lo"
+# "low" is frequent → merge to "low"
+# Continue until vocabulary size reached (e.g. 50,000)</code></pre>
+<p>The final vocabulary is a mixture of full common words, common word fragments, and individual characters as fallback. The key property: every possible string can be tokenized — worst case you fall back to individual bytes, so there's never an "unknown token" for normal text.</p>
+<p>In practice, <b>tiktoken</b> (used by OpenAI, open-sourced) and <b>SentencePiece</b> (used by Google/Meta) are the main implementations. They're highly optimized and can tokenize millions of tokens per second. The vocabulary and merge rules are fixed at training time — you can't change the tokenizer without retraining the model from scratch.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why does tokenization matter for AI applications — what can go wrong?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Tokenization is one of those "invisible infrastructure" things that only becomes visible when it causes a bug. Here are the practical failure modes every engineer should know:</p>
+<p><b>Arithmetic problems.</b> Numbers are tokenized inconsistently. "1000" might be a single token, but "1,000" (with a comma) might be three tokens: "1", ",", "000". This is part of why LLMs historically struggled with arithmetic — the number system isn't represented in a way that aligns with mathematical operations.</p>
+<pre><code>import tiktoken
+enc = tiktoken.get_encoding("cl100k_base")
+
+enc.encode("1000")    # → [1041]        (1 token)
+enc.encode("1,000")   # → [16, 11, 931] (3 tokens)
+enc.encode("0.001")   # → [15, 13, 4119] (3 tokens)</code></pre>
+<p><b>Multilingual efficiency gap.</b> English is heavily over-represented in training data, so the tokenizer is optimized for English. Non-English languages get tokenized less efficiently — more tokens per word. A 1,000-word English document might be ~1,300 tokens; the same document in Thai or Arabic might be 2,500–4,000 tokens. This means: shorter effective context, higher API cost, and potentially worse performance for non-English languages.</p>
+<p><b>Code and special characters.</b> Code tends to tokenize better than arbitrary text because operators like <code>{</code>, <code>-&gt;</code>, <code>===</code> are common in training data. But unusual Unicode, mathematical notation, or non-standard punctuation can tokenize into many small fragments.</p>
+<p><b>API cost and latency.</b> You're billed per token, not per character or word. Token count can vary significantly for the same semantic content depending on language, formatting, and whether you use markdown. Trim whitespace, avoid unnecessary formatting, and count tokens before sending large batches.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is vocabulary size and why does it matter?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Vocabulary size is the number of distinct tokens the model knows about. GPT-2 used ~50,000 tokens; GPT-4 and Llama-3 use ~100,000–128,000 tokens. This choice has real trade-offs.</p>
+<p><b>Larger vocabulary = fewer tokens per sentence.</b> With a 100k vocabulary, common multi-character words ("running", "because", "however") each get their own token rather than being split. This means sequences are shorter, attention computations are cheaper, and the model can fit more content into its context window.</p>
+<p><b>But vocabulary size directly affects model size.</b> Every token needs an embedding vector (typically 4096 dimensions for a 7B model). The embedding table is:</p>
+<pre><code># Embedding table memory
+vocab_size = 100_000
+embedding_dim = 4096
+bytes_per_param = 2  # bf16
+
+embedding_memory = vocab_size * embedding_dim * bytes_per_param
+# = 100,000 × 4,096 × 2 = ~800 MB just for the embedding table</code></pre>
+<p>The output projection (LM head) has the same shape — so together, the input and output token layers consume ~1.6 GB for a 100k-vocab model. For a model with 4B total parameters, this is a significant fraction.</p>
+<p><b>Expressive efficiency vs. representational cost.</b> A 128k vocabulary can represent more information per token (making the model more "efficient" in tokens-per-concept), but the embedding table and LM head are bigger. Current frontier models have settled around 100k–200k as the practical sweet spot for English + multilingual + code.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="section-3-pretraining-data" class="qa-section">
+        <div class="section-header">
+          <h2>Section 3: Pretraining Data</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What data is used to pretrain frontier LLMs?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Frontier LLMs are trained on an enormous mixture of text sources. The specific composition is a competitive secret, but from published papers and leaks, the primary sources are:</p>
+<ul>
+<li><b>Web crawls</b> — CommonCrawl is a nonprofit that crawls the web and makes petabytes of text available. It's the largest single source for most models, but requires heavy filtering (see Q11).</li>
+<li><b>Books</b> — Books3, Project Gutenberg, and similar datasets provide long-form, high-quality prose. Books are disproportionately valuable because they contain coherent multi-paragraph reasoning.</li>
+<li><b>Code</b> — GitHub repositories. Code requires precise logical reasoning and has extremely consistent formatting, making it a high signal/noise training source.</li>
+<li><b>Wikipedia and encyclopedias</b> — Dense factual content, well-written, frequently cross-referenced.</li>
+<li><b>Scientific papers</b> — arXiv, PubMed, Semantic Scholar. Adds reasoning patterns from academic argument.</li>
+</ul>
+<p>The scale is staggering. Llama-3 was trained on 15 trillion tokens. To put that in perspective: if you read one page per second, 24 hours a day with no sleep, it would take approximately <em>475,000 years</em> to read 15 trillion tokens.</p>
+<p>The model doesn't memorize this data — it distills patterns, relationships, and reasoning strategies into 8 or 70 billion parameters. That compression from 15T tokens to 70B parameters (roughly 200:1) is part of what makes LLMs so capable: they've internalized the structure of language and knowledge, not a lookup table of text.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Why is data quality and curation as important as data quantity?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>A common misconception: "just scrape more data and the model gets better." This is wrong. The composition and quality of training data matters as much as the quantity, and there's a growing body of evidence that quality dominates at equivalent compute budgets.</p>
+<p>Raw web crawls contain enormous amounts of low-quality content:</p>
+<ul>
+<li>Spam, SEO-driven filler content, and auto-generated text</li>
+<li>Near-duplicate content (the same article reprinted on 200 sites)</li>
+<li>Toxic content, hate speech, and harmful material</li>
+<li>Boilerplate (navigation menus, cookie notices, legal disclaimers)</li>
+<li>Non-English text mixed into English-labeled corpora</li>
+</ul>
+<p><b>Deduplication</b> is especially critical. If the same document appears 100 times in training data, the model doesn't learn 100x more — it learns to memorize and reproduce that exact text. Memorization reduces generalization and wastes compute. MinHash-based deduplication at scale is now standard practice.</p>
+<p><b>Quality filtering</b> typically combines heuristics (discard documents shorter than N words, with too many punctuation errors, in the wrong language) with model-based scoring (use a small classifier to predict whether a document would be upvoted by a human expert).</p>
+<p>The <b>FineWeb paper</b> (HuggingFace, 2024) demonstrated this cleanly: carefully filtered web data substantially outperforms unfiltered CommonCrawl at the same token count and compute budget. Better data = better model, even if it means training on fewer total tokens.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the data mixture problem, and why is it hard?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Even after filtering for quality, you have a new problem: how much of each domain should be in the training mix? Too much web text and the model is a fluent bullshitter. Too much academic text and it's stilted and verbose. Too much code and its prose degrades. Too much fiction and it hallucinates freely.</p>
+<p>The right mixture is not knowable from first principles — it's discovered empirically through <b>ablation studies</b>: train many small models on different mixtures, evaluate on a diverse benchmark suite, and use the results to guide the full-scale run. Frontier labs run hundreds of these "preview" experiments before committing to a trillion-token training run.</p>
+<p>A particularly thorny issue is <b>benchmark contamination</b>. Standard evaluation sets like MMLU, HumanEval, and HellaSwag are sourced from the internet. If training data contains the answers to these benchmarks, reported scores are inflated and misleading. Labs now use heuristic and neural decontamination pipelines to detect and remove likely benchmark overlaps, but it's imperfect.</p>
+<p>The most recent frontier finding: <b>synthetic data</b> (text generated by an existing model) can be high-quality training data if filtered carefully. Microsoft's Phi series and Meta's Llama-3 both used model-generated synthetic examples — especially for reasoning, math, and code — to supplement web crawls. This opens a potential path past the limits of human-written internet text, though it also raises concerns about model collapse if synthetic data dominates.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a knowledge cutoff, and why do LLMs have one?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Every LLM has a <b>knowledge cutoff</b> — a date beyond which the model has no information about world events. This isn't a bug; it's a fundamental property of how models are trained.</p>
+<p>Training data is collected up to some point in time, then frozen. The model learns from that fixed snapshot. Events that happened after the cutoff simply don't exist in the training corpus — the model never saw any text about them. When asked about post-cutoff events, it doesn't know it doesn't know; it uses patterns from similar historical events to generate plausible-sounding (but fabricated) answers. This is a significant hallucination risk.</p>
+<p>Why not just keep training on new data continuously? Several reasons:</p>
+<ul>
+<li><b>Catastrophic forgetting</b> — training on new data causes a neural network to overwrite old knowledge. Without careful techniques, the model degrades on things it previously knew well.</li>
+<li><b>Retraining cost</b> — even a "small" update to a frontier model costs millions of dollars</li>
+<li><b>Evaluation difficulty</b> — how do you verify a continuously updated model's knowledge is correct and consistent?</li>
+</ul>
+<p>The practical workaround is <b>Retrieval-Augmented Generation (RAG)</b>: connect the model to a search system or database at inference time, so it can look up current information rather than recalling it from weights. This is how most production systems handle knowledge freshness — the model's reasoning stays in the weights, the facts come from retrieval.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the &quot;data flywheel&quot; and how do frontier labs maintain their advantage?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>A data flywheel is a self-reinforcing feedback loop where having more users generates better training data, which makes the model better, which attracts more users. It's one of the most durable competitive moats in AI.</p>
+<p>Here's how it works for a deployed LLM product:</p>
+<ul>
+<li>Millions of users send prompts and interact with responses every day</li>
+<li>User feedback (thumbs up/down, edits, re-prompts) signals which responses were good and which weren't</li>
+<li>This preference data is used to create training pairs for RLHF or DPO alignment</li>
+<li>The aligned model is more helpful → more users → more feedback → better alignment data</li>
+</ul>
+<p>The key insight: high-quality preference data is expensive and hard to generate without a real user base. A team of human contractors writing preference comparisons can produce tens of thousands of examples. Real-world usage generates millions. OpenAI had GPT-3 and ChatGPT deployed at scale before most labs had alignment infrastructure at all — the preference data they accumulated is largely responsible for why early ChatGPT was so dramatically more usable than raw GPT-3.</p>
+<p>Open-source models can't replicate this directly — releasing weights doesn't give you user feedback data. Labs like Meta (Llama), Mistral, and Qwen compensate with larger synthetic data investments and by leveraging usage of their closed products to generate alignment signal. But the gap in real-world preference data remains a structural advantage for deployed products over pure open-source releases.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="section-4-compute-flops" class="qa-section">
+        <div class="section-header">
+          <h2>Section 4: Compute &amp; FLOPs</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a FLOP and why does it matter for understanding LLM training?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>A <b>FLOP</b> (Floating Point Operation) is one multiply-add on one number. It's the atomic unit of compute, like a calorie for energy — not intuitive on its own, but essential for comparing training runs across hardware, labs, and time.</p>
+<p>The critical rule of thumb from Hoffmann et al. and Kaplan et al.: training a transformer requires approximately <b>6 × N × D FLOPs</b>, where N is parameter count and D is training tokens.</p>
+<pre><code># Estimating training FLOPs for a 7B model on 1T tokens
+N = 7e9   # parameters
+D = 1e12  # training tokens
+C = 6 * N * D
+# C ≈ 4.2 × 10^22 FLOPs
+
+# How long on one A100?
+a100_peak_flops = 312e12  # FLOPs/second (bf16 tensor cores)
+utilization = 0.40        # realistic for distributed training
+
+seconds = C / (a100_peak_flops * utilization)
+# ≈ 336 million seconds ≈ 3,888 A100-days ≈ 11 years on 1 GPU
+
+# On 1,000 A100s: ~3.9 days
+# On 10,000 A100s: ~9 hours (unrealistic due to communication overhead)</code></pre>
+<p>This is why frontier model training costs what it does. At cloud spot pricing of ~$2/A100-hour, 3,888 A100-days is about $186,000. A 70B model trained on 1T tokens is roughly 10× that — $1.8M. GPT-4-class training, estimated at 10–25× larger, gets you into the $20M–$100M range for hardware alone, before energy, engineering time, and failed runs.</p>
+<p>Understanding FLOPs lets you reason about whether a claimed model is plausible, compare efficiency across architectures, and think clearly about compute budgets before starting a training run.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is model parallelism and why is it needed for large model training?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>A 70B parameter model stored in 16-bit (bf16) format requires about 140 GB of GPU memory just for the weights. An NVIDIA H100 has 80 GB. So the model literally doesn't fit on a single GPU — you need to distribute it across multiple devices.</p>
+<p>This is model parallelism, and it comes in three forms that are typically combined:</p>
+<p><b>Tensor parallelism</b> — split individual weight matrices across GPUs. Each GPU holds a slice of each layer. They operate in parallel and communicate intermediate results at each layer boundary. Good for: reducing memory per GPU, fast (NVLink bandwidth). Bad for: adds synchronization latency at every layer.</p>
+<p><b>Pipeline parallelism</b> — assign different layers to different GPUs. GPU 0 handles layers 1–8, GPU 1 handles layers 9–16, etc. Data flows through the pipeline in "micro-batches." Good for: reduces the need for all GPUs to communicate simultaneously. Bad for: creates "pipeline bubbles" (idle time while waiting for earlier stages to finish).</p>
+<p><b>Data parallelism</b> — replicate the full model (or model shard) across GPU groups, each processing different data. Gradients are averaged across replicas after each step (all-reduce). This is the most bandwidth-efficient form and scales well with large clusters.</p>
+<p>State-of-the-art training uses all three simultaneously — called <b>3D parallelism</b>. Coordinating this is one of the hardest engineering challenges in LLM development, which is why libraries like Megatron-LM and DeepSpeed exist specifically to manage it.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is mixed precision training and why is it universally used?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Floating point numbers come in different precisions: fp32 (32-bit, ~7 significant decimal digits), fp16 (16-bit, ~3-4 digits), and bf16 (16-bit with wider exponent range). Training in fp32 is the "safe" choice — nothing overflows or underflows. But it's wasteful: the weights use twice the memory of fp16, and modern GPU tensor cores are 2–4× faster in 16-bit arithmetic.</p>
+<p><b>Mixed precision training</b> is the standard approach: do the forward and backward pass in bf16/fp16 (fast, memory-efficient), but keep a fp32 "master copy" of the weights for the optimizer update (numerically stable). After each gradient update, copy the new fp32 weights back to bf16 for the next forward pass.</p>
+<pre><code># PyTorch mixed precision (simplified)
+from torch.cuda.amp import autocast, GradScaler
+
+scaler = GradScaler()  # scales loss to avoid fp16 underflow
+
+with autocast(dtype=torch.bfloat16):  # forward pass in bf16
+    output = model(input)
+    loss = criterion(output, target)
+
+scaler.scale(loss).backward()     # backward pass in bf16
+scaler.step(optimizer)            # optimizer updates fp32 master weights
+scaler.update()</code></pre>
+<p><b>bf16 is preferred over fp16</b> for LLMs because it has the same exponent range as fp32 (important for large activations in deep networks) but less precision in the mantissa. fp16 can overflow or underflow on large transformer activations, requiring careful loss scaling. bf16 almost never does, making training more stable and removing the need for GradScaler in most cases.</p>
+<p>The result: 2× memory reduction compared to fp32 training, 2–4× speedup on tensor core operations, and essentially no accuracy loss in practice.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is gradient checkpointing and activation recomputation?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>During the backward pass (backpropagation), the model needs the activations (intermediate outputs) from the forward pass to compute gradients. The naive approach is to store all activations in memory after the forward pass. For a large model, this is the dominant memory cost — often 5–10× the memory of the weights themselves.</p>
+<p>Here's the problem at scale:</p>
+<pre><code># Memory breakdown for a 7B model, batch size 32, seq len 2048
+weight_memory     ≈ 14 GB  (fp16)
+optimizer_states  ≈ 56 GB  (fp32 Adam: 2 × weights + gradient)
+activation_memory ≈ 70 GB+ (storing ALL intermediate activations)
+# Total: well beyond a single GPU, and activations dominate</code></pre>
+<p><b>Gradient checkpointing</b> (also called activation recomputation) trades compute for memory. Instead of storing all activations, you save only activations at "checkpoint" boundaries — e.g., at the start of each transformer layer. During the backward pass, when you need an intermediate activation that wasn't saved, you recompute it on the fly by re-running the forward pass for that segment.</p>
+<p>The result: memory for activations drops by roughly 4× (you only store activations at N checkpoint boundaries, not at every intermediate layer), at the cost of about 33% extra compute (you're running one extra forward pass worth of computation spread across the backward pass).</p>
+<p>In practice, gradient checkpointing is enabled by default in virtually all large-model training. The compute overhead is well worth the memory savings that make training large models feasible at all.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="section-5-scaling-laws" class="qa-section">
+        <div class="section-header">
+          <h2>Section 5: Scaling Laws</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are neural scaling laws, and why did they change everything in AI research?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Before scaling laws, building a large model felt like guessing. Researchers would propose an architecture, choose a size based on intuition and GPU budget, train it, and hope it worked. If it didn't perform well, it was unclear whether the architecture was wrong, the size was wrong, or the training was wrong.</p>
+<p>The breakthrough came from Kaplan et al. (OpenAI, 2020): model performance — specifically, the cross-entropy loss on a held-out text dataset — follows smooth <b>power laws</b> as you scale up parameters (N), training data (D), or compute (C):</p>
+<pre><code># Approximate scaling relationships (Kaplan et al.)
+Loss ∝ N^(-0.076)   # doubling parameters reduces loss by ~5%
+Loss ∝ D^(-0.095)   # doubling data reduces loss by ~6%
+Loss ∝ C^(-0.050)   # doubling compute reduces loss by ~3%</code></pre>
+<p>These relationships are remarkably consistent across model sizes, architectures (within the transformer family), and modalities. They don't flatten suddenly; they just keep going smoothly as you scale.</p>
+<p>This changed AI from guesswork to engineering. If you can predict how a 10× larger model will perform before training it — and pay $1M to train a test model to validate the prediction — you can make an informed decision about whether a $10M full training run is worth it. Frontier labs now run "scaling experiments" at small scale to extrapolate performance at large scale before committing to major runs.</p>
+<p>The philosophical implication is profound too: it suggests there may not be a fundamental ceiling in sight. Performance keeps improving, predictably, as you add resources. This convinced investors and labs to pour billions into training larger and larger models — with reasonable confidence the investment would pay off.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the Chinchilla scaling law and how does it differ from earlier understanding?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>In 2022, DeepMind published what's now called the <b>Chinchilla paper</b> (Hoffmann et al.), and it quietly invalidated how most frontier labs had been spending their compute budgets.</p>
+<p>The Kaplan (2020) scaling laws had implied that, given a fixed compute budget, you should mostly scale model size (parameters) and keep data roughly constant. This led to models like GPT-3 (175B parameters, 300B tokens) — very large models trained on relatively few tokens for their size.</p>
+<p>Chinchilla's insight: <b>parameters and training tokens should scale equally</b>. If you double your compute, you should also roughly double both model size and training data. The compute-optimal ratio is approximately 20 training tokens per parameter.</p>
+<pre><code># GPT-3: compute-optimal check
+params = 175e9
+tokens = 300e9
+ratio = tokens / params  # 300B / 175B ≈ 1.7 tokens/param
+# Way below the optimal 20 tokens/param → GPT-3 was undertrained
+
+# Chinchilla: 70B params, 1.4T tokens
+ratio = 1.4e12 / 70e9  # = 20 tokens/param ✓ compute-optimal
+
+# Result: Chinchilla (70B) outperformed GPT-3 (175B) on most benchmarks</code></pre>
+<p>The implication for production models: a smaller, compute-optimally trained model is cheaper to run at inference time than an oversized model trained on too little data — while matching or exceeding its performance. This insight directly drove the "smaller but better-trained" wave: Llama-3 8B (trained on 15T tokens = ~1875 tokens/param), Phi-4 (14B, heavy on synthetic data), Qwen-2.5 (various sizes, large token counts).</p>
+<p>For an AI engineer: if you're choosing between a large model and a small well-trained model, the small one often wins on a cost-per-quality basis for inference.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What does &quot;compute-optimal&quot; mean in practice?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Compute-optimal training answers a specific question: given a fixed compute budget C, what is the best way to split it between model size N and training tokens D?</p>
+<p>The key insight is that there are two different optimization targets, and they give different answers:</p>
+<p><b>Compute-optimal for training loss</b> (Chinchilla answer): scale N and D equally. If you double compute, double both. The resulting model achieves the best possible loss at that compute budget. This produces the most capable model per training dollar.</p>
+<p><b>Compute-optimal for inference</b> (the deployment consideration): inference cost scales with model size, not with how much it was trained. A model that was trained on 10× more data but is 2× smaller will cost 2× less to serve per query, forever, potentially serving millions of queries. This justifies <em>overtraining</em> — training a smaller model on far more tokens than Chinchilla recommends.</p>
+<pre><code># Two models with the same compute budget
+# Option A: Chinchilla-optimal
+model_A: 70B params, 1.4T tokens  → best benchmark score at training time
+
+# Option B: Inference-optimal (overtrained small model)
+model_B: 7B params, 14T tokens   → lower benchmark score, but
+                                   10x cheaper per query to serve
+                                   fits on smaller hardware
+                                   faster latency</code></pre>
+<p>Llama-3 8B on 15T tokens is explicitly the "inference-optimal" choice. Meta trained it knowing it could have used those FLOPs for a bigger model — but chose a smaller, heavily-trained model because it's cheaper and faster for users to run.</p>
+<p>The practical lesson: don't just compare model sizes. Ask how many tokens it was trained on. A well-trained 8B model often outperforms a poorly-trained 70B model on real tasks.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are emergent capabilities, and are they real?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>An <b>emergent capability</b> is a behavior that appears suddenly at some scale threshold — absent or near-zero in smaller models, then appearing abruptly in larger ones, without having been explicitly trained for. Examples include: performing arithmetic, translating languages the model wasn't directly trained on, multi-step logical reasoning, and following complex instructions.</p>
+<p>The canonical observation (Wei et al., 2022): when you plot performance vs. model scale for tasks like multi-digit addition, the curve is essentially flat at small scales, then jumps sharply upward at around 10–100B parameters. This looks like a phase transition — similar to water freezing suddenly at 0°C rather than gradually becoming more solid.</p>
+<p>But here's where it gets interesting. A follow-up paper (Schaeffer et al., 2023 — "Are Emergent Abilities of Large Language Models a Mirage?") showed that many apparent emergent abilities disappear when you change the evaluation metric. Specifically:</p>
+<ul>
+<li>Binary metrics (right/wrong) create apparent phase transitions by construction — there's a threshold where the model starts getting enough digits right to count as "correct"</li>
+<li>Smooth metrics (e.g., edit distance, partial credit) show gradual, continuous improvement without sudden jumps</li>
+</ul>
+<p>The honest answer: some emergence is real and surprising (particularly capabilities that require genuinely novel combinations of skills). Some is a measurement artifact. The uncertainty is scientifically important because it affects whether we expect future models to gain dangerous capabilities suddenly and without warning, or gradually and predictably. This isn't just academic — it directly informs AI safety research.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the relationship between model size and capability — why can&#x27;t you just keep scaling?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Scaling works, but it has diminishing returns. Doubling compute gives you a predictable but modest improvement in loss — not a doubling of capability. The power law exponents mean each 10× increase in compute buys you roughly a 35–50% reduction in loss, which translates to real but incremental improvement in downstream tasks.</p>
+<p>Several hard constraints are emerging:</p>
+<p><b>Data constraints.</b> Internet-scale text is finite. Estimates suggest high-quality English web text will be exhausted for training purposes by the late 2020s if current consumption rates continue. You can't just scrape more — there isn't more to scrape that isn't already in existing datasets. Synthetic data is the main proposed solution, but generating synthetic data at scale without model collapse (the model starts imitating its own outputs, losing diversity) is an unsolved problem.</p>
+<p><b>Energy and environmental constraints.</b> Training a frontier model consumes as much electricity as a small city for months. As models get larger, this becomes a genuine infrastructure and sustainability concern — not just a cost concern.</p>
+<p><b>Economic constraints.</b> Each 10× scale-up multiplies training cost by 10×. You eventually run into the limit of what any single organization can spend on one training run.</p>
+<p>The current research direction in response: <b>inference-time compute</b> — letting models "think longer" on hard problems rather than making the base model bigger. OpenAI's o1/o3 and Anthropic's extended thinking models trade cheaper pretraining compute for more expensive but targeted inference compute. This is a fundamentally different scaling axis than model size, and it's where a lot of current progress is coming from.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What practical lessons should an AI engineer take from scaling laws?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Scaling laws are mostly studied by researchers at frontier labs — but they have concrete implications for engineers building production systems.</p>
+<p><b>Bigger isn't always better for your task.</b> A well-prompted, well-trained 8B model often beats a carelessly-used 70B model. The benchmark numbers you see online are on standardized academic tests — your specific task (customer support emails, code completion in a specific language, document classification) may behave differently. Always test empirically on your actual task.</p>
+<p><b>Training token count matters as much as parameter count for production models.</b> When evaluating open-source models, check how many tokens they were trained on. Llama-3 8B (15T tokens) will behave very differently from an 8B model trained on 1T tokens, even if the architecture is identical.</p>
+<p><b>Benchmark contamination means benchmark comparisons are unreliable.</b> A model that reports 90% on MMLU may have seen some of those questions during training. Treat benchmark scores as signals, not ground truth. Run your own evals on held-out data from your domain.</p>
+<p><b>The "smaller, better-trained" trend is real and useful.</b> Models like Phi-4 (14B), Mistral-7B, and Qwen-2.5-7B consistently punch above their weight in practical tasks because they were trained on curated, high-quality, large-token-count datasets. For most production use cases, these are better starting points than much larger, older models.</p>
+<p><b>Evaluate total cost, not just accuracy.</b> A 7B model at 100 req/s might be more cost-effective than a 70B model at 12 req/s, even if the larger model scores 3% higher on your benchmark. Quantify the quality gap in dollars, not just percentages.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="section-6-the-alignment-pipeline" class="qa-section">
+        <div class="section-header">
+          <h2>Section 6: The Alignment Pipeline</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What happens after pretraining — how does a base model become a chat assistant?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Pretraining gives you a very powerful, very weird model — one that has absorbed enormous knowledge but has no concept of being helpful, following instructions, or being safe. It will just as happily complete a story about a murder as explain quantum mechanics. Turning it into a useful assistant requires a multi-stage alignment pipeline.</p>
+<p>The standard pipeline looks like this:</p>
+<ol>
+<li><b>Pretraining</b> — months of training on trillions of tokens. Output: base model.</li>
+<li><b>Supervised Fine-Tuning (SFT)</b> — train the base model on thousands of high-quality instruction/response pairs. Output: a model that understands the format "user asks, assistant answers."</li>
+<li><b>Preference Data Collection</b> — human raters compare pairs of model responses and indicate which is better. Output: a preference dataset.</li>
+<li><b>Reward Model Training</b> — train a model to predict human preference scores from the preference data.</li>
+<li><b>RL Optimization (RLHF)</b> — use the reward model to fine-tune the policy (the SFT model) via reinforcement learning (PPO). Output: a helpful, harmless, honest assistant.</li>
+</ol>
+<p>Modern shortcut: <b>Direct Preference Optimization (DPO)</b> skips the reward model and RL entirely, directly optimizing the model on preference pairs. Most open-source instruct models now use DPO-style alignment because it's simpler and more stable than PPO.</p>
+<p>The total compute for the alignment pipeline is tiny compared to pretraining — often less than 0.1% of pretraining FLOPs. But the impact on usability is enormous: this is what turns a text predictor into an assistant you'd actually want to use.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Supervised Fine-Tuning (SFT) and what makes a good SFT dataset?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>SFT is the first alignment step after pretraining. You take the base model and train it on a collection of example conversations or instructions paired with ideal responses. It's standard supervised learning — the loss is just cross-entropy on the response tokens, given the instruction as context.</p>
+<pre><code># SFT data format
+{
+  "messages": [
+    {"role": "user",      "content": "Summarize this article in 3 bullet points: ..."},
+    {"role": "assistant", "content": "• The article discusses...\n• Key finding...\n• Implications..."}
+  ]
+}
+# The model is trained to predict the assistant's response given the user's message</code></pre>
+<p>What makes a good SFT dataset is <b>quality over quantity</b>. The influential "LIMA" paper (Zhou et al., 2023) showed that fine-tuning on just 1,000 carefully curated, high-quality examples outperformed models fine-tuned on hundreds of thousands of lower-quality examples. The model already has the knowledge from pretraining — SFT just teaches it how to surface that knowledge in a helpful, well-formatted way.</p>
+<p>SFT shapes several behavioral properties:</p>
+<ul>
+<li><b>Response format</b> — does the model use markdown headers? Numbered lists? How long are its answers?</li>
+<li><b>Tone and register</b> — formal vs. casual, verbose vs. concise</li>
+<li><b>Safety behavior</b> — how does it respond to harmful requests? What does it refuse?</li>
+<li><b>Instruction following</b> — does it respect constraints like "answer in 50 words" or "respond in French"?</li>
+</ul>
+<p>Critically: <b>SFT does not add new knowledge</b>. If the base model doesn't know something (because it wasn't in pretraining data), SFT won't fix that. SFT teaches format and behavior, not facts.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a reward model in RLHF, and what does it actually predict?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>A reward model is a classifier trained to predict how much a human rater would approve of a given model response. It takes a prompt and a response as input, and outputs a single scalar score — higher is better.</p>
+<pre><code># Reward model training data format (pairwise preferences)
+{
+  "prompt":    "What is the capital of Australia?",
+  "chosen":    "The capital of Australia is Canberra.",
+  "rejected":  "The capital of Australia is Sydney, which is the largest city."
+}
+# The reward model learns: chosen &gt; rejected
+# At inference: score any (prompt, response) pair</code></pre>
+<p>The reward model is trained on <b>pairwise comparison data</b>: human raters see two responses to the same prompt and indicate which is better (along various dimensions: accuracy, helpfulness, harmlessness, formatting). The Bradley-Terry model is then fit to these comparisons, yielding a reward function that generalizes beyond the training examples.</p>
+<p>This reward model becomes the "stand-in for human judgment" during RL training. Rather than asking a human to rate every single response during RL (millions of rollouts), you use the reward model to score them automatically.</p>
+<p>The critical failure mode is <b>reward hacking</b>: the RL policy learns to generate responses that score high on the reward model without actually being better responses. Classic examples include very long responses (human raters often equate length with effort), excessive sycophancy ("That's a great question!"), or responses that trigger patterns the reward model liked in training but don't generalize. This is why alignment is an ongoing research area and not a solved problem — the reward model is always an imperfect proxy for actual human values.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Direct Preference Optimization (DPO) and why has it largely replaced PPO for alignment?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>RLHF with PPO works, but it's complex. You need four separate models running simultaneously: the policy (the model being trained), the reference policy (a frozen copy to prevent it from drifting too far), the reward model, and the value function. Each has its own memory footprint, learning rate, and failure mode. Hyperparameter tuning is tricky, and training can be unstable.</p>
+<p><b>DPO</b> (Rafailov et al., 2023) made an elegant mathematical observation: the optimal RLHF policy has a closed-form relationship to the reference policy and the reward. You can rearrange the optimization to skip training a reward model entirely and directly train the policy on preference data:</p>
+<pre><code># DPO loss (conceptually)
+# For each (prompt, chosen_response, rejected_response) triple:
+# Maximize: log σ(β × (log P_policy(chosen) - log P_ref(chosen))
+#                  - β × (log P_policy(rejected) - log P_ref(rejected)))
+# β is a temperature controlling how far the policy can drift from reference
+
+# In PyTorch pseudo-code:
+chosen_reward  = model(prompt + chosen)   - ref_model(prompt + chosen)
+rejected_reward = model(prompt + rejected) - ref_model(prompt + rejected)
+loss = -F.logsigmoid(beta * (chosen_reward - rejected_reward)).mean()</code></pre>
+<p>The result: same training data, no RL loop, no reward model, just a modified cross-entropy loss. DPO is simpler to implement, more memory-efficient, and trains stably without careful PPO hyperparameter tuning. Empirically, it matches or slightly outperforms PPO on most alignment benchmarks.</p>
+<p>Virtually all open-weight instruct models — Llama-3-Instruct, Mistral-Instruct, Qwen-Instruct — use DPO or DPO-derived methods (IPO, KTO, SimPO). PPO is still used at some frontier labs (OpenAI uses it for o-series models), particularly for complex reasoning tasks where the reward signal is more structured.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Constitutional AI (CAI) and how does it scale alignment without human annotation?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Constitutional AI (Anthropic, 2022) was designed to address the fundamental bottleneck in RLHF: human annotators. At scale, you need millions of preference comparisons. Hiring, training, and quality-controlling human raters is expensive, slow, and doesn't scale to dozens of languages and specialized domains.</p>
+<p>CAI's solution: use the model itself as the rater. This is called <b>RLAIF</b> — Reinforcement Learning from AI Feedback.</p>
+<p>The process has two stages:</p>
+<p><b>Stage 1: Supervised critique-revision.</b> The model generates a response, then critiques its own response using a set of principles from the "constitution" (e.g., "Is this response honest?", "Does this response avoid harm?"), then revises the response based on the critique. This produces pairs of (original, revised) responses where the revised version embodies the principles better.</p>
+<p><b>Stage 2: AI-generated preference data.</b> The model is shown pairs of responses and asked which better matches constitutional principles. These AI-generated preference labels replace human rater labels for RLHF. The resulting "harmlessness" reward model is trained entirely from AI feedback.</p>
+<p>The constitution itself is a human artifact — Anthropic researchers wrote the principles. But the annotation of millions of comparisons is automated. This is the scaling advantage: the annotation bottleneck is broken.</p>
+<p>An interesting side effect: CAI-trained models tend to provide more nuanced, principle-grounded explanations of their refusals ("I can't help with this because it could harm someone in X way") rather than flat refusals. The model has internalized <em>why</em> certain responses are better, not just what to say.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="section-7-open-vs-closed-model-landscape" class="qa-section">
+        <div class="section-header">
+          <h2>Section 7: Open vs. Closed Model Landscape</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the main open-weight LLM families in 2026 and how do they differ?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The open-weight ecosystem has consolidated significantly. A few families dominate for most practical use cases:</p>
+<ul>
+<li><b>Meta Llama 3.1/3.3</b> — 8B, 70B, 405B variants. Broadly permissive license (commercial use OK with conditions for &lt;700M monthly active users). Trained on 15T tokens. Strong all-around, excellent for fine-tuning base. The de facto standard for open-weight work.</li>
+<li><b>Mistral / Mixtral</b> — Mistral-7B (Apache 2.0, genuinely open), Mixtral-8x7B and 8x22B (sparse MoE — activates ~2 of 8 experts per token, giving 7B-level inference cost with 47B effective parameters). Strong on reasoning and instruction following.</li>
+<li><b>Qwen-2.5</b> (Alibaba) — 0.5B to 72B, strong multilingual especially Chinese/English, permissive license for most sizes. One of the best code models at 7B scale.</li>
+<li><b>Google Gemma-3</b> — clean architecture, strong for its parameter count, well-documented, good safety properties out of the box.</li>
+<li><b>Microsoft Phi-4</b> — 14B parameters, emphasizes reasoning and code. Trained heavily on synthetic and curated data. Punches well above its weight class on reasoning benchmarks.</li>
+</ul>
+<p>An important distinction: <b>"open-weight" is not "open-source."</b> Open-weight means the model weights are publicly downloadable. But for most of these models, the training code, training data, and data curation pipelines are proprietary. You can run the model and fine-tune it, but you can't replicate the pretraining. True open-source AI (fully reproducible training pipeline + data + weights) remains rare — OLMo from Allen AI is the most prominent example.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>When should you use an open-weight model instead of a closed API?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The default in 2026 is to start with a closed API (OpenAI, Anthropic, Google) and switch to open-weight when specific constraints force the decision. Here's the decision framework:</p>
+<p><b>Use open-weight when:</b></p>
+<ul>
+<li><b>Data privacy or sovereignty</b> — healthcare records, legal documents, financial data, anything subject to GDPR or HIPAA that can't leave your infrastructure. A self-hosted Llama-3 never sends data to a third party.</li>
+<li><b>Cost at scale</b> — API pricing is typically $0.50–$15 per million tokens. At 500M tokens/day, that's $250–$7,500/day. A self-hosted cluster of GPUs amortizes the cost in weeks. The break-even is roughly 50–100M tokens/day depending on hardware costs.</li>
+<li><b>Latency control</b> — self-hosted model on co-located hardware can achieve 50–100 tokens/second with sub-100ms first-token latency. API latency is network-bound and variable.</li>
+<li><b>Deep customization</b> — full fine-tuning, LoRA adapters, custom tokenizers, modified architectures. APIs offer limited fine-tuning and no architectural access.</li>
+</ul>
+<p><b>Use closed API when:</b></p>
+<ul>
+<li>You need frontier capability (long context, multimodality, best reasoning)</li>
+<li>Infrastructure management overhead isn't worth it at your current scale</li>
+<li>You're prototyping and haven't proven product-market fit yet</li>
+<li>You need the latest model updates automatically (APIs update silently)</li>
+</ul>
+<p>Rule of thumb: start with a closed API to validate your product, then evaluate the open-weight migration when your monthly API bill exceeds $5,000–$10,000/month or when data privacy requirements emerge.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What does &quot;quantization&quot; mean in the context of deploying open-weight models?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Quantization is the process of reducing the numerical precision of model weights from fp32 or fp16 to lower-precision formats (8-bit integers, 4-bit integers, or even 2-bit). The goal is to shrink the model's memory footprint so it fits on smaller hardware without prohibitive cost.</p>
+<pre><code># Memory requirements for Llama-3 70B at different precisions
+fp32:    70B × 4 bytes = 280 GB   (need 4 × A100 80GB GPUs minimum)
+fp16:    70B × 2 bytes = 140 GB   (need 2 × A100 80GB GPUs)
+int8:    70B × 1 byte  =  70 GB   (fits on 1 × A100 80GB!)
+int4:    70B × 0.5 byte = 35 GB   (fits on 1 × A100 or a high-end consumer GPU)
+Q4_K_M:  ≈ 40 GB (mixed 4-bit with some 6-bit for sensitive layers)</code></pre>
+<p>The quality-size tradeoff is remarkably favorable. Modern <b>GGUF quantization</b> (used by llama.cpp and Ollama) with Q4_K_M format typically loses less than 1–2% performance on standard benchmarks compared to fp16, while cutting memory by 4×. For most production applications, this quality loss is not noticeable.</p>
+<p>Key formats and tools:</p>
+<ul>
+<li><b>GGUF / llama.cpp</b> — optimized for CPU inference (and GPU offloading), the format used by Ollama for one-command local deployment</li>
+<li><b>GPTQ / AWQ</b> — GPU-optimized 4-bit quantization with better quality retention than naive int4</li>
+<li><b>bitsandbytes</b> — HuggingFace-integrated 4-bit and 8-bit quantization with NF4 format</li>
+</ul>
+<p>Practical upshot: with Ollama, you can run Llama-3 8B on a laptop with 16GB RAM, or Llama-3 70B on a single consumer GPU with 48GB VRAM. Quantization has democratized access to powerful models without requiring a data center.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is vLLM and why has it become the standard for open-weight LLM serving?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>vLLM (from UC Berkeley, 2023) is an open-source inference server specifically designed for high-throughput LLM serving. It's not just a wrapper around HuggingFace — it contains a fundamentally novel approach to managing GPU memory that dramatically increases the number of requests you can handle per GPU.</p>
+<p>The core innovation is <b>PagedAttention</b>. During inference, each active request needs to store its KV (key-value) cache — the attention keys and values for all tokens processed so far. This cache can be gigabytes per request. Naïve serving pre-allocates the maximum context length in contiguous GPU memory for each request, wasting enormous space (requests rarely use their full context budget). PagedAttention manages KV cache like virtual memory in an operating system: small non-contiguous pages, allocated on demand, freed immediately when a request completes.</p>
+<pre><code># Memory waste comparison (simplified)
+# Naïve serving with max_context=8192
+reserved_per_request = 8192 tokens × kv_cache_bytes/token
+# If actual request uses 200 tokens: 97.5% waste
+
+# PagedAttention: allocates pages as needed
+used_memory = actual_tokens × kv_cache_bytes/token + small_overhead
+# Near 0% waste</code></pre>
+<p>The result: 2–4× higher throughput at the same hardware cost compared to HuggingFace Transformers inference. For a production system serving thousands of requests per minute, this directly translates to fewer GPUs needed and lower operating costs.</p>
+<p>Beyond PagedAttention, vLLM provides <b>continuous batching</b> (new requests join in-flight batches without waiting for current batch to finish), <b>tensor parallelism</b>, and an <b>OpenAI-compatible REST API</b> — so existing code written for the OpenAI SDK works with zero changes against a self-hosted vLLM endpoint. It's the de facto standard for production open-weight serving.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+        </div>
+      </div>
+      <details class="resources-panel" open>
+        <summary>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          Resources &mdash; 3 videos
+        </summary>
+        <div class="resources-grid">
+      <div class="resource-card" data-vid="LPZh9BOjkQs">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/LPZh9BOjkQs/mqdefault.jpg" alt="Large Language Models Explained Briefly" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/LPZh9BOjkQs" target="_blank" rel="noopener">Large Language Models Explained Briefly</a></h4>
+          <p>3Blue1Brown&#x27;s concise visual tour of LLMs — tokenization, attention, next-token prediction, and emergent capabilities. Perfect primer before diving into pretraining details.</p>
+          <div class="resource-meta">3Blue1Brown</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="iQ9arr3TTMA">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/iQ9arr3TTMA/mqdefault.jpg" alt="How GPUs Work for Deep Learning" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/iQ9arr3TTMA" target="_blank" rel="noopener">How GPUs Work for Deep Learning</a></h4>
+          <p>Explains why GPUs are essential for LLM pretraining — parallelism, CUDA cores, tensor cores, and how matrix multiply maps to GPU architecture at scale.</p>
+          <div class="resource-meta">ByteMonk</div>
+        </div>
+      </div>
+      <div class="resource-card" data-vid="XJUpuOBpT-4">
+        <div class="resource-thumb" onclick="playVideo(this)">
+          <img src="https://img.youtube.com/vi/XJUpuOBpT-4/mqdefault.jpg" alt="The Insane Engineering of DeepSeek V4" loading="lazy" width="320" height="180">
+          <div class="play-overlay">
+            <div class="play-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="white" aria-hidden="true"><polygon points="5,3 19,12 5,21"/></svg>
+            </div>
+          </div>
+        </div>
+        <div class="resource-body">
+          <div class="resource-badge resource-badge-video">Video</div>
+          <h4><a href="https://youtu.be/XJUpuOBpT-4" target="_blank" rel="noopener">The Insane Engineering of DeepSeek V4</a></h4>
+          <p>Technical deep dive into a frontier open-weight model — MoE architecture, training efficiency, and what it took to train a GPT-4-class model at a fraction of the cost.</p>
+          <div class="resource-meta">AI Search</div>
+        </div>
+      </div>
+        </div>
+      </details>
+    </main>
+  </div>
+</div>
+<script src="../../assets/main.js"></script>
+</body>
+</html>

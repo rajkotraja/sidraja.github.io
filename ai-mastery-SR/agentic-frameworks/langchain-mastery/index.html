@@ -220,6 +220,9 @@ loaded_chain = RunnableSerializable.from_json(data)
             <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Write a function to create a simple LangChain LLMChain for text summarization.</summary>
             <div class="qa-answer answer-inner">
               
+<p style="border-left:4px solid #f59e0b; padding:.6rem .9rem; border-radius:4px; margin-bottom:.75rem">
+<b>⚠️ Legacy API Notice:</b> <code>LLMChain</code> and <code>SequentialChain</code> were deprecated in LangChain v0.2 (2024) and are removed in v0.3+. Modern LangChain uses <b>LCEL (LangChain Expression Language)</b>: <code>chain = prompt | model | parser</code>. You may encounter these in older codebases — understand them for context, but build new code with LCEL.
+</p>
 <div id="text_23022000000010533">
 <!-- --> <p>Modern LangChain encourages building pipelines like: <b>prompt → model → parser</b>.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> langchain.chat_models <span class="hljs-keyword">import</span> init_chat_model
 <span class="hljs-keyword">from</span> langchain_core.prompts <span class="hljs-keyword">import</span> ChatPromptTemplate
@@ -434,6 +437,9 @@ response = llm.invoke(<span class="hljs-string">"Explain RAG in 2 sentences."</s
             <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between LLMChain and SequentialChain?</summary>
             <div class="qa-answer answer-inner">
               
+<p style="border-left:4px solid #f59e0b; padding:.6rem .9rem; border-radius:4px; margin-bottom:.75rem">
+<b>⚠️ Legacy API Notice:</b> <code>LLMChain</code> and <code>SequentialChain</code> were deprecated in LangChain v0.2 (2024) and are removed in v0.3+. Modern LangChain uses <b>LCEL (LangChain Expression Language)</b>: <code>chain = prompt | model | parser</code>. You may encounter these in older codebases — understand them for context, but build new code with LCEL.
+</p>
 <div class="reset-basic">
 <h1><b>What is the difference between LLMChain and SequentialChain?</b><br/></h1><p>To understand the difference, first understand what a “chain” means in LangChain.<br/></p><p>A chain is simply:<br/></p><p>Input → Some processing → Output<br/></p><p>Now let’s look at both types clearly.<br/></p><div><hr/><br/></div><h2>LLMChain<br/></h2><p>An LLMChain is the <b>simplest type of chain</b>.<br/></p><p>It connects:<br/></p><p>Prompt → LLM → Output<br/></p><p>That’s it.<br/></p><p>It is used when you only need <b>one LLM call</b>.<br/></p><p>For example:<br/></p><p>You give a topic → It generates an explanation.<br/></p><p>Here’s a simple example:<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> langchain.chains <span class="hljs-keyword">import</span> LLMChain
 <span class="hljs-keyword">from</span> langchain_openai <span class="hljs-keyword">import</span> ChatOpenAI
@@ -1119,6 +1125,9 @@ resp2 = chain_with_memory.invoke(
             <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is ConversationBufferMemory in LangChain?</summary>
             <div class="qa-answer answer-inner">
               
+<p style="border-left:4px solid #f59e0b; padding:.6rem .9rem; border-radius:4px; margin-bottom:.75rem">
+<b>⚠️ Legacy API Notice:</b> <code>ConversationBufferMemory</code> was deprecated in LangChain v0.2. The modern pattern uses <b>RunnableWithMessageHistory</b> with <code>MessagesPlaceholder</code> and an external chat history store (e.g., <code>InMemoryChatMessageHistory</code> or Redis). New projects should not use the deprecated memory classes.
+</p>
 <div class="reset-basic">
 <h1><b>What is ConversationBufferMemory in LangChain?</b><br/></h1><p>ConversationBufferMemory is a memory class in LangChain that <b>stores the entire conversation history</b> and sends it back to the model every time the chain runs.<br/></p><p>In simple words:<br/></p><p>It remembers everything that has been said so far.<br/></p><p>And it keeps adding new messages to that memory.<br/></p><div><hr/><br/></div><p>Let’s understand why this is needed.<br/></p><p>By default, an LLM does not remember previous messages.<br/></p><p>Every call is independent.<br/></p><p>If you say:<br/></p><p>"My name is Rahul."<br/></p><p>And then later ask:<br/></p><p>"What is my name?"<br/></p><p>The model will not know unless you send the earlier message again.<br/></p><p>ConversationBufferMemory solves this problem.<br/></p><p>It automatically stores previous messages and includes them in the next prompt.<br/></p><div><hr/><br/></div><p>How does it work?<br/></p><p>It keeps a running “buffer” of the conversation like this:<br/></p><p></p><div>User: Hello<br/></div><div>AI: Hi there<br/></div><div>User: My name is Rahul<br/></div><div>AI: Nice to meet you<br/></div><div>User: What is my name?<br/></div><p></p><p>Before answering the last question, the memory sends the entire conversation to the LLM.<br/></p><p>So the LLM sees the full history.<br/></p><div><hr/><br/></div><p>Here’s a simple example using classic LangChain chains.<br/></p><pre><code class="language-python hljs"><span class="hljs-keyword">from</span> langchain_openai <span class="hljs-keyword">import</span> ChatOpenAI
 <span class="hljs-keyword">from</span> langchain.chains <span class="hljs-keyword">import</span> ConversationChain

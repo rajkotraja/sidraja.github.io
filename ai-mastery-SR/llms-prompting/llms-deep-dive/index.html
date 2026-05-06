@@ -39,18 +39,24 @@
       </a>
       <div class="sidebar-course-name">LLMs &amp; Prompting</div>
       <ul class="topic-list">
-        <li class=""><a href="../prompt-engineering-mastery/index.html">Prompt Engineering Mastery</a></li>
         <li class="active"><a href="../llms-deep-dive/index.html">LLMs Deep Dive</a></li>
+        <li class=""><a href="../llm-pretraining-scaling-laws/index.html">LLM Pretraining &amp; Scaling Laws</a></li>
+        <li class=""><a href="../reasoning-models-test-time-compute/index.html">Reasoning Models &amp; Test-Time Compute</a></li>
+        <li class=""><a href="../multimodal-llms/index.html">Multimodal LLMs</a></li>
         <li class=""><a href="../tranformer-architecture-qa/index.html">Tranformer Architecture Q&amp;A</a></li>
+        <li class=""><a href="../prompt-engineering-mastery/index.html">Prompt Engineering Mastery</a></li>
       </ul>
     </nav>
     <main class="topic-main" id="main-content">
       <nav class="mobile-course-nav" aria-label="Topics in LLMs &amp; Prompting">
         <div class="mobile-course-nav-title">LLMs &amp; Prompting</div>
         <ul class="mobile-topic-list">
-          <li class=""><a href="../prompt-engineering-mastery/index.html">Prompt Engineering Mastery</a></li>
           <li class="active"><a href="../llms-deep-dive/index.html">LLMs Deep Dive</a></li>
+          <li class=""><a href="../llm-pretraining-scaling-laws/index.html">LLM Pretraining &amp; Scaling Laws</a></li>
+          <li class=""><a href="../reasoning-models-test-time-compute/index.html">Reasoning Models &amp; Test-Time Compute</a></li>
+          <li class=""><a href="../multimodal-llms/index.html">Multimodal LLMs</a></li>
           <li class=""><a href="../tranformer-architecture-qa/index.html">Tranformer Architecture Q&amp;A</a></li>
+          <li class=""><a href="../prompt-engineering-mastery/index.html">Prompt Engineering Mastery</a></li>
         </ul>
       </nav>
       <div class="topic-header">
@@ -60,7 +66,7 @@
         </div>
         <h1>LLMs Deep Dive</h1>
         <div class="topic-meta">
-          <span class="topic-stats">40 questions</span>
+          <span class="topic-stats">45 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -86,6 +92,7 @@
               
 <div class="reset-basic">
 <h3>What are Large Language Models (LLMs)?<br/></h3><p>Large Language Models (LLMs) are advanced artificial intelligence systems designed to understand and generate human language.<br/></p><p>They are:<br/></p><ul><li><p style="margin-top: 0px">“Large” because they contain billions (sometimes trillions) of parameters.<br/></p></li><li><p style="margin-top: 0px">“Language models” because they are trained to predict and generate text.<br/></p></li></ul><div><hr/><br/></div><h3>Core Idea Behind LLMs<br/></h3><p>At their core, LLMs work by predicting the next word (or token) in a sequence.<br/></p><p>Example:<br/></p><p></p><div>Input:<br/></div><div>“The capital of France is”<br/></div><p></p><p></p><div>The model predicts:<br/></div><div>“Paris”<br/></div><p></p><p>They learn this ability by being trained on massive amounts of text data such as:<br/></p><ul><li><p style="margin-top: 0px">Books<br/></p></li><li><p style="margin-top: 0px">Websites<br/></p></li><li><p style="margin-top: 0px">Articles<br/></p></li><li><p style="margin-top: 0px">Code<br/></p></li><li><p style="margin-top: 0px">Conversations<br/></p></li></ul><div><hr/><br/></div><h3>How Do LLMs Work?<br/></h3><ol><li><p style="margin-top: 0px"></p><div>Tokenization<br/></div><div>Text is broken into smaller units called tokens.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Embeddings<br/></div><div>Tokens are converted into numerical vectors.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Transformer Architecture<br/></div><div>Most modern LLMs use a neural network architecture called the Transformer, which uses attention mechanisms to understand context.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Training Objective<br/></div><div>They are trained to predict the next token given previous tokens.<br/></div><p></p></li></ol><p>Example training task:<br/></p><p></p><div>Input: “Machine learning is”<br/></div><div>Target: “a”<br/></div><p></p><p>Over time, the model learns grammar, facts, reasoning patterns, and structure.<br/></p><div><hr/><br/></div><h3>What Makes Them “Large”?<br/></h3><p>LLMs are large in two main ways:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Number of parameters<br/></div><div>These are the learnable weights of the neural network.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Training data size<br/></div><div>Trained on massive datasets.<br/></div><p></p></li></ol><p>Examples:<br/></p><ul><li><p style="margin-top: 0px">GPT models<br/></p></li><li><p style="margin-top: 0px">LLaMA<br/></p></li><li><p style="margin-top: 0px">PaLM<br/></p></li><li><p style="margin-top: 0px">Claude<br/></p></li></ul><div><hr/><br/></div><h3>Capabilities of LLMs<br/></h3><p>LLMs can:<br/></p><ul><li><p style="margin-top: 0px">Answer questions<br/></p></li><li><p style="margin-top: 0px">Summarize text<br/></p></li><li><p style="margin-top: 0px">Translate languages<br/></p></li><li><p style="margin-top: 0px">Generate code<br/></p></li><li><p style="margin-top: 0px">Write essays<br/></p></li><li><p style="margin-top: 0px">Perform reasoning tasks<br/></p></li><li><p style="margin-top: 0px">Extract structured data<br/></p></li><li><p style="margin-top: 0px">Engage in conversation<br/></p></li></ul><p>They are general-purpose language systems.<br/></p><div><hr/><br/></div><h3>Key Characteristics<br/></h3><ol><li><p style="margin-top: 0px"></p><div>Context-aware<br/></div><div>They consider previous words in a sentence.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Pre-trained<br/></div><div>They are trained on large datasets before being used for specific tasks.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Fine-tunable<br/></div><div>They can be adapted for domain-specific tasks.<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Probabilistic<br/></div><div>They generate text based on probability distributions.<br/></div><p></p></li></ol><div><hr/><br/></div><h3>Limitations<br/></h3><p>LLMs:<br/></p><ul><li><p style="margin-top: 0px">Can hallucinate (generate incorrect information)<br/></p></li><li><p style="margin-top: 0px">Do not truly “understand” in a human sense<br/></p></li><li><p style="margin-top: 0px">May reflect biases from training data<br/></p></li><li><p style="margin-top: 0px">Are sensitive to prompt phrasing<br/></p></li></ul><div><hr/><br/></div><h3>In Simple Terms<br/></h3><p>An LLM is a very large neural network trained on massive amounts of text that can understand, generate, and manipulate human language by predicting the next word in a sequence based on context.<br/></p><div><br/></div>
+<p><b>How LLMs are created:</b> LLMs are produced through pretraining on massive text datasets — typically hundreds of billions to trillions of tokens — using <b>next-token prediction</b> as the training objective. This is followed by supervised fine-tuning (SFT) and alignment training (RLHF or DPO) to make the model helpful and safe. The base model's broad capabilities emerge from pretraining; fine-tuning shapes behavior without significantly changing core knowledge. This distinction — base model vs. aligned chat model — is fundamental to understanding LLM behavior.</p>
 </div>
 <p class="media-note">[Image/Media]</p>
             </div>
@@ -450,7 +457,7 @@
             <div class="qa-answer answer-inner">
               
 <div class="reset-basic">
-<p>A context window is the <b>amount of text a language model can read and remember at one time</b>.<br/></p><p>Think of it like short-term memory.<br/></p><p>If I give you a long paragraph and ask a question about the first sentence, you can answer only if you still remember it.<br/></p><p>LLMs work the same way.<br/></p><p>They can only “see” a limited number of tokens at once.<br/></p><div><hr/><br/></div><p>What is a token?<br/></p><p>A token is a small piece of text.<br/></p><p>It could be:<br/></p><ul><li><p style="margin-top: 0px">A word<br/></p></li><li><p style="margin-top: 0px">Part of a word<br/></p></li><li><p style="margin-top: 0px">A punctuation mark<br/></p></li></ul><p>For example:<br/></p><p>“ChatGPT is powerful.”<br/></p><p>Might be split into tokens like:<br/></p><ul><li><p style="margin-top: 0px">Chat<br/></p></li><li><p style="margin-top: 0px">GPT<br/></p></li><li><p style="margin-top: 0px">is<br/></p></li><li><p style="margin-top: 0px">powerful<br/></p></li><li><p style="margin-top: 0px">.<br/></p></li></ul><div><hr/><br/></div><p>If a model has a context window of 8,000 tokens, it means:<br/></p><p>It can look at the last 8,000 tokens of conversation.<br/></p><p>If the conversation becomes longer than that, older parts are removed from memory.<br/></p><div><hr/><br/></div><p>Real-life analogy:<br/></p><p>Imagine a whiteboard that can only hold 8,000 words.<br/></p><p>When it becomes full, you must erase the oldest content to write new content.<br/></p><p>That is how context windows work.<br/></p><div><hr/><br/></div><p>Why is this important?<br/></p><p>Because it affects:<br/></p><ul><li><p style="margin-top: 0px">Long conversations<br/></p></li><li><p style="margin-top: 0px">Document summarization<br/></p></li><li><p style="margin-top: 0px">Code generation<br/></p></li><li><p style="margin-top: 0px">Memory of previous instructions<br/></p></li></ul><p>A larger context window means the model can handle longer inputs without forgetting earlier details.<br/></p><div><br/></div>
+<p>A context window is the <b>amount of text a language model can read and remember at one time</b>.<br/></p><p>Think of it like short-term memory.<br/></p><p>If I give you a long paragraph and ask a question about the first sentence, you can answer only if you still remember it.<br/></p><p>LLMs work the same way.<br/></p><p>They can only “see” a limited number of tokens at once.<br/></p><div><hr/><br/></div><p>What is a token?<br/></p><p>A token is a small piece of text.<br/></p><p>It could be:<br/></p><ul><li><p style="margin-top: 0px">A word<br/></p></li><li><p style="margin-top: 0px">Part of a word<br/></p></li><li><p style="margin-top: 0px">A punctuation mark<br/></p></li></ul><p>For example:<br/></p><p>“ChatGPT is powerful.”<br/></p><p>Might be split into tokens like:<br/></p><ul><li><p style="margin-top: 0px">Chat<br/></p></li><li><p style="margin-top: 0px">GPT<br/></p></li><li><p style="margin-top: 0px">is<br/></p></li><li><p style="margin-top: 0px">powerful<br/></p></li><li><p style="margin-top: 0px">.<br/></p></li></ul><div><hr/><br/></div><p>If a model has a context window of 8,000 tokens, it means:<br/></p><p>It can look at the last 8,000 tokens of conversation.<br/></p><p>If the conversation becomes longer than that, older parts are removed from memory.<br/></p><div><hr/><br/></div><p>Real-life analogy:<br/></p><p>Imagine a whiteboard that can only hold 8,000 words.<br/></p><p>When it becomes full, you must erase the oldest content to write new content.<br/></p><p>That is how context windows work.<br/></p><div><hr/><br/></div><p>Why is this important?<br/></p><p>Because it affects:<br/></p><ul><li><p style="margin-top: 0px">Long conversations<br/></p></li><li><p style="margin-top: 0px">Document summarization<br/></p></li><li><p style="margin-top: 0px">Code generation<br/></p></li><li><p style="margin-top: 0px">Memory of previous instructions<br/></p></li></ul><p>A larger context window means the model can handle longer inputs without forgetting earlier details.<br/></p><p><b>2026 update:</b> Context windows of 128K–2M tokens are now standard — GPT-4o: 128K, Claude 3.5: 200K, Gemini 2.0: 1M+. The practical constraint has shifted from "will the model fit this input?" to <b>cost management</b>: sending more tokens costs more money, regardless of whether the model needs them all. Large context does not automatically mean good context — retrieval and context compression are often better than stuffing everything in.</p><div><br/></div>
 </div>
 <p class="media-note">[Image/Media]</p>
             </div>
@@ -483,6 +490,73 @@
 <p>Using LLMs in production is powerful but not easy.<br/></p><p>Here are the main challenges.<br/></p><div><hr/><br/></div><ol><li><p style="margin-top: 0px">Hallucinations<br/></p></li></ol><p>LLMs can generate answers that sound correct but are false.<br/></p><p>They do not truly “know” facts.<br/></p><p>They predict text.<br/></p><div><hr/><br/></div><ol start="2"><li><p style="margin-top: 0px">Bias and Fairness<br/></p></li></ol><p>Training data may contain societal bias.<br/></p><p>The model can reflect that bias.<br/></p><p>This creates ethical concerns.<br/></p><div><hr/><br/></div><ol start="3"><li><p style="margin-top: 0px">High Cost<br/></p></li></ol><p>Large models require:<br/></p><ul><li><p style="margin-top: 0px">Expensive GPUs<br/></p></li><li><p style="margin-top: 0px">High memory<br/></p></li><li><p style="margin-top: 0px">Large infrastructure<br/></p></li></ul><p>Running them at scale is costly.<br/></p><div><hr/><br/></div><ol start="4"><li><p style="margin-top: 0px">Latency<br/></p></li></ol><p>Large models can be slow.<br/></p><p>Real-time applications need fast responses.<br/></p><div><hr/><br/></div><ol start="5"><li><p style="margin-top: 0px">Context Window Limits<br/></p></li></ol><p>Models forget older parts of long conversations.<br/></p><p>This limits memory.<br/></p><div><hr/><br/></div><ol start="6"><li><p style="margin-top: 0px">Data Privacy<br/></p></li></ol><p>Sending sensitive data to an LLM API can create compliance risks.<br/></p><div><hr/><br/></div><ol start="7"><li><p style="margin-top: 0px">Security Risks<br/></p></li></ol><p>LLMs can be attacked with:<br/></p><ul><li><p style="margin-top: 0px">Prompt injection<br/></p></li><li><p style="margin-top: 0px">Jailbreaking<br/></p></li><li><p style="margin-top: 0px">Data extraction attempts<br/></p></li></ul><div><hr/><br/></div><ol start="8"><li><p style="margin-top: 0px">Evaluation Difficulty<br/></p></li></ol><p>It is hard to measure:<br/></p><ul><li><p style="margin-top: 0px">Correctness<br/></p></li><li><p style="margin-top: 0px">Creativity<br/></p></li><li><p style="margin-top: 0px">Safety<br/></p></li></ul><p>There is no single accuracy score like in classification tasks.<br/></p><div><br/></div>
 </div>
 <p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="the-alignment-pipeline-from-base-model-to-chat-assistant" class="qa-section">
+        <div class="section-header">
+          <h2>The Alignment Pipeline — From Base Model to Chat Assistant</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does a base language model become a helpful chat assistant?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Pretraining produces a base model — a powerful text predictor that continues any input probabilistically. Ask it "What is the capital of France?" and it might respond "What is the capital of Germany? What is the capital of Spain?" — it's predicting what text typically follows a geography question, not answering it.</p>
+<p>The alignment pipeline transforms this into a chat assistant through three stages:</p>
+<ul>
+<li>Supervised Fine-Tuning (SFT): train on high-quality instruction-response examples</li>
+<li>Reward Model Training: learn to predict which responses humans prefer</li>
+<li>Reinforcement Learning from Human Feedback (RLHF): use the reward model to improve the policy via PPO, or skip to Direct Preference Optimization (DPO)</li>
+</ul>
+<p>Each stage is necessary: SFT shapes format and style; RLHF/DPO shapes values and helpfulness.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Supervised Fine-Tuning (SFT) and what makes a good SFT dataset?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>SFT trains the base model on (instruction, response) pairs — teaching it the format of helpful interaction. The dataset must be: high quality (well-written responses from expert humans), diverse (questions across many domains and task types), and balanced (mix of task types: QA, summarisation, coding, reasoning).</p>
+<p>Key insight: SFT doesn't add new knowledge — it teaches the model to use its existing knowledge helpfully. A model with strong pretraining and weak SFT will underperform a model with average pretraining and excellent SFT data. OpenAI's InstructGPT used ~13K demonstration examples for SFT — tiny compared to pretraining.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a reward model in RLHF and what does it predict?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>A reward model (RM) is a classifier trained on human preference data. Input: a prompt + a model response. Output: a scalar score representing how much a human rater would approve of this response. Trained on pairwise comparisons: "Given prompt P and responses A and B, which is better?"</p>
+<p>Key failure mode: reward hacking — the policy (language model) learns to generate text that tricks the reward model into giving high scores, without actually being helpful. Example: verbose, confident, flattering responses score highly on naive RMs even when incorrect. Mitigation: use diverse annotators, iterate RM training as the policy improves.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Direct Preference Optimization (DPO) and why has it largely replaced PPO?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>PPO-based RLHF requires maintaining four models simultaneously: the policy, reference policy, reward model, and value function. Training is unstable and sensitive to hyperparameters.</p>
+<p>DPO (Rafailov et al., 2023) derives a direct objective from the same human preference data, eliminating the reward model and RL training loop entirely. The loss directly increases the log probability of preferred responses relative to rejected ones. In practice: DPO trains more stably, requires less memory, and achieves comparable or better alignment results than PPO. Most open-source aligned models (Llama-3-Instruct, Mistral-Instruct) use DPO-style training.</p>
+<p>The trade-off: DPO may be less able to improve beyond the quality of the SFT model; PPO can theoretically explore beyond the initial behaviour.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Constitutional AI (CAI) and why does it matter for scaling alignment?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Human annotation is the bottleneck in RLHF — trained annotators are expensive and slow. Constitutional AI (Anthropic, 2022) addresses this with AI Feedback (RLAIF): instead of human raters, use the AI itself to generate preference data.</p>
+<p>The "constitution" is a set of principles ("choose the response that is less harmful", "choose the more honest response"). Process:</p>
+<ul>
+<li>Generate responses</li>
+<li>Ask the model to critique each response against the constitution</li>
+<li>Ask it to revise based on the critique</li>
+<li>Use the (original, revised) pairs as preference data for DPO/RLHF</li>
+</ul>
+<p>Why it scales: removes the human annotation bottleneck while maintaining principled guidance. Used in training Claude (Anthropic). Limitation: RLAIF inherits the biases of the base model used as judge.</p>
+
             </div>
           </details>
         </div>
