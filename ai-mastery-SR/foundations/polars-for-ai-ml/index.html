@@ -1,0 +1,1812 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Polars for AI/ML Engineers | Foundations | AI Mastery by Siddharth Raja</title>
+<link rel="stylesheet" href="../../assets/main.css">
+<script>
+(function(){
+  var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.dataset.theme=t;
+  if(sessionStorage.getItem('am_auth')!=='1'){
+    document.documentElement.style.opacity='0';
+  }
+})();
+</script>
+</head>
+<body data-root="../../">
+<header class="site-header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">AI <span>Mastery</span> <span class="logo-by">by Siddharth Raja</span></a>
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+      <input type="search" id="search-input" placeholder="Search questions… (/)" autocomplete="off" spellcheck="false" aria-label="Search questions">
+      <div id="search-results" role="listbox" hidden></div>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+<div class="page-body">
+  <div class="layout">
+    <nav class="course-sidebar" aria-label="Course topics">
+      <a href="../../index.html" class="sidebar-back">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        All courses
+      </a>
+      <div class="sidebar-course-name">Foundations</div>
+      <ul class="topic-list">
+        <li class=""><a href="../python-essentials-for-ai-engineer/index.html">Python Essentials for AI Engineer</a></li>
+        <li class="active"><a href="../polars-for-ai-ml/index.html">Polars for AI/ML Engineers</a></li>
+        <li class=""><a href="../statistics-math-for-aiml-interviews/index.html">Statistics &amp; Math for AI/ML Interviews</a></li>
+        <li class=""><a href="../machine-learning-foundations/index.html">Machine Learning Foundations</a></li>
+        <li class=""><a href="../deep-learning-essentials/index.html">Deep Learning Essentials</a></li>
+      </ul>
+    </nav>
+    <main class="topic-main" id="main-content">
+      <nav class="mobile-course-nav" aria-label="Topics in Foundations">
+        <div class="mobile-course-nav-title">Foundations</div>
+        <ul class="mobile-topic-list">
+          <li class=""><a href="../python-essentials-for-ai-engineer/index.html">Python Essentials for AI Engineer</a></li>
+          <li class="active"><a href="../polars-for-ai-ml/index.html">Polars for AI/ML Engineers</a></li>
+          <li class=""><a href="../statistics-math-for-aiml-interviews/index.html">Statistics &amp; Math for AI/ML Interviews</a></li>
+          <li class=""><a href="../machine-learning-foundations/index.html">Machine Learning Foundations</a></li>
+          <li class=""><a href="../deep-learning-essentials/index.html">Deep Learning Essentials</a></li>
+        </ul>
+      </nav>
+      <div class="topic-header">
+        <div class="topic-breadcrumb">
+          <a href="../../index.html">Home</a> /
+          <a href="../index.html">Foundations</a>
+        </div>
+        <h1>Polars for AI/ML Engineers</h1>
+        <div class="topic-meta">
+          <span class="topic-stats">47 questions</span>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-wrap">
+          <svg class="filter-icon" width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+          <input type="search" id="topic-filter" placeholder="Filter questions… (f)" autocomplete="off" spellcheck="false" aria-label="Filter questions on this page">
+        </div>
+        <span id="filter-count"></span>
+      </div>
+      <div id="filter-no-results" class="filter-no-results">No questions match your filter.</div>
+      <div class="content-with-toc">
+        <nav class="toc-sidebar" aria-label="Page sections">
+          <p class="toc-title">Sections</p>
+          <ul class="toc-list">
+        <li><a href="#introduction-why-polars">Introduction &amp; Why Polars</a></li>
+        <li><a href="#installation-setup">Installation &amp; Setup</a></li>
+        <li><a href="#core-data-structures">Core Data Structures</a></li>
+        <li><a href="#the-expression-api">The Expression API</a></li>
+        <li><a href="#data-loading-io">Data Loading &amp; I/O</a></li>
+        <li><a href="#data-filtering-selection">Data Filtering &amp; Selection</a></li>
+        <li><a href="#data-transformation">Data Transformation</a></li>
+        <li><a href="#aggregation-groupby">Aggregation &amp; GroupBy</a></li>
+        <li><a href="#joins-concatenation">Joins &amp; Concatenation</a></li>
+        <li><a href="#string-date-operations">String &amp; Date Operations</a></li>
+        <li><a href="#lazy-api-query-optimisation">Lazy API &amp; Query Optimisation</a></li>
+        <li><a href="#integration-with-aiml-workflows">Integration with AI/ML Workflows</a></li>
+        <li><a href="#performance-best-practices">Performance Best Practices</a></li>
+          </ul>
+        </nav>
+        <div class="qa-sections">
+      <section id="introduction-why-polars" class="qa-section">
+        <div class="section-header">
+          <h2>Introduction &amp; Why Polars</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Polars and why is it important for AI/ML engineers?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Polars is a lightning-fast DataFrame library written in <b>Rust</b>, designed as a modern replacement for Pandas. It uses the Apache Arrow memory format and a lazy query engine to process data dramatically faster than Pandas — often 5–50x faster on real-world workloads.</p>
+<p>For AI/ML engineers, Polars matters because:</p>
+<ul>
+<li><b>Data preprocessing is the bottleneck</b> — most ML projects spend 60–80% of time cleaning and transforming data. Faster DataFrames directly reduce iteration time.</li>
+<li><b>Large datasets</b> — Polars handles datasets that would cause Pandas to run out of memory, using streaming and lazy evaluation.</li>
+<li><b>Modern AI pipelines</b> — Polars integrates natively with NumPy, PyTorch, Hugging Face, and Arrow-based tools without copying data.</li>
+<li><b>Production readiness</b> — Rust-based, memory-safe, and deterministic performance makes Polars suitable for production feature pipelines.</li>
+</ul>
+<p>In short: if you work with tabular data for ML, Polars will make every step faster and more scalable.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does Polars compare to Pandas? What are the key differences?</summary>
+            <div class="qa-answer answer-inner">
+              
+<table style="width:100%; border-collapse:collapse; margin:.5rem 0">
+<tr><th style="padding:.4rem .7rem; text-align:left; border:1px solid #ddd">Feature</th><th style="padding:.4rem .7rem; text-align:left; border:1px solid #ddd">Pandas</th><th style="padding:.4rem .7rem; text-align:left; border:1px solid #ddd">Polars</th></tr>
+<tr><td style="padding:.4rem .7rem; border:1px solid #ddd">Language</td><td style="padding:.4rem .7rem; border:1px solid #ddd">Python/C</td><td style="padding:.4rem .7rem; border:1px solid #ddd">Rust (Python bindings)</td></tr>
+<tr><td style="padding:.4rem .7rem; border:1px solid #ddd">Memory format</td><td style="padding:.4rem .7rem; border:1px solid #ddd">NumPy arrays</td><td style="padding:.4rem .7rem; border:1px solid #ddd">Apache Arrow</td></tr>
+<tr><td style="padding:.4rem .7rem; border:1px solid #ddd">Execution</td><td style="padding:.4rem .7rem; border:1px solid #ddd">Eager only</td><td style="padding:.4rem .7rem; border:1px solid #ddd">Eager + Lazy (query optimizer)</td></tr>
+<tr><td style="padding:.4rem .7rem; border:1px solid #ddd">Parallelism</td><td style="padding:.4rem .7rem; border:1px solid #ddd">Single-threaded</td><td style="padding:.4rem .7rem; border:1px solid #ddd">Multi-threaded by default</td></tr>
+<tr><td style="padding:.4rem .7rem; border:1px solid #ddd">Row index</td><td style="padding:.4rem .7rem; border:1px solid #ddd">Has index (source of many bugs)</td><td style="padding:.4rem .7rem; border:1px solid #ddd">No index (cleaner)</td></tr>
+<tr><td style="padding:.4rem .7rem; border:1px solid #ddd">Missing values</td><td style="padding:.4rem .7rem; border:1px solid #ddd">NaN (float) and None mixed</td><td style="padding:.4rem .7rem; border:1px solid #ddd">Null (consistent across types)</td></tr>
+<tr><td style="padding:.4rem .7rem; border:1px solid #ddd">Speed</td><td style="padding:.4rem .7rem; border:1px solid #ddd">Baseline</td><td style="padding:.4rem .7rem; border:1px solid #ddd">5–50x faster typically</td></tr>
+<tr><td style="padding:.4rem .7rem; border:1px solid #ddd">Large data</td><td style="padding:.4rem .7rem; border:1px solid #ddd">Limited by RAM</td><td style="padding:.4rem .7rem; border:1px solid #ddd">Streaming (larger than RAM)</td></tr>
+</table>
+<p>The biggest mental shift: Polars uses an <b>Expression API</b> instead of row-level operations. You describe what you want (declaratively), and Polars optimizes how to compute it.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Apache Arrow and why does Polars use it?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Apache Arrow is a columnar in-memory data format designed for high-performance analytics. It stores data column by column (not row by row), which means:</p>
+<ul>
+<li><b>Better CPU cache usage</b> — when you filter or aggregate a column, the data is contiguous in memory</li>
+<li><b>SIMD vectorization</b> — CPUs can process multiple values per clock cycle using SIMD instructions</li>
+<li><b>Zero-copy interoperability</b> — Polars DataFrames can be shared with PyTorch, Pandas, DuckDB, and others <i>without copying data</i></li>
+</ul>
+<p>In AI/ML this is critical. When you convert a Polars DataFrame to a PyTorch tensor or a Hugging Face Dataset, no data is copied — the same Arrow memory buffer is reused. This saves both time and RAM in large training pipelines.</p>
+<pre><code># Arrow memory shared — no copy
+import polars as pl
+df = pl.read_parquet("features.parquet")
+numpy_array = df["embedding"].to_numpy()  # zero-copy view of Arrow buffer
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does Polars achieve its high performance?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Polars is fast for four compounding reasons:</p>
+<h3>1. Written in Rust</h3>
+<p>Rust compiles to native machine code with no garbage collector. Every operation runs as fast as hand-optimised C.</p>
+<h3>2. Parallel execution</h3>
+<p>Polars automatically parallelises work across all CPU cores using Rayon (a Rust parallelism library). A 16-core machine runs Polars roughly 16x faster than single-threaded Pandas for many operations.</p>
+<h3>3. Query optimiser (Lazy API)</h3>
+<p>When you use <code>LazyFrame</code>, Polars builds a query plan and optimises it before running:</p>
+<ul>
+<li><b>Predicate pushdown</b>: filters are applied before scans, reading less data</li>
+<li><b>Projection pushdown</b>: only selected columns are loaded from disk</li>
+<li><b>Common subexpression elimination</b>: shared computations run once</li>
+</ul>
+<h3>4. SIMD and vectorised operations</h3>
+<p>Arrow's columnar layout lets Polars use CPU SIMD instructions that process 4–16 values per clock cycle instead of one at a time.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>When should you choose Polars over Pandas for AI/ML work?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p><b>Always prefer Polars when:</b></p>
+<ul>
+<li>Dataset is larger than ~100 MB (Polars is faster and more memory-efficient at all sizes)</li>
+<li>You need to process data faster (feature pipelines, real-time inference preprocessing)</li>
+<li>Your data lives in Parquet, Arrow, or CSV files and you need lazy loading</li>
+<li>You're building production data pipelines where reproducibility and speed matter</li>
+<li>You work with time-series data requiring rolling windows or resampling</li>
+</ul>
+<p><b>Stick with Pandas when:</b></p>
+<ul>
+<li>A library you depend on <i>only</i> accepts Pandas DataFrames and you can't convert easily</li>
+<li>You have very small exploratory datasets (&lt;10 MB) where speed doesn't matter</li>
+<li>Your team is deeply invested in Pandas idioms and migration cost exceeds benefit</li>
+</ul>
+<p>In practice: start new AI/ML projects with Polars. For existing Pandas code, migrate hot paths first.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="installation-setup" class="qa-section">
+        <div class="section-header">
+          <h2>Installation &amp; Setup</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you install Polars and what are the installation options?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code># Minimal install (core only)
+pip install polars
+
+# Full install with all optional dependencies (recommended for ML)
+pip install polars[all]
+
+# Specific extras
+pip install polars[numpy]      # NumPy integration
+pip install polars[pandas]     # Pandas interop
+pip install polars[pyarrow]    # PyArrow integration
+pip install polars[xlsx2csv]   # Excel reading
+pip install polars[connectorx] # Database connections (SQL)
+pip install polars[fsspec]     # Cloud storage (S3, GCS, Azure)
+
+# For GPU-accelerated operations (experimental)
+pip install polars[gpu]
+</code></pre>
+<p>After installing, verify:</p>
+<pre><code>import polars as pl
+print(pl.__version__)   # e.g. 1.x.x
+print(pl.show_versions())  # full dependency info
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the standard Polars imports for AI/ML work?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl                     # core — always needed
+import polars.selectors as cs          # smart column selectors
+
+# Polars integrates directly with these:
+import numpy as np
+import pandas as pd
+
+# Type aliases you'll see in code
+from polars import DataFrame, LazyFrame, Series, Expr
+</code></pre>
+<p>Common aliases used throughout the Polars docs and community:</p>
+<ul>
+<li><code>pl.col("x")</code> — refer to column "x" in expressions</li>
+<li><code>pl.lit(42)</code> — wrap a literal value in an expression</li>
+<li><code>pl.when(...).then(...).otherwise(...)</code> — conditional logic</li>
+<li><code>cs.numeric()</code> — select all numeric columns (from polars.selectors)</li>
+</ul>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="core-data-structures" class="qa-section">
+        <div class="section-header">
+          <h2>Core Data Structures</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the three main data structures in Polars?</summary>
+            <div class="qa-answer answer-inner">
+              
+<h3>Series</h3>
+<p>A single named column of typed data (like a 1D array).</p>
+<pre><code>s = pl.Series("scores", [92, 88, 75, 95, 60])
+print(s.dtype)   # Int64
+print(s.mean())  # 82.0
+</code></pre>
+<h3>DataFrame</h3>
+<p>A 2D table of named, typed columns. Queries run <b>eagerly</b> — results are computed immediately.</p>
+<pre><code>df = pl.DataFrame({
+    "name":  ["Alice", "Bob", "Carol"],
+    "score": [92, 88, 75],
+    "model": ["gpt-4", "claude", "gemini"],
+})
+</code></pre>
+<h3>LazyFrame</h3>
+<p>A deferred computation plan. Nothing runs until you call <code>.collect()</code>. Polars optimises the query plan first.</p>
+<pre><code>lf = df.lazy()                     # or pl.scan_csv("data.csv")
+result = (
+    lf
+    .filter(pl.col("score") &gt; 80)
+    .select(["name", "score"])
+    .collect()                     # execute now
+)
+</code></pre>
+<p><b>Rule of thumb:</b> use <code>LazyFrame</code> for any pipeline with more than two steps, or when reading files. Use <code>DataFrame</code> for quick exploration.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What data types does Polars support and why does typing matter for ML?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Polars is strictly typed — every column has one type. This prevents the silent type coercion bugs that cause wrong model predictions in Pandas.</p>
+<h3>Numeric types</h3>
+<pre><code>pl.Int8, pl.Int16, pl.Int32, pl.Int64     # signed integers
+pl.UInt8, pl.UInt16, pl.UInt32, pl.UInt64 # unsigned integers
+pl.Float32, pl.Float64                     # floats (use Float32 for ML — saves RAM)
+</code></pre>
+<h3>Other types</h3>
+<pre><code>pl.Boolean       # True/False
+pl.Utf8          # strings (aliased as pl.String)
+pl.Categorical   # low-cardinality strings (like pd.Categorical)
+pl.Date          # date (no time)
+pl.Datetime      # timestamp with optional timezone
+pl.Duration      # time delta
+pl.List(pl.Float32)   # list column (e.g. embeddings stored per row)
+pl.Array(pl.Float32, shape=768)  # fixed-size array (new in Polars 0.19+)
+pl.Struct([...]) # nested struct (like a dict column)
+pl.Null          # all-null column
+</code></pre>
+<p><b>ML tip:</b> store embeddings as <code>pl.List(pl.Float32)</code> or <code>pl.Array(pl.Float32, 768)</code>. Using <code>Float32</code> instead of <code>Float64</code> halves memory usage with no accuracy loss for most models.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you create a DataFrame from different data sources?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+# From a dict
+df = pl.DataFrame({
+    "feature_a": [1.2, 3.4, 5.6],
+    "feature_b": [0.1, 0.2, 0.3],
+    "label":     [0, 1, 0],
+})
+
+# From a list of dicts (common when consuming API/JSON responses)
+records = [{"id": 1, "text": "hello"}, {"id": 2, "text": "world"}]
+df = pl.DataFrame(records)
+
+# From NumPy arrays
+import numpy as np
+X = np.random.randn(1000, 10).astype(np.float32)
+df = pl.from_numpy(X, schema=[f"f{i}" for i in range(10)])
+
+# From a Pandas DataFrame
+import pandas as pd
+pdf = pd.DataFrame({"x": [1, 2, 3]})
+df = pl.from_pandas(pdf)
+
+# Specifying schema explicitly (recommended — avoids type inference errors)
+df = pl.DataFrame(
+    {"id": [1, 2, 3], "score": [0.9, 0.8, 0.7]},
+    schema={"id": pl.UInt32, "score": pl.Float32},
+)
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you convert between Polars and Pandas, and when should you?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+df_polars = pl.read_csv("data.csv")
+
+# Polars → Pandas (when a library only accepts Pandas)
+df_pandas = df_polars.to_pandas()
+
+# Pandas → Polars (to speed up processing)
+df_polars = pl.from_pandas(df_pandas)
+
+# Convert a single column to NumPy (for model input)
+arr = df_polars["feature"].to_numpy()
+
+# Convert to PyArrow Table (zero-copy)
+arrow_table = df_polars.to_arrow()
+</code></pre>
+<p><b>Rule:</b> do all heavy processing in Polars, then convert to Pandas/NumPy <i>only at the boundary</i> where another library requires it. Avoid converting back and forth inside loops.</p>
+<p><b>When scikit-learn requires Pandas:</b></p>
+<pre><code>from sklearn.preprocessing import StandardScaler
+
+# Process in Polars, convert once for sklearn
+X = df.select(feature_cols).to_pandas()
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+</code></pre>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="the-expression-api" class="qa-section">
+        <div class="section-header">
+          <h2>The Expression API</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is an Expression in Polars and why is it the core concept?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>An <b>Expression</b> (<code>pl.Expr</code>) is a lazy description of a computation on a column. Expressions are composable, vectorised, and automatically parallelised — they are the building block for everything in Polars.</p>
+<pre><code>import polars as pl
+
+# These are expressions — nothing is computed yet
+expr1 = pl.col("price") * 1.1                      # price with 10% markup
+expr2 = pl.col("score") - pl.col("score").mean()   # mean-centred score
+expr3 = (pl.col("text").str.len_chars() &gt; 50).alias("is_long")
+
+# Expressions are evaluated inside DataFrame/LazyFrame methods
+df = pl.DataFrame({"price": [10.0, 20.0, 30.0], "score": [80, 90, 70]})
+result = df.with_columns([expr1.alias("price_with_tax"), expr2.alias("score_centred")])
+</code></pre>
+<p>Key point: expressions are <b>not row-by-row</b> like <code>apply()</code> in Pandas. They operate on entire columns at once using optimised, parallel Rust code. This is why they are fast.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between select(), with_columns(), and filter()?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>df = pl.DataFrame({
+    "a": [1, 2, 3, 4],
+    "b": [10, 20, 30, 40],
+    "c": ["x", "y", "x", "y"],
+})
+</code></pre>
+<h3>select() — choose and compute columns (output has ONLY these columns)</h3>
+<pre><code>df.select([
+    pl.col("a"),
+    (pl.col("b") * 2).alias("b_doubled"),
+])
+# columns: a, b_doubled — 'c' is gone
+</code></pre>
+<h3>with_columns() — add/replace columns (output keeps ALL original columns)</h3>
+<pre><code>df.with_columns([
+    (pl.col("b") * 2).alias("b_doubled"),
+    pl.col("c").str.to_uppercase().alias("c_upper"),
+])
+# columns: a, b, c, b_doubled, c_upper
+</code></pre>
+<h3>filter() — keep rows matching condition</h3>
+<pre><code>df.filter(pl.col("a") &gt; 2)
+# rows where a = 3 or 4
+
+# Multiple conditions use &amp; (and), | (or), ~ (not)
+df.filter((pl.col("a") &gt; 1) &amp; (pl.col("c") == "x"))
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you use pl.when().then().otherwise() for conditional logic?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>This replaces <code>numpy.where()</code> and <code>df.apply(lambda row: ...)</code> from Pandas. It is vectorised and fast.</p>
+<pre><code>df = pl.DataFrame({"score": [45, 72, 88, 55, 95]})
+
+df.with_columns(
+    pl.when(pl.col("score") &gt;= 90)
+      .then(pl.lit("A"))
+      .when(pl.col("score") &gt;= 75)
+      .then(pl.lit("B"))
+      .when(pl.col("score") &gt;= 60)
+      .then(pl.lit("C"))
+      .otherwise(pl.lit("F"))
+      .alias("grade")
+)
+# shape: (5, 2) — columns: score, grade
+</code></pre>
+<p>ML use case — flag potential data issues:</p>
+<pre><code>df.with_columns(
+    pl.when(pl.col("embedding_dim") != 768)
+      .then(pl.lit("DIMENSION_MISMATCH"))
+      .when(pl.col("text").str.len_chars() == 0)
+      .then(pl.lit("EMPTY_TEXT"))
+      .otherwise(pl.lit("OK"))
+      .alias("data_quality_flag")
+)
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are column selectors and how do they simplify ML feature selection?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Column selectors (<code>polars.selectors</code>) let you select groups of columns without naming them explicitly — essential for ML where you have hundreds of features.</p>
+<pre><code>import polars as pl
+import polars.selectors as cs
+
+df = pl.DataFrame({
+    "id": [1, 2, 3],
+    "age": [25, 30, 22],
+    "income": [50000.0, 75000.0, 45000.0],
+    "name": ["Alice", "Bob", "Carol"],
+    "created_at": ["2024-01-01", "2024-02-01", "2024-03-01"],
+})
+
+# Select all numeric columns
+df.select(cs.numeric())
+
+# Select all string columns
+df.select(cs.string())
+
+# Exclude specific columns
+df.select(cs.all() - cs.by_name("id", "created_at"))
+
+# Combine selectors
+df.select(cs.numeric() | cs.by_name("name"))
+
+# Negate
+df.select(~cs.numeric())   # all non-numeric
+
+# Practical ML: get feature columns (drop label and ID)
+feature_df = df.select(cs.numeric() - cs.by_name("id", "label"))
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do window functions (over()) work in Polars?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p><code>over()</code> lets you compute group-level aggregations without reducing the DataFrame — each row keeps its original position but gains a group-level value. This is equivalent to SQL's <code>PARTITION BY</code> window functions.</p>
+<pre><code>df = pl.DataFrame({
+    "category": ["A", "B", "A", "B", "A"],
+    "value":    [10, 20, 30, 40, 50],
+})
+
+df.with_columns([
+    pl.col("value").mean().over("category").alias("category_mean"),
+    pl.col("value").rank().over("category").alias("rank_within_category"),
+    (pl.col("value") - pl.col("value").mean().over("category")).alias("value_centred"),
+])
+</code></pre>
+<p><b>ML use case</b> — compute per-user statistics as features without groupby and merge:</p>
+<pre><code>df.with_columns([
+    pl.col("purchase_amount").mean().over("user_id").alias("user_avg_spend"),
+    pl.col("session_duration").max().over("user_id").alias("user_max_session"),
+    pl.col("event").count().over(["user_id", "date"]).alias("daily_event_count"),
+])
+</code></pre>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="data-loading-io" class="qa-section">
+        <div class="section-header">
+          <h2>Data Loading &amp; I/O</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you read and write CSV files in Polars?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+# Eager read — all rows into memory
+df = pl.read_csv("data.csv")
+
+# With options
+df = pl.read_csv(
+    "data.csv",
+    separator="\t",               # tab-separated
+    has_header=True,
+    null_values=["NA", "", "N/A"],
+    schema_overrides={"id": pl.UInt32, "score": pl.Float32},
+    try_parse_dates=True,         # auto-detect date columns
+    n_rows=10_000,                # read first N rows only (for exploration)
+    skip_rows=1,                  # skip N rows before header
+)
+
+# Lazy read (PREFERRED for large files — Polars optimises the scan)
+lf = pl.scan_csv("data.csv")
+result = lf.filter(pl.col("label") == 1).collect()
+
+# Write
+df.write_csv("output.csv")
+df.write_csv("output.csv", separator=",", include_header=True)
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you work with Parquet files and why is Parquet the best format for ML?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Parquet is the <b>standard file format for ML data</b> because it is:</p>
+<ul>
+<li>Columnar — reads only the columns you select (massive speed-up)</li>
+<li>Compressed — typically 5–10x smaller than CSV</li>
+<li>Typed — schema is stored in the file, no inference needed</li>
+<li>Splittable — can be read in parallel shards</li>
+</ul>
+<pre><code>import polars as pl
+
+# Read
+df = pl.read_parquet("features.parquet")
+
+# Lazy read with column selection (reads ONLY those columns from disk)
+lf = pl.scan_parquet("features.parquet")
+result = lf.select(["user_id", "embedding", "label"]).collect()
+
+# Read a directory of parquet files (data lake pattern)
+df = pl.read_parquet("data/year=2024/*.parquet")
+# or lazy:
+lf = pl.scan_parquet("data/year=2024/*.parquet")
+
+# Write
+df.write_parquet("output.parquet")
+df.write_parquet("output.parquet", compression="zstd")  # best compression
+
+# Write with row group size (tune for your query patterns)
+df.write_parquet("output.parquet", row_group_size=50_000)
+</code></pre>
+<p><b>Best practice:</b> always use Parquet for ML datasets. Convert CSVs from data sources to Parquet once, then use Parquet everywhere in your pipeline.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you read from databases and cloud storage?</summary>
+            <div class="qa-answer answer-inner">
+              
+<h3>Databases (via ConnectorX — fastest Python DB reader)</h3>
+<pre><code>import polars as pl
+
+# PostgreSQL, MySQL, SQLite, Redshift, BigQuery, etc.
+df = pl.read_database_uri(
+    query="SELECT * FROM features WHERE split = 'train'",
+    uri="postgresql://user:password@host:5432/dbname",
+)
+
+# With connection object
+import sqlite3
+conn = sqlite3.connect("local.db")
+df = pl.read_database("SELECT * FROM experiments", connection=conn)
+</code></pre>
+<h3>Cloud storage (S3, GCS, Azure)</h3>
+<pre><code># pip install polars[fsspec] s3fs
+
+# Read from S3
+df = pl.read_parquet("s3://my-bucket/features/train.parquet")
+
+# Lazy scan from S3 (only pulls data needed after filter)
+lf = pl.scan_parquet("s3://my-bucket/features/*.parquet")
+result = (
+    lf
+    .filter(pl.col("date") &gt;= "2024-01-01")
+    .select(["user_id", "feature_1", "label"])
+    .collect()
+)
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you read JSON and NDJSON files?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+# Standard JSON (array of objects)
+df = pl.read_json("data.json")
+
+# NDJSON / JSONL (one JSON object per line — common in LLM output logging)
+df = pl.read_ndjson("outputs.jsonl")
+
+# Lazy NDJSON scan
+lf = pl.scan_ndjson("outputs.jsonl")
+
+# Struct columns (nested JSON) — access with struct.field()
+df = pl.DataFrame({
+    "response": [
+        '{"content": "hello", "tokens": 5}',
+        '{"content": "world", "tokens": 6}',
+    ]
+})
+df = df.with_columns(
+    pl.col("response").str.json_decode()
+)
+# Now access nested fields:
+df.with_columns(pl.col("response").struct.field("tokens").alias("token_count"))
+</code></pre>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="data-filtering-selection" class="qa-section">
+        <div class="section-header">
+          <h2>Data Filtering &amp; Selection</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you filter rows with complex conditions in Polars?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>df = pl.read_parquet("training_data.parquet")
+
+# Simple filter
+df.filter(pl.col("label") == 1)
+
+# Multiple conditions — use &amp; (AND), | (OR), ~ (NOT)
+df.filter(
+    (pl.col("score") &gt; 0.8) &amp;
+    (pl.col("split") == "train") &amp;
+    (~pl.col("flagged"))
+)
+
+# Filter using is_in (like SQL IN)
+valid_splits = ["train", "validation"]
+df.filter(pl.col("split").is_in(valid_splits))
+
+# Filter nulls
+df.filter(pl.col("embedding").is_not_null())
+df.drop_nulls(subset=["feature_a", "label"])
+
+# Filter on string patterns
+df.filter(pl.col("text").str.contains("error"))
+df.filter(pl.col("model_name").str.starts_with("gpt"))
+
+# Filter rows where any numeric column is above threshold
+import polars.selectors as cs
+df.filter(cs.numeric().max_horizontal() &lt; 1e6)  # remove outlier rows
+
+# Keep first N rows per group (e.g. deduplication)
+df.filter(
+    pl.col("created_at").rank(method="ordinal").over("user_id") == 1
+)
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you handle null values in Polars?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>df = pl.DataFrame({
+    "a": [1, None, 3, None, 5],
+    "b": [1.0, 2.0, None, 4.0, None],
+    "c": ["x", None, "z", "w", None],
+})
+
+# Detect nulls
+df.null_count()               # count per column
+df.select(pl.col("a").is_null())   # boolean mask
+
+# Drop rows with any null
+df.drop_nulls()
+
+# Drop rows where specific columns are null
+df.drop_nulls(subset=["a", "b"])
+
+# Fill nulls
+df.with_columns([
+    pl.col("a").fill_null(0),                        # constant
+    pl.col("b").fill_null(pl.col("b").mean()),        # column mean
+    pl.col("b").fill_null(strategy="forward"),        # forward fill
+    pl.col("b").fill_null(strategy="backward"),       # backward fill
+    pl.col("c").fill_null("MISSING"),                 # string default
+])
+
+# Fill NaN (different from null — only in float columns)
+df.with_columns(pl.col("b").fill_nan(0.0))
+
+# ML tip: for feature engineering, fill with median (more robust than mean)
+median_val = df["b"].median()
+df.with_columns(pl.col("b").fill_null(median_val))
+</code></pre>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="data-transformation" class="qa-section">
+        <div class="section-header">
+          <h2>Data Transformation</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you rename, drop, and reorder columns?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+df = pl.DataFrame({"col_a": [1], "col_b": [2], "col_c": [3]})
+
+# Rename
+df.rename({"col_a": "feature_1", "col_b": "feature_2"})
+
+# Rename all columns with a function
+df.rename(lambda col: col.replace("col_", "f_"))
+
+# Drop columns
+df.drop(["col_c"])
+df.drop(cs.by_name("col_a", "col_b"))
+
+# Select specific columns in a specific order
+df.select(["col_c", "col_a", "col_b"])
+
+# Move a column to first position
+df.select([pl.col("col_c"), pl.all().exclude("col_c")])
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you cast data types and why does this matter for ML?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+df = pl.DataFrame({
+    "id":     ["1", "2", "3"],        # string IDs
+    "price":  ["10.5", "20.0", "?"],  # prices as strings
+    "label":  [1.0, 0.0, 1.0],        # label stored as float
+})
+
+# Cast types
+df.with_columns([
+    pl.col("id").cast(pl.UInt32),
+    pl.col("label").cast(pl.Int8),    # 0/1 labels don't need Float64
+])
+
+# Safe cast — returns null instead of error on bad values
+df.with_columns(
+    pl.col("price").cast(pl.Float32, strict=False)  # "?" becomes null
+)
+
+# Cast all float64 to float32 (halves memory — critical for large feature tables)
+import polars.selectors as cs
+df.with_columns(
+    cs.float().cast(pl.Float32)
+)
+
+# String to categorical (saves memory for low-cardinality columns)
+df.with_columns(
+    pl.col("label_name").cast(pl.Categorical)
+)
+</code></pre>
+<p><b>Why it matters:</b> A feature table with 10M rows and 100 Float64 columns uses 8 GB RAM. Casting to Float32 halves it to 4 GB — often the difference between fitting in RAM and not.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you apply custom Python functions in Polars, and when should you avoid them?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Polars provides <code>map_elements()</code> to run Python functions row-by-row. <b>Use it only as a last resort</b> — it bypasses Polars' optimisations and is slow.</p>
+<pre><code>import polars as pl
+
+df = pl.DataFrame({"text": ["Hello World", "Polars is fast", "AI is here"]})
+
+# map_elements — slow (row-by-row Python loop)
+df.with_columns(
+    pl.col("text").map_elements(lambda s: s.lower()[:10], return_dtype=pl.String)
+)
+
+# PREFERRED: use built-in expressions — 10–100x faster
+df.with_columns(
+    pl.col("text").str.to_lowercase().str.slice(0, 10)
+)
+</code></pre>
+<p><b>When map_elements is appropriate:</b></p>
+<ul>
+<li>Calling external APIs or libraries that have no vectorised form (e.g., tokenisers)</li>
+<li>Complex custom parsing logic not expressible with Polars expressions</li>
+</ul>
+<pre><code>from transformers import AutoTokenizer
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+
+# Tokenize text — no vectorised alternative, so map_elements is acceptable
+df.with_columns(
+    pl.col("text").map_elements(
+        lambda t: len(tokenizer.encode(t)),
+        return_dtype=pl.UInt32,
+    ).alias("token_count")
+)
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you work with list columns for embeddings and multi-value features?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>List columns are essential for ML — they store embeddings, token lists, tags, and other variable-length features per row.</p>
+<pre><code>import polars as pl
+import numpy as np
+
+# Store embeddings as list column
+embeddings = np.random.randn(5, 768).astype(np.float32)
+df = pl.DataFrame({
+    "id": range(5),
+    "embedding": embeddings.tolist(),  # each row is a list of 768 floats
+})
+# embedding column dtype: List(Float32)
+
+# Access list operations with .list namespace
+df.with_columns([
+    pl.col("embedding").list.len().alias("dim"),          # length of list
+    pl.col("embedding").list.mean().alias("emb_mean"),    # mean of values
+    pl.col("embedding").list.get(0).alias("first_dim"),   # first element
+    pl.col("embedding").list.slice(0, 10).alias("emb_10"), # first 10 dims
+])
+
+# Explode list into separate rows
+df_exploded = df.explode("embedding")
+
+# Stack multiple embeddings into a 2D NumPy array for model input
+emb_matrix = np.vstack(df["embedding"].to_list())  # shape (N, 768)
+</code></pre>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="aggregation-groupby" class="qa-section">
+        <div class="section-header">
+          <h2>Aggregation &amp; GroupBy</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does group_by() and agg() work in Polars?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+df = pl.DataFrame({
+    "model":    ["gpt-4", "claude", "gpt-4", "claude", "gpt-4"],
+    "score":    [0.92, 0.88, 0.95, 0.91, 0.89],
+    "latency":  [120, 80, 110, 75, 130],
+    "tokens":   [500, 400, 600, 350, 550],
+})
+
+# Single aggregation
+df.group_by("model").agg(pl.col("score").mean().alias("avg_score"))
+
+# Multiple aggregations at once (very efficient — one pass through data)
+stats = df.group_by("model").agg([
+    pl.col("score").mean().alias("avg_score"),
+    pl.col("score").std().alias("std_score"),
+    pl.col("score").min().alias("min_score"),
+    pl.col("score").max().alias("max_score"),
+    pl.col("latency").median().alias("median_latency"),
+    pl.col("tokens").sum().alias("total_tokens"),
+    pl.len().alias("n_requests"),
+])
+print(stats)
+</code></pre>
+<p>Note: <code>group_by()</code> in Polars does NOT guarantee output order (unlike Pandas). Use <code>sort()</code> afterwards if order matters.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you compute rolling and time-series aggregations?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+df = pl.DataFrame({
+    "date": pl.date_range(
+        pl.date(2024, 1, 1), pl.date(2024, 1, 10), "1d", eager=True
+    ),
+    "value": [10, 12, 9, 15, 11, 14, 13, 16, 12, 11],
+})
+
+# Rolling mean (window of 3)
+df.with_columns(
+    pl.col("value").rolling_mean(window_size=3).alias("rolling_avg"),
+)
+
+# Rolling operations with dynamic window (time-based)
+# Sort by date first — required for time-based rolling
+df.sort("date").with_columns(
+    pl.col("value")
+      .rolling_mean(window_size="3d", by="date")
+      .alias("3day_avg")
+)
+
+# Exponential moving average
+df.with_columns(
+    pl.col("value").ewm_mean(alpha=0.3).alias("ema")
+)
+
+# Group by time period and aggregate
+df.group_by_dynamic("date", every="3d").agg(
+    pl.col("value").mean().alias("3d_mean")
+)
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you pivot and unpivot (melt) a DataFrame in Polars?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+# Wide format → Long format (unpivot, formerly melt)
+df_wide = pl.DataFrame({
+    "id":     [1, 2],
+    "score_a": [80, 90],
+    "score_b": [70, 85],
+    "score_c": [75, 88],
+})
+
+df_long = df_wide.unpivot(
+    index=["id"],
+    on=["score_a", "score_b", "score_c"],
+    variable_name="metric",
+    value_name="score",
+)
+# id | metric  | score
+# 1  | score_a | 80
+# 1  | score_b | 70
+# ...
+
+# Long format → Wide format (pivot)
+df_back = df_long.pivot(
+    values="score",
+    index="id",
+    on="metric",
+)
+</code></pre>
+<p><b>ML use case:</b> unpivot is useful to reshape model evaluation metrics (e.g. per-class F1 scores) from wide to long format for visualisation or further analysis.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="joins-concatenation" class="qa-section">
+        <div class="section-header">
+          <h2>Joins &amp; Concatenation</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you join DataFrames in Polars?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+features = pl.DataFrame({"id": [1, 2, 3], "emb": [[0.1], [0.2], [0.3]]})
+labels   = pl.DataFrame({"id": [1, 2, 4], "label": [0, 1, 0]})
+
+# Inner join (only matching rows)
+features.join(labels, on="id", how="inner")
+
+# Left join (all rows from left, nulls for missing right rows)
+features.join(labels, on="id", how="left")
+
+# Full outer join
+features.join(labels, on="id", how="full")
+
+# Semi join — keep rows in left that EXIST in right (no columns added)
+features.join(labels, on="id", how="semi")
+
+# Anti join — keep rows in left that DON'T EXIST in right
+features.join(labels, on="id", how="anti")
+
+# Join on different column names
+df_a.join(df_b, left_on="user_id", right_on="uid", how="left")
+
+# Join on multiple keys
+df_a.join(df_b, on=["user_id", "date"], how="inner")
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you concatenate DataFrames vertically and horizontally?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+train = pl.read_parquet("train.parquet")
+val   = pl.read_parquet("val.parquet")
+test  = pl.read_parquet("test.parquet")
+
+# Vertical concat (stack rows — schemas must match)
+all_data = pl.concat([train, val, test])
+
+# Vertical concat, allowing missing columns (filled with null)
+all_data = pl.concat([train, val, test], how="diagonal")
+
+# Horizontal concat (add columns side by side — row counts must match)
+features = pl.read_parquet("features.parquet")
+metadata = pl.read_parquet("metadata.parquet")
+combined = pl.concat([features, metadata], how="horizontal")
+
+# Rechunk after many concats for better performance
+all_data = all_data.rechunk()
+</code></pre>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="string-date-operations" class="qa-section">
+        <div class="section-header">
+          <h2>String &amp; Date Operations</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you work with string columns in Polars for NLP preprocessing?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+df = pl.DataFrame({"text": ["Hello World!", "  Polars is FAST  ", "AI/ML in 2024"]})
+
+# All string operations live in the .str namespace
+df.with_columns([
+    pl.col("text").str.to_lowercase().alias("lower"),
+    pl.col("text").str.to_uppercase().alias("upper"),
+    pl.col("text").str.strip_chars().alias("stripped"),
+    pl.col("text").str.replace("AI", "Artificial Intelligence").alias("expanded"),
+    pl.col("text").str.replace_all(r"[^a-zA-Z\s]", "", literal=False).alias("letters_only"),
+    pl.col("text").str.len_chars().alias("char_count"),
+    pl.col("text").str.len_bytes().alias("byte_count"),
+    pl.col("text").str.contains("Polars").alias("mentions_polars"),
+    pl.col("text").str.starts_with("Hello").alias("starts_hello"),
+    pl.col("text").str.split(" ").alias("words"),       # returns List(String)
+    pl.col("text").str.count_matches(r"\b\w+\b", literal=False).alias("word_count"),
+])
+
+# Extract with regex
+df.with_columns(
+    pl.col("text").str.extract(r"(\d{4})", group_index=1).alias("year")
+)
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you parse and manipulate dates and timestamps?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+df = pl.DataFrame({
+    "ts_str": ["2024-01-15 10:30:00", "2024-03-22 14:45:30"],
+    "date_str": ["2024-01-15", "2024-03-22"],
+})
+
+# Parse strings to datetime
+df.with_columns([
+    pl.col("ts_str").str.strptime(pl.Datetime, "%Y-%m-%d %H:%M:%S"),
+    pl.col("date_str").str.strptime(pl.Date, "%Y-%m-%d"),
+])
+
+# Date arithmetic and extraction (use .dt namespace)
+df_dates = df.with_columns(
+    pl.col("ts_str").str.strptime(pl.Datetime, "%Y-%m-%d %H:%M:%S").alias("ts")
+)
+
+df_dates.with_columns([
+    pl.col("ts").dt.year().alias("year"),
+    pl.col("ts").dt.month().alias("month"),
+    pl.col("ts").dt.day().alias("day"),
+    pl.col("ts").dt.hour().alias("hour"),
+    pl.col("ts").dt.weekday().alias("weekday"),   # 0=Monday
+    pl.col("ts").dt.ordinal_day().alias("day_of_year"),
+    (pl.col("ts") - pl.col("ts").min()).dt.total_seconds().alias("seconds_elapsed"),
+])
+
+# Generate a date range
+dates = pl.date_range(pl.date(2024, 1, 1), pl.date(2024, 12, 31), "1d", eager=True)
+</code></pre>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="lazy-api-query-optimisation" class="qa-section">
+        <div class="section-header">
+          <h2>Lazy API &amp; Query Optimisation</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does the Lazy API work and what optimisations does it apply?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The Lazy API lets Polars see your entire query before executing it, then optimises it automatically.</p>
+<pre><code>import polars as pl
+
+# Step 1: Build a lazy query plan
+lf = pl.scan_parquet("large_dataset.parquet")  # nothing is read yet
+
+query = (
+    lf
+    .filter(pl.col("year") == 2024)
+    .filter(pl.col("country") == "India")
+    .select(["user_id", "feature_a", "feature_b", "label"])
+    .with_columns(
+        (pl.col("feature_a") / pl.col("feature_b")).alias("ratio")
+    )
+    .group_by("user_id")
+    .agg(pl.col("ratio").mean())
+)
+
+# See the optimised query plan
+print(query.explain(optimized=True))
+
+# Step 2: Execute
+result = query.collect()
+</code></pre>
+<p><b>Key optimisations applied automatically:</b></p>
+<ul>
+<li><b>Predicate pushdown:</b> <code>filter(year == 2024)</code> is pushed to the Parquet scan — only 2024 rows are read from disk, not all rows.</li>
+<li><b>Projection pushdown:</b> only <code>user_id, feature_a, feature_b, label</code> columns are read from Parquet, not all columns.</li>
+<li><b>Common subexpression elimination:</b> if <code>pl.col("a").mean()</code> appears multiple times, it's computed once.</li>
+<li><b>Streaming mode:</b> for queries that don't need all data in memory at once.</li>
+</ul>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you use streaming mode to process datasets larger than RAM?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Streaming processes data in batches, never loading the full dataset into RAM. It is ideal for very large Parquet files or large CSV scans.</p>
+<pre><code>import polars as pl
+
+# Use scan_* (not read_*) to enable streaming
+lf = pl.scan_parquet("100gb_features.parquet")
+
+result = (
+    lf
+    .filter(pl.col("label").is_not_null())
+    .group_by("category")
+    .agg(pl.col("value").mean())
+    .collect(streaming=True)  # process in batches — fits in RAM
+)
+
+# Write directly to Parquet without materialising result in RAM
+(
+    lf
+    .filter(pl.col("split") == "train")
+    .select(["id", "feature_a", "label"])
+    .sink_parquet("train_filtered.parquet")  # streaming sink
+)
+
+# Streaming CSV sink
+lf.sink_csv("output.csv")
+</code></pre>
+<p><b>When to use streaming:</b></p>
+<ul>
+<li>Dataset is larger than available RAM</li>
+<li>You only need aggregate results (mean, sum, count) — no sorting of all rows</li>
+<li>Writing processed data to a new file</li>
+</ul>
+<p>Note: some operations (like <code>sort()</code>, <code>join()</code>) cannot be streamed and require all data in memory.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you profile and optimise slow Polars queries?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+
+lf = pl.scan_parquet("data.parquet")
+query = lf.filter(pl.col("score") &gt; 0.9).select(["id", "score"])
+
+# See the un-optimised plan
+print(query.explain(optimized=False))
+
+# See the optimised plan (what Polars actually executes)
+print(query.explain(optimized=True))
+
+# Profile execution time by stage
+result, profile = query.profile()
+print(profile)  # shows time per node in the query plan
+</code></pre>
+<p><b>Common performance tips:</b></p>
+<ul>
+<li>Use <code>scan_parquet()</code> instead of <code>read_parquet()</code> to enable pushdown optimisations</li>
+<li>Filter <i>early</i> in the chain to reduce data volume</li>
+<li>Avoid <code>map_elements()</code> — use built-in expressions</li>
+<li>Cast Float64 to Float32 before heavy computation</li>
+<li>Use <code>rechunk()</code> after many concatenations</li>
+<li>For repeated lookups, use <code>join()</code> with <code>how="left"</code> instead of <code>map_elements()</code> with a dict</li>
+</ul>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="integration-with-aiml-workflows" class="qa-section">
+        <div class="section-header">
+          <h2>Integration with AI/ML Workflows</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you convert Polars DataFrames to NumPy arrays for model input?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+import numpy as np
+
+df = pl.read_parquet("features.parquet")
+
+# Single column to NumPy
+arr = df["score"].to_numpy()               # 1D array
+arr = df["score"].to_numpy(allow_copy=False)  # zero-copy if possible
+
+# Multiple columns to 2D array (feature matrix)
+feature_cols = ["f1", "f2", "f3", "f4"]
+X = df.select(feature_cols).to_numpy()     # shape (N, 4), dtype float64
+
+# Cast to float32 before converting (saves memory, faster for GPU)
+X = df.select(feature_cols).cast(pl.Float32).to_numpy()
+
+# Labels
+y = df["label"].to_numpy()
+
+# For list columns (e.g. embeddings)
+emb_matrix = np.vstack(df["embedding"].to_list())  # shape (N, D)
+# Or using PyArrow for zero-copy:
+import pyarrow as pa
+emb_matrix = df["embedding"].to_arrow().to_pylist()
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you use Polars with scikit-learn for ML pipelines?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+import polars.selectors as cs
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+
+# Load and preprocess with Polars
+df = (
+    pl.read_parquet("raw_data.parquet")
+    .drop_nulls(subset=["label"])
+    .with_columns(
+        cs.float().cast(pl.Float32),
+        pl.col("category").cast(pl.Categorical),
+    )
+    .filter(pl.col("label").is_in([0, 1]))
+)
+
+# One-hot encode categoricals in Polars before sklearn
+df_encoded = df.to_dummies(["category"])
+
+# Convert to numpy for sklearn
+feature_cols = [c for c in df_encoded.columns if c != "label"]
+X = df_encoded.select(feature_cols).to_numpy()
+y = df_encoded["label"].to_numpy()
+
+# Train/test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# Fit model
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled  = scaler.transform(X_test)
+
+model = RandomForestClassifier()
+model.fit(X_train_scaled, y_train)
+print(model.score(X_test_scaled, y_test))
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you use Polars with PyTorch for custom DataLoaders?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+import torch
+from torch.utils.data import Dataset, DataLoader
+import numpy as np
+
+class PolarsDataset(Dataset):
+    def __init__(self, df: pl.DataFrame, feature_cols: list, label_col: str):
+        # Convert once at init — avoid repeated conversions in __getitem__
+        self.X = torch.tensor(
+            df.select(feature_cols).to_numpy(), dtype=torch.float32
+        )
+        self.y = torch.tensor(df[label_col].to_numpy(), dtype=torch.long)
+
+    def __len__(self):
+        return len(self.X)
+
+    def __getitem__(self, idx):
+        return self.X[idx], self.y[idx]
+
+
+# Usage
+df = pl.read_parquet("train.parquet")
+feature_cols = [c for c in df.columns if c.startswith("feat_")]
+
+dataset    = PolarsDataset(df, feature_cols, "label")
+dataloader = DataLoader(dataset, batch_size=256, shuffle=True, num_workers=4)
+
+for X_batch, y_batch in dataloader:
+    # Train step
+    pass
+</code></pre>
+<p>For very large datasets, use Polars lazy scanning + streaming to feed batches without loading everything:</p>
+<pre><code># Lazy batch loading for very large datasets
+lf = pl.scan_parquet("huge_train.parquet")
+
+for chunk_df in lf.collect(streaming=True):  # batch iterator in newer Polars
+    X = torch.tensor(chunk_df.select(feature_cols).to_numpy(), dtype=torch.float32)
+    # ... train step
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you integrate Polars with Hugging Face datasets?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+from datasets import Dataset, load_dataset
+
+# Load HuggingFace dataset, convert to Polars for fast preprocessing
+hf_dataset = load_dataset("imdb", split="train")
+
+# HuggingFace Dataset → PyArrow Table → Polars DataFrame (zero-copy)
+df = pl.from_arrow(hf_dataset.data.table)
+
+# Fast preprocessing in Polars
+df_clean = (
+    df
+    .with_columns([
+        pl.col("text").str.strip_chars(),
+        pl.col("text").str.len_chars().alias("text_len"),
+    ])
+    .filter(pl.col("text_len") &gt; 50)
+    .filter(pl.col("text_len") &lt; 2000)
+    .select(["text", "label"])
+)
+
+# Convert back to HuggingFace Dataset
+hf_processed = Dataset.from_polars(df_clean)  # available in datasets &gt;= 2.16
+
+# Or via Pandas as fallback
+hf_processed = Dataset.from_pandas(df_clean.to_pandas())
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you use Polars for feature engineering in production ML pipelines?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Polars is ideal for production feature pipelines because it is fast, deterministic, and works on large data. Here is a real-world pattern:</p>
+<pre><code>import polars as pl
+
+def build_features(raw_path: str, output_path: str) -&gt; None:
+    """Feature pipeline: reads raw data, engineers features, writes Parquet."""
+    (
+        pl.scan_parquet(raw_path)
+        # Clean
+        .drop_nulls(subset=["user_id", "event_time", "amount"])
+        .with_columns(
+            pl.col("amount").cast(pl.Float32),
+            pl.col("event_time").str.strptime(pl.Datetime, "%Y-%m-%d %H:%M:%S"),
+        )
+        # Temporal features
+        .with_columns([
+            pl.col("event_time").dt.hour().alias("hour_of_day"),
+            pl.col("event_time").dt.weekday().alias("day_of_week"),
+            pl.col("event_time").dt.month().alias("month"),
+        ])
+        # User aggregation features (window functions)
+        .with_columns([
+            pl.col("amount").mean().over("user_id").alias("user_avg_amount"),
+            pl.col("amount").std().over("user_id").alias("user_std_amount"),
+            pl.col("event_time").count().over("user_id").alias("user_txn_count"),
+            pl.col("amount").rolling_mean(window_size=7).over("user_id").alias("rolling_7d_avg"),
+        ])
+        # Normalise
+        .with_columns(
+            ((pl.col("amount") - pl.col("user_avg_amount")) /
+             (pl.col("user_std_amount") + 1e-8)).alias("amount_zscore")
+        )
+        # Output
+        .sink_parquet(output_path)  # streaming — no RAM overflow
+    )
+
+build_features("raw/transactions.parquet", "features/train_features.parquet")
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you use Polars for RAG and LLM data pipelines?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Polars is increasingly used in LLM/RAG pipelines to manage document collections, embeddings, and retrieval metadata at scale.</p>
+<pre><code>import polars as pl
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer("all-MiniLM-L6-v2")
+
+# Step 1: Load and clean documents
+docs = (
+    pl.scan_parquet("documents/*.parquet")
+    .filter(pl.col("text").str.len_chars() &gt; 100)
+    .with_columns(
+        pl.col("text").str.strip_chars(),
+        pl.col("source").cast(pl.Categorical),
+    )
+    .collect()
+)
+
+# Step 2: Chunk long documents
+def chunk_text(text: str, max_chars: int = 512) -&gt; list:
+    words = text.split()
+    chunks, chunk = [], []
+    for w in words:
+        chunk.append(w)
+        if len(" ".join(chunk)) &gt; max_chars:
+            chunks.append(" ".join(chunk))
+            chunk = []
+    if chunk:
+        chunks.append(" ".join(chunk))
+    return chunks
+
+docs_chunked = docs.with_columns(
+    pl.col("text").map_elements(chunk_text, return_dtype=pl.List(pl.String))
+).explode("text")
+
+# Step 3: Embed (batch for efficiency)
+texts = docs_chunked["text"].to_list()
+embeddings = model.encode(texts, batch_size=64, show_progress_bar=True)
+
+# Step 4: Store embeddings back in Polars
+docs_with_emb = docs_chunked.with_columns(
+    pl.Series("embedding", embeddings.tolist())
+)
+
+# Step 5: Save for vector DB ingestion
+docs_with_emb.write_parquet("vector_index/chunks_with_embeddings.parquet")
+
+# Similarity search (CPU brute force for small datasets)
+query_emb = model.encode(["What is RAG?"])[0]
+emb_matrix = np.vstack(docs_with_emb["embedding"].to_list())
+scores = (emb_matrix @ query_emb) / (
+    np.linalg.norm(emb_matrix, axis=1) * np.linalg.norm(query_emb)
+)
+
+docs_with_emb.with_columns(
+    pl.Series("similarity", scores)
+).sort("similarity", descending=True).head(5)
+</code></pre>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="performance-best-practices" class="qa-section">
+        <div class="section-header">
+          <h2>Performance Best Practices</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the most important Polars performance rules for ML engineers?</summary>
+            <div class="qa-answer answer-inner">
+              
+<h3>Rule 1: Always use the Lazy API for multi-step queries</h3>
+<pre><code># BAD — executes eagerly at every step
+df = pl.read_csv("data.csv")
+df = df.filter(pl.col("label") == 1)
+df = df.select(["f1", "f2"])
+
+# GOOD — one optimised pass
+df = (
+    pl.scan_csv("data.csv")
+    .filter(pl.col("label") == 1)
+    .select(["f1", "f2"])
+    .collect()
+)
+</code></pre>
+<h3>Rule 2: Avoid map_elements() — use expressions</h3>
+<pre><code># BAD (row-by-row Python, 100x slower)
+df.with_columns(pl.col("x").map_elements(lambda v: v ** 2 + 1))
+
+# GOOD (vectorised, parallel)
+df.with_columns(pl.col("x") ** 2 + 1)
+</code></pre>
+<h3>Rule 3: Cast Float64 to Float32</h3>
+<pre><code>import polars.selectors as cs
+df = df.with_columns(cs.float().cast(pl.Float32))
+</code></pre>
+<h3>Rule 4: Use Parquet, not CSV</h3>
+<pre><code># Column pruning + predicate pushdown only work with Parquet
+pl.scan_parquet("data.parquet").filter(...).select([...]).collect()
+</code></pre>
+<h3>Rule 5: rechunk() after many concats</h3>
+<pre><code>df = pl.concat([df1, df2, ..., df100]).rechunk()
+</code></pre>
+<h3>Rule 6: Do dictionary lookups with join, not map_elements</h3>
+<pre><code># BAD
+lookup = {"A": 1, "B": 2}
+df.with_columns(pl.col("cat").map_elements(lookup.get, return_dtype=pl.Int32))
+
+# GOOD
+lookup_df = pl.DataFrame({"cat": ["A", "B"], "code": [1, 2]})
+df.join(lookup_df, on="cat", how="left")
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does Polars parallelism work and how do you tune it?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Polars uses all available CPU cores by default using Rust's Rayon thread pool. You rarely need to configure this manually, but you can:</p>
+<pre><code>import polars as pl
+import os
+
+# Check how many threads Polars uses
+print(pl.thread_pool_size())   # defaults to number of logical CPUs
+
+# Limit thread count (e.g. in a constrained container)
+os.environ["POLARS_MAX_THREADS"] = "4"  # must be set BEFORE importing polars
+
+# Or at runtime:
+pl.Config.set_tbl_rows(20)     # display settings
+</code></pre>
+<p><b>Operations that parallelise well:</b></p>
+<ul>
+<li>group_by + agg — each group is processed in parallel</li>
+<li>Multiple with_columns expressions — computed in parallel</li>
+<li>Reading multiple Parquet files — files read in parallel</li>
+<li>Joins with large datasets</li>
+</ul>
+<p><b>Operations that are inherently sequential:</b></p>
+<ul>
+<li>Rolling window operations (data-dependent order)</li>
+<li>Streaming sinks</li>
+</ul>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you benchmark Polars vs Pandas on your own data?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+import pandas as pd
+import time
+
+path = "large_data.parquet"
+
+# Benchmark Pandas
+start = time.perf_counter()
+pdf = pd.read_parquet(path)
+result_pd = (
+    pdf[pdf["score"] &gt; 0.8]
+    .groupby("category")["value"]
+    .agg(["mean", "std", "count"])
+)
+pd_time = time.perf_counter() - start
+print(f"Pandas: {pd_time:.2f}s")
+
+# Benchmark Polars (Lazy)
+start = time.perf_counter()
+result_pl = (
+    pl.scan_parquet(path)
+    .filter(pl.col("score") &gt; 0.8)
+    .group_by("category")
+    .agg([
+        pl.col("value").mean().alias("mean"),
+        pl.col("value").std().alias("std"),
+        pl.col("value").count().alias("count"),
+    ])
+    .collect()
+)
+pl_time = time.perf_counter() - start
+print(f"Polars: {pl_time:.2f}s")
+print(f"Speedup: {pd_time / pl_time:.1f}x")
+</code></pre>
+<p>Typical results: 5–20x speedup on groupby/aggregation, 10–50x on large file scans with predicate pushdown.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you use Polars with DuckDB for analytical SQL queries?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Polars and DuckDB share the Apache Arrow format — you can pass DataFrames between them with zero copying. This lets you write SQL over Polars DataFrames.</p>
+<pre><code>import polars as pl
+import duckdb
+
+df = pl.read_parquet("features.parquet")
+
+# Query a Polars DataFrame with SQL (zero-copy via Arrow)
+result = duckdb.sql("""
+    SELECT
+        category,
+        AVG(score) AS avg_score,
+        COUNT(*) AS n
+    FROM df
+    WHERE score &gt; 0.7
+    GROUP BY category
+    ORDER BY avg_score DESC
+""").pl()  # .pl() returns result as Polars DataFrame
+
+# Polars for preprocessing, DuckDB for complex analytical SQL
+df_processed = (
+    pl.scan_parquet("raw/*.parquet")
+    .drop_nulls()
+    .collect()
+)
+
+result = duckdb.sql("SELECT * FROM df_processed WHERE year = 2024").pl()
+</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a complete end-to-end Polars workflow for an ML project?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>import polars as pl
+import polars.selectors as cs
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import GradientBoostingClassifier
+from sklearn.metrics import classification_report
+import numpy as np
+
+# ── 1. Load raw data (lazy) ──────────────────────────────────────────────────
+lf = pl.scan_parquet("raw/*.parquet")
+
+# ── 2. Clean and engineer features (all lazy, one optimised pass) ────────────
+features_lf = (
+    lf
+    .drop_nulls(subset=["label", "user_id"])
+    .filter(pl.col("amount") &gt; 0)
+    .with_columns([
+        pl.col("amount").cast(pl.Float32),
+        pl.col("timestamp").str.strptime(pl.Datetime, "%Y-%m-%d %H:%M:%S"),
+        pl.col("category").cast(pl.Categorical),
+    ])
+    .with_columns([
+        pl.col("timestamp").dt.hour().cast(pl.UInt8).alias("hour"),
+        pl.col("timestamp").dt.weekday().cast(pl.UInt8).alias("weekday"),
+        pl.col("amount").log1p().alias("log_amount"),
+        pl.col("amount").mean().over("user_id").alias("user_avg"),
+        pl.col("amount").std().over("user_id").alias("user_std"),
+    ])
+    .with_columns(
+        ((pl.col("amount") - pl.col("user_avg")) /
+         (pl.col("user_std") + 1e-8)).alias("amount_z")
+    )
+    .drop(["timestamp", "amount", "user_avg", "user_std"])
+)
+
+# ── 3. One-hot encode and collect ─────────────────────────────────────────────
+df = features_lf.collect()
+df = df.to_dummies(["category"])
+
+# ── 4. Cast all floats to float32 ────────────────────────────────────────────
+df = df.with_columns(cs.float().cast(pl.Float32))
+
+# ── 5. Prepare arrays for sklearn ────────────────────────────────────────────
+label_col = "label"
+feature_cols = [c for c in df.columns if c != label_col]
+X = df.select(feature_cols).to_numpy()
+y = df[label_col].to_numpy()
+
+# ── 6. Train / evaluate ───────────────────────────────────────────────────────
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = GradientBoostingClassifier(n_estimators=200, max_depth=5)
+model.fit(X_train, y_train)
+
+print(classification_report(y_test, model.predict(X_test)))
+</code></pre>
+
+            </div>
+          </details>
+        </div>
+      </section>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+<script src="../../assets/main.js"></script>
+</body>
+</html>
