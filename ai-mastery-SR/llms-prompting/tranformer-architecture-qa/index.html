@@ -66,7 +66,7 @@
         </div>
         <h1>Tranformer Architecture Q&amp;A</h1>
         <div class="topic-meta">
-          <span class="topic-stats">60 questions</span>
+          <span class="topic-stats">64 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -684,6 +684,136 @@
 <div class="ui-rte-editor-div ui-rte-editor" style="overflow-wrap: break-word; font-variant-ligatures: none"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Definition</p><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Greedy decoding is a text generation strategy where, at each step, the model selects the <strong>token with the highest probability (argmax)</strong> from the output distribution</p><p style="margin: 0px; tab-size: 4; box-sizing: border-box">[<br/>\text{next token} = \arg\max P(\text{token})<br/>]</p><p style="margin: 0px; tab-size: 4; box-sizing: border-box">This decision is made independently at every step</p><h2 style="margin: 0px; box-sizing: border-box">How it works</h2><p style="margin: 0px; tab-size: 4; box-sizing: border-box">At each generation step</p><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">compute logits for the next token</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">apply softmax to get probabilities</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">pick the token with the highest probability</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">append it to the sequence</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">repeat</p></li></ul><h2 style="margin: 0px; box-sizing: border-box">Key characteristic</h2><p style="margin: 0px; tab-size: 4; box-sizing: border-box">It always chooses the <strong>locally most probable token</strong>, without considering future consequences</p><h2 style="margin: 0px; box-sizing: border-box">Main weaknesses</h2><h3 style="margin: 0px; box-sizing: border-box">1 Gets stuck in suboptimal sequences</h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Greedy decoding optimizes locally, not globally</p><p style="margin: 0px; tab-size: 4; box-sizing: border-box">A slightly less probable token now might lead to a better overall sentence later, but greedy never explores that</p><h3 style="margin: 0px; box-sizing: border-box">2 Low diversity</h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">It always produces the same output for the same prompt</p><p style="margin: 0px; tab-size: 4; box-sizing: border-box">No randomness</p><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">no variation</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">no creativity</p></li></ul><h3 style="margin: 0px; box-sizing: border-box">3 Repetitive outputs</h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Greedy decoding often leads to repetition</p><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Example</p><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">repeated phrases</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">loops like "the the the"</p></li></ul><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Because high-probability tokens keep reinforcing themselves</p><h3 style="margin: 0px; box-sizing: border-box">4 Poor handling of ambiguity</h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">If multiple valid continuations exist</p><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">greedy picks only one path</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">ignores other plausible options</p></li></ul><h3 style="margin: 0px; box-sizing: border-box">5 Error accumulation</h3><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Once a wrong token is chosen</p><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">all future predictions depend on it</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">cannot recover</p></li></ul><h2 style="margin: 0px; box-sizing: border-box">Key intuition</h2><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Greedy decoding is like<br/>always picking the best immediate option without thinking ahead</p><h2 style="margin: 0px; box-sizing: border-box">When it works well</h2><ul style="list-style-image: none; box-sizing: border-box"><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">tasks requiring deterministic output</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">short or simple completions</p></li><li style="box-sizing: border-box"><p style="margin: 0px; tab-size: 4; box-sizing: border-box">when highest-probability path is clearly correct</p></li></ul><h2 style="margin: 0px; box-sizing: border-box">Short interview-ready answer</h2><p style="margin: 0px; tab-size: 4; box-sizing: border-box">Greedy decoding is a strategy where the model selects the highest-probability token at each step. While simple and fast, its main weaknesses are that it makes only local decisions, lacks diversity, often produces repetitive or dull outputs, and can get stuck in suboptimal sequences because it does not explore alternative possibilities.</p></div>
 </div>
 <p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="hands-on-code-inside-transformer-architecture-chapter-3-hands-on-llms-book" class="qa-section">
+        <div class="section-header">
+          <h2>Hands-On Code: Inside Transformer Architecture (Chapter 3 — Hands-On LLMs Book)</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you inspect a transformer&#x27;s internal layers and hidden states in code?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>You can access the raw outputs of every transformer block by calling <code>model.model()</code> (the base without the LM head) and setting <code>output_hidden_states=True</code>. This exposes the representations at each layer — useful for probing, interpretability, and extracting embeddings.</p>
+<pre><code>from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+model_name = "microsoft/Phi-3-mini-4k-instruct"
+tokenizer  = AutoTokenizer.from_pretrained(model_name)
+model      = AutoModelForCausalLM.from_pretrained(
+    model_name, device_map="cuda", torch_dtype=torch.bfloat16
+)
+
+prompt = "The Eiffel Tower is located in"
+inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
+
+with torch.no_grad():
+    outputs = model.model(
+        **inputs,
+        output_hidden_states=True,
+    )
+
+hidden_states = outputs.hidden_states   # tuple of (n_layers + 1) tensors
+print(f"Number of layers (incl. embedding): {len(hidden_states)}")
+print(f"Shape per layer: {hidden_states[-1].shape}")
+# Shape: (batch=1, seq_len, hidden_dim=3072 for Phi-3-mini)</code></pre>
+<p>The first element <code>hidden_states[0]</code> is the input embedding; the last is the final layer's representation. Each shape is <code>(1, seq_len, d_model)</code>.</p>
+<p><a href="https://colab.research.google.com/github/HandsOnLLM/Hands-On-Large-Language-Models/blob/main/chapter03/Chapter%203%20-%20Looking%20Inside%20LLMs.ipynb" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">▶ Open in Google Colab — Chapter 3</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How can you implement greedy decoding manually using the LM head, and what does it reveal about how generation works?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The LM head is a single linear layer that projects from hidden_dim to vocabulary_size. Softmax over those logits gives you the probability of each token being next. Greedy decoding picks the highest-probability token at every step.</p>
+<pre><code>import torch
+import torch.nn.functional as F
+
+# One forward pass
+with torch.no_grad():
+    hidden = model.model(**inputs).last_hidden_state  # (1, seq_len, 3072)
+    logits = model.lm_head(hidden)                    # (1, seq_len, vocab_size)
+
+# Logits for the LAST token position (the prediction for the next token)
+last_token_logits = logits[0, -1, :]           # (vocab_size,)
+probs = F.softmax(last_token_logits, dim=-1)   # convert to probabilities
+
+# Top-5 predictions
+top5_probs, top5_ids = torch.topk(probs, 5)
+for prob, token_id in zip(top5_probs, top5_ids):
+    token_str = tokenizer.decode([token_id.item()])
+    print(f"  P={prob.item():.4f}  token={repr(token_str)}")
+
+# Greedy selection
+next_token_id = torch.argmax(last_token_logits).item()
+print(f"\nGreedy next token: {repr(tokenizer.decode([next_token_id]))}")</code></pre>
+<p>This is what happens inside every autoregressive step. For the prompt "The Eiffel Tower is located in", the top prediction will be " Paris" with very high probability.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does KV-cache speed up inference, and how do you benchmark the difference in code?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Without KV-cache, generating each new token requires recomputing attention for the entire sequence from scratch — O(n²) per token. With KV-cache, previously computed key and value tensors are cached, making each step O(n). The speedup is dramatic for long sequences.</p>
+<pre><code>import time
+
+# Generate 100 tokens of the same prompt twice: with and without KV-cache
+prompt = "Large language models are neural networks that"
+inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
+
+# WITHOUT KV-cache (recomputes everything each step)
+start = time.time()
+with torch.no_grad():
+    model.generate(**inputs, max_new_tokens=100, use_cache=False)
+time_no_cache = time.time() - start
+
+# WITH KV-cache (default — caches K,V for all previous positions)
+start = time.time()
+with torch.no_grad():
+    model.generate(**inputs, max_new_tokens=100, use_cache=True)
+time_with_cache = time.time() - start
+
+print(f"Without KV-cache: {time_no_cache:.2f}s")
+print(f"With KV-cache:    {time_with_cache:.2f}s")
+print(f"Speedup:          {time_no_cache / time_with_cache:.1f}x")</code></pre>
+<p>Expected result: approximately 3x speedup with KV-cache on 100 tokens. The speedup grows with sequence length — at 2000 tokens, the difference is even more pronounced. This is why KV-cache memory management (vLLM's PagedAttention) is critical for production serving.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you visualise what a transformer model looks like architecturally by inspecting its layers in code?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Printing a PyTorch model shows its full layer hierarchy. This is one of the most instructive debugging exercises — you can see exactly what building blocks a specific architecture uses.</p>
+<pre><code>from transformers import AutoModelForCausalLM
+import torch
+
+model = AutoModelForCausalLM.from_pretrained(
+    "microsoft/Phi-3-mini-4k-instruct",
+    device_map="cpu",           # CPU for inspection (no need for GPU)
+    torch_dtype=torch.float16,
+)
+
+# Print the full architecture
+print(model)
+
+# Inspect a single transformer block
+block_0 = model.model.layers[0]
+print("\nLayer 0 structure:")
+print(block_0)
+
+# Count parameters per component
+for name, param in model.named_parameters():
+    if "layers.0." in name:
+        print(f"  {name:60s}  shape={list(param.shape)}")</code></pre>
+<p>You'll see the structure: <code>input_layernorm → self_attn (q_proj, k_proj, v_proj, o_proj) → post_attention_layernorm → mlp (gate_proj, up_proj, down_proj)</code>. The attention projections are where QKV comes from; the MLP is a gated feedforward network (SwiGLU activation). Every modern transformer decoder has this pattern.</p>
+
             </div>
           </details>
         </div>

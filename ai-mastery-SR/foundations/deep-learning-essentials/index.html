@@ -64,7 +64,7 @@
         </div>
         <h1>Deep Learning Essentials</h1>
         <div class="topic-meta">
-          <span class="topic-stats">61 questions</span>
+          <span class="topic-stats">63 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -700,6 +700,89 @@
 <p>Hyperparameters are configuration settings defined before training a model. They are not learned from data.<br/></p><p>They control the learning process and architecture.<br/></p><p>Common hyperparameters in neural networks:<br/></p><p>Model architecture hyperparameters:<br/></p><ul><li><p style="margin-top: 0px">Number of hidden layers<br/></p></li><li><p style="margin-top: 0px">Number of neurons per layer<br/></p></li><li><p style="margin-top: 0px">Type of activation function<br/></p></li><li><p style="margin-top: 0px">Kernel size (in CNN)<br/></p></li><li><p style="margin-top: 0px">Number of filters (in CNN)<br/></p></li></ul><p>Training hyperparameters:<br/></p><ul><li><p style="margin-top: 0px">Learning rate<br/></p></li><li><p style="margin-top: 0px">Batch size<br/></p></li><li><p style="margin-top: 0px">Number of epochs<br/></p></li><li><p style="margin-top: 0px">Optimizer (SGD, Adam, RMSProp)<br/></p></li><li><p style="margin-top: 0px">Momentum<br/></p></li><li><p style="margin-top: 0px">Weight initialization method<br/></p></li></ul><p>Regularization hyperparameters:<br/></p><ul><li><p style="margin-top: 0px">Dropout rate<br/></p></li><li><p style="margin-top: 0px">L1 or L2 regularization strength<br/></p></li><li><p style="margin-top: 0px">Early stopping patience<br/></p></li></ul><p>Learning rate scheduling hyperparameters:<br/></p><ul><li><p style="margin-top: 0px">Decay rate<br/></p></li><li><p style="margin-top: 0px">Step size<br/></p></li><li><p style="margin-top: 0px">Warmup steps<br/></p></li></ul><p>Hyperparameters significantly affect model performance and must be tuned carefully.<br/></p><div><br/></div>
 </div>
 <p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="hands-on-code-llm-architecture-inspection-from-hands-on-llms-book" class="qa-section">
+        <div class="section-header">
+          <h2>Hands-On Code: LLM Architecture Inspection (from Hands-On LLMs Book)</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you run a neural network inference step on a GPU and understand what&#x27;s happening at each stage?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>This complete example loads a real neural network (a small LLM), moves it to GPU, runs a forward pass, and shows the data flowing through each stage — tokenization → embedding → transformer layers → output logits.</p>
+<pre><code>from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+# 1. Load model and tokenizer
+tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3-mini-4k-instruct")
+model     = AutoModelForCausalLM.from_pretrained(
+    "microsoft/Phi-3-mini-4k-instruct",
+    device_map="cuda",
+    torch_dtype=torch.bfloat16,
+)
+print(f"Model parameters: {sum(p.numel() for p in model.parameters()):,}")
+
+# 2. Tokenize input
+text   = "Deep learning is powerful because"
+inputs = tokenizer(text, return_tensors="pt").to("cuda")
+print(f"Input shape (tokens): {inputs['input_ids'].shape}")
+
+# 3. Forward pass
+with torch.no_grad():
+    outputs = model(**inputs, output_hidden_states=True)
+
+# 4. What came out
+print(f"Logits shape: {outputs.logits.shape}")  # (batch, seq_len, vocab_size)
+print(f"Num hidden layers: {len(outputs.hidden_states)}")
+
+# 5. Predicted next token
+next_token_id = outputs.logits[0, -1, :].argmax()
+print(f"Predicted next: '{tokenizer.decode([next_token_id])}'")
+</code></pre>
+<p>This bridges theory and practice: the "3.8 billion parameters" in Phi-3-mini are just numbers — the <code>sum(p.numel())</code> call makes that concrete. The logits shape <code>(1, 7, 32064)</code> means: 1 batch, 7 tokens in the prompt, predicting over 32,064 possible next tokens.</p>
+<p><a href="https://colab.research.google.com/github/HandsOnLLM/Hands-On-Large-Language-Models/blob/main/chapter01/Chapter%201%20-%20Introduction%20to%20Language%20Models.ipynb" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">▶ Open in Google Colab — Chapter 1</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you compare the impact of using GPU vs CPU for deep learning inference?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>GPUs are essential for deep learning because they perform matrix multiplications in parallel — a linear layer multiplying a (1, 4096) input by a (4096, 4096) weight matrix is 16 million multiply-adds, all happening simultaneously on thousands of GPU cores.</p>
+<pre><code>import torch
+import time
+
+# Create a weight matrix like a transformer MLP layer
+W = torch.randn(4096, 4096)
+x = torch.randn(1, 4096)
+
+# CPU timing
+start = time.time()
+for _ in range(100):
+    y = x @ W
+cpu_time = (time.time() - start) / 100 * 1000
+print(f"CPU: {cpu_time:.2f} ms per matmul")
+
+# GPU timing
+if torch.cuda.is_available():
+    W_gpu = W.to("cuda")
+    x_gpu = x.to("cuda")
+    torch.cuda.synchronize()    # wait for GPU to be ready
+
+    start = time.time()
+    for _ in range(100):
+        y = x_gpu @ W_gpu
+    torch.cuda.synchronize()
+    gpu_time = (time.time() - start) / 100 * 1000
+    print(f"GPU: {gpu_time:.2f} ms per matmul")
+    print(f"Speedup: {cpu_time / gpu_time:.0f}x")</code></pre>
+<p>Typical result: 50–200x speedup for large matrix operations. A transformer forward pass involves hundreds of these matrix multiplications — this is why training a 70B model requires thousands of GPU-days and why inference latency is measured in milliseconds rather than seconds on a good GPU.</p>
+
             </div>
           </details>
         </div>

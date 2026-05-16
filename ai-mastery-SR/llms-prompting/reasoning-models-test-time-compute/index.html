@@ -66,7 +66,7 @@
         </div>
         <h1>Reasoning Models &amp; Test-Time Compute</h1>
         <div class="topic-meta">
-          <span class="topic-stats">22 questions</span>
+          <span class="topic-stats">24 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -86,6 +86,7 @@
         <li><a href="#section-3-specific-models-apis">Section 3: Specific Models &amp; APIs</a></li>
         <li><a href="#section-4-cost-latency-trade-offs">Section 4: Cost, Latency &amp; Trade-offs</a></li>
         <li><a href="#section-5-the-broader-implications">Section 5: The Broader Implications</a></li>
+        <li><a href="#further-reading-visual-guides-to-reasoning-models">Further Reading: Visual Guides to Reasoning Models</a></li>
           </ul>
         </nav>
         <div class="qa-sections">
@@ -601,6 +602,68 @@ def solve_complex_task(task, tools):
 <p>The trade-off: each reasoning step adds latency. A 10-step agentic pipeline where each step uses extended thinking can take 10-30 minutes for complex tasks. This is acceptable for async background agents but unacceptable for real-time interactive agents.</p>
 <p><strong>Current best practice:</strong> use reasoning models for the initial task decomposition and final answer synthesis; use fast standard models for individual tool calls, data retrieval, and routine sub-tasks. The reasoning budget is precious — spend it on the decisions that most benefit from careful deliberation, not on boilerplate execution steps.</p>
 <p>Looking forward, reasoning-capable agents represent a qualitative shift in what agentic systems can reliably accomplish. The bottleneck for autonomous agents has always been decision quality, not execution speed. Reasoning models address the right constraint.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="further-reading-visual-guides-to-reasoning-models" class="qa-section">
+        <div class="section-header">
+          <h2>Further Reading: Visual Guides to Reasoning Models</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Where can I find visual, in-depth explanations of how reasoning models like DeepSeek-R1 were built and trained?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The <b>Hands-On Large Language Models</b> book contains two dedicated bonus chapters on reasoning models, written by Maarten Grootendorst (BERTopic creator). These go deeper on training mechanics than most blog posts, with detailed diagrams.</p>
+<p><b>A Visual Guide to Reasoning LLMs</b> — covers test-time compute paradigm, chain-of-thought as emergent behaviour, reasoning traces as extended inference, and how CoT training produces thinking models:</p>
+<p><a href="https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-reasoning-llms" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">📖 Read: Visual Guide to Reasoning LLMs</a></p>
+<p><b>The Illustrated DeepSeek-R1</b> — deep dive into DeepSeek-R1's MoE architecture (256 experts, 8 activated per token), GRPO reward modeling, rule-based verifiers, and how it was distilled into smaller models:</p>
+<p><a href="https://newsletter.languagemodels.co/p/the-illustrated-deepseek-r1" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">📖 Read: The Illustrated DeepSeek-R1</a></p>
+<p>Both articles are highly visual — each concept is illustrated with diagrams showing data flow, training loops, and architecture components. Recommended reading after completing this section.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you use the Claude API to access extended thinking and inspect the reasoning trace?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Claude's Extended Thinking API lets you set a token budget for the model's internal reasoning. The thinking trace is returned as a separate block — you can read it to understand why the model reached its conclusion.</p>
+<pre><code>import anthropic
+
+client = anthropic.Anthropic()  # uses ANTHROPIC_API_KEY env var
+
+response = client.messages.create(
+    model="claude-3-7-sonnet-20250219",
+    max_tokens=16000,
+    thinking={
+        "type": "enabled",
+        "budget_tokens": 10000   # max thinking tokens (more = better but costs more)
+    },
+    messages=[{
+        "role": "user",
+        "content": """Solve this logic puzzle:
+        Three friends — Alice, Bob, Carol — each own a different pet (cat, dog, fish).
+        - Alice does not own the dog.
+        - Bob owns the fish.
+        - The person who owns the cat is not Carol.
+        Who owns what?"""
+    }]
+)
+
+# The response has multiple content blocks
+for block in response.content:
+    if block.type == "thinking":
+        print("=== REASONING TRACE ===")
+        print(block.thinking[:500], "...")   # print first 500 chars
+    elif block.type == "text":
+        print("\n=== FINAL ANSWER ===")
+        print(block.text)
+
+print(f"\nTotal tokens: {response.usage.input_tokens} in, {response.usage.output_tokens} out")</code></pre>
+<p>The thinking trace shows the model working through the constraints one by one — "Bob owns fish → Bob doesn't own cat or dog. Alice doesn't own dog → Alice owns cat or fish. Alice can't have fish (Bob has it) → Alice owns cat. Carol gets dog." This step-by-step verification is what makes reasoning models reliable on logic problems.</p>
 
             </div>
           </details>

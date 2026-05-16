@@ -66,7 +66,7 @@
         </div>
         <h1>Prompt Engineering Mastery</h1>
         <div class="topic-meta">
-          <span class="topic-stats">32 questions</span>
+          <span class="topic-stats">35 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -407,6 +407,129 @@ Output format <span class="hljs-title">requirement</span> <span class="hljs-para
 <p>System-level instructions define global behavior before user input is processed.<br/></p><p>They:<br/></p><ol><li><p style="margin-top: 0px"></p><div>Set role and identity<br/></div><div> “You are a licensed medical information assistant providing general educational information only.”<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Enforce safety boundaries<br/></div><div> “Never provide instructions for harmful activities.”<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Define tone and professionalism<br/></div><div> “Maintain calm, respectful, and non-judgmental language.”<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Establish refusal policy<br/></div><div> “Decline requests involving violence, hate speech, or illegal guidance.”<br/></div><p></p></li><li><p style="margin-top: 0px"></p><div>Control scope<br/></div><div> “Provide high-level information only, not personalized medical diagnosis.”<br/></div><p></p></li></ol><p data-is-last-node="" data-is-only-node=""></p><div>System instructions act as persistent guardrails.<br/></div><div> They ensure consistent behavior across all user interactions, especially in domains like healthcare, finance, law, or mental health.<br/></div><p></p><div><br/></div>
 </div>
 <p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="hands-on-code-prompt-engineering-in-practice-chapter-6-hands-on-llms-book" class="qa-section">
+        <div class="section-header">
+          <h2>Hands-On Code: Prompt Engineering in Practice (Chapter 6 — Hands-On LLMs Book)</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you implement role prompting and few-shot learning in code, and when does each technique help?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p><b>Role prompting</b> gives the model a persona to adopt — this shapes tone, expertise level, and response style. <b>Few-shot learning</b> shows the model examples of the input-output pattern you want before your actual question.</p>
+<pre><code>from transformers import pipeline
+
+pipe = pipeline(
+    "text-generation",
+    model="microsoft/Phi-3-mini-4k-instruct",
+    device_map="cuda",
+    torch_dtype="auto",
+)
+
+def generate(messages, max_tokens=300):
+    return pipe(messages, max_new_tokens=max_tokens, return_full_text=False)[0]["generated_text"]
+
+# --- Role prompting ---
+messages_role = [
+    {"role": "system", "content": "You are a senior machine learning engineer with 10 years of experience. Give concise, practical advice. Avoid theory when possible."},
+    {"role": "user",   "content": "How should I choose between fine-tuning and RAG for a customer support chatbot?"},
+]
+print("ROLE PROMPTED:\n", generate(messages_role))
+
+# --- Few-shot prompting ---
+messages_fewshot = [
+    {"role": "system", "content": "Classify the sentiment of each movie review as POSITIVE or NEGATIVE. Reply only with the label."},
+    {"role": "user",   "content": "Review: This film was an absolute masterpiece."},
+    {"role": "assistant", "content": "POSITIVE"},
+    {"role": "user",   "content": "Review: I walked out after 20 minutes."},
+    {"role": "assistant", "content": "NEGATIVE"},
+    {"role": "user",   "content": "Review: Boring plot but amazing visual effects."},  # ambiguous
+]
+print("\nFEW-SHOT:\n", generate(messages_fewshot, max_tokens=10))</code></pre>
+<p>Key insight: few-shot examples teach the model the output <i>format</i> ("POSITIVE"/"NEGATIVE" as single words) not just the task. Without examples, the model might output "The sentiment is positive." — correct but wrong format for parsing.</p>
+<p><a href="https://colab.research.google.com/github/HandsOnLLM/Hands-On-Large-Language-Models/blob/main/chapter06/Chapter%206%20-%20Prompt%20Engineering.ipynb" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">▶ Open in Google Colab — Chapter 6</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you implement Chain-of-Thought prompting and what makes it work for complex reasoning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Chain-of-Thought prompting asks the model to reason step-by-step before answering. It dramatically improves accuracy on multi-step problems — math, logic, code debugging — because it forces the model to "think on paper" rather than guess the answer in one shot.</p>
+<pre><code>from transformers import pipeline
+
+pipe = pipeline("text-generation", model="microsoft/Phi-3-mini-4k-instruct",
+                device_map="cuda", torch_dtype="auto")
+
+math_problem = """
+A train leaves Chicago at 9:00 AM travelling at 80 mph.
+Another train leaves NYC at 11:00 AM travelling at 100 mph toward Chicago.
+The distance between Chicago and NYC is 790 miles.
+At what time do they meet?
+"""
+
+# WITHOUT chain-of-thought
+messages_direct = [
+    {"role": "user", "content": math_problem + "\nAnswer:"}
+]
+
+# WITH chain-of-thought
+messages_cot = [
+    {"role": "user", "content": math_problem + "\nThink step by step, then give the answer."}
+]
+
+# Zero-Shot CoT — just adding "Let's think step by step"
+messages_zscot = [
+    {"role": "user", "content": math_problem + "\nLet's think step by step."}
+]
+
+def gen(messages):
+    return pipe(messages, max_new_tokens=400, return_full_text=False)[0]["generated_text"]
+
+print("Direct answer:\n", gen(messages_direct)[:200])
+print("\nChain-of-Thought:\n", gen(messages_cot)[:500])
+print("\nZero-Shot CoT:\n", gen(messages_zscot)[:500])</code></pre>
+<p>The direct prompt often gives a wrong answer. CoT forces the model to: "Train A travels 80 mph × (t+2) hours... Train B travels 100 mph × t hours... solve: 80(t+2) + 100t = 790..." Each reasoning step attends to the previous, building toward a correct answer. This is why CoT works — it's adding intermediate computational steps to a fundamentally sequential text predictor.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you get structured JSON output from an LLM reliably?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Structured output is one of the most important practical prompt engineering skills. LLMs can be made to output valid JSON by combining a clear system prompt, an example in the prompt, and optionally grammar-constrained decoding.</p>
+<pre><code>from transformers import pipeline
+import json
+
+pipe = pipeline("text-generation", model="microsoft/Phi-3-mini-4k-instruct",
+                device_map="cuda", torch_dtype="auto")
+
+# The trick: show exactly what format you want with an example
+messages = [
+    {"role": "system", "content": """You are a data extraction assistant.
+Always respond with valid JSON only. No explanation, no markdown, just the JSON object.
+Example format: {"name": "string", "age": number, "skills": ["string"]}"""},
+    {"role": "user", "content": "Extract info: Sarah Chen is a 28-year-old ML engineer who knows Python, PyTorch, and Kubernetes."},
+]
+
+result = pipe(messages, max_new_tokens=200, return_full_text=False)[0]["generated_text"]
+print("Raw output:", result)
+
+# Parse to verify it's valid JSON
+try:
+    parsed = json.loads(result.strip())
+    print("Parsed JSON:", parsed)
+    print("Name:", parsed["name"])
+except json.JSONDecodeError as e:
+    print(f"Parse failed: {e}")
+    # Retry with more explicit prompt or use grammar-constrained decoding</code></pre>
+<p>For production: use <code>response_format={"type": "json_object"}</code> with OpenAI/Anthropic APIs, or use <code>outlines</code> / <code>guidance</code> libraries for grammar-constrained decoding with open-weight models. Open-ended prompting for JSON fails ~10-20% of the time even with good prompts.</p>
+
             </div>
           </details>
         </div>

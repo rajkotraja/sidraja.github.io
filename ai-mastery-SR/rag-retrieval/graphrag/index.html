@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GraphRAG — Graph-Based Retrieval Augmented Generation | RAG &amp; Retrieval | AI Mastery by Siddharth Raja</title>
+<link rel="stylesheet" href="../../assets/main.css">
+<script>
+(function(){
+  var t=localStorage.getItem('theme')||(window.matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light');
+  document.documentElement.dataset.theme=t;
+  if(sessionStorage.getItem('am_auth')!=='1'){
+    document.documentElement.style.opacity='0';
+  }
+})();
+</script>
+</head>
+<body data-root="../../">
+<header class="site-header">
+  <div class="header-inner">
+    <a href="../../index.html" class="logo">AI <span>Mastery</span> <span class="logo-by">by Siddharth Raja</span></a>
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+      <input type="search" id="search-input" placeholder="Search questions… (/)" autocomplete="off" spellcheck="false" aria-label="Search questions">
+      <div id="search-results" role="listbox" hidden></div>
+    </div>
+    <button id="theme-toggle" aria-label="Toggle dark mode">
+      <svg id="icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun"  width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+<div class="page-body">
+  <div class="layout">
+    <nav class="course-sidebar" aria-label="Course topics">
+      <a href="../../index.html" class="sidebar-back">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+        All courses
+      </a>
+      <div class="sidebar-course-name">RAG &amp; Retrieval</div>
+      <ul class="topic-list">
+        <li class=""><a href="../rag-systems/index.html">RAG Systems</a></li>
+        <li class=""><a href="../embeddings-deep-dive/index.html">Embeddings Deep Dive</a></li>
+        <li class=""><a href="../advanced-rag/index.html">Advanced RAG</a></li>
+        <li class="active"><a href="../graphrag/index.html">GraphRAG — Graph-Based Retrieval Augmented Generation</a></li>
+      </ul>
+    </nav>
+    <main class="topic-main" id="main-content">
+      <nav class="mobile-course-nav" aria-label="Topics in RAG &amp; Retrieval">
+        <div class="mobile-course-nav-title">RAG &amp; Retrieval</div>
+        <ul class="mobile-topic-list">
+          <li class=""><a href="../rag-systems/index.html">RAG Systems</a></li>
+          <li class=""><a href="../embeddings-deep-dive/index.html">Embeddings Deep Dive</a></li>
+          <li class=""><a href="../advanced-rag/index.html">Advanced RAG</a></li>
+          <li class="active"><a href="../graphrag/index.html">GraphRAG — Graph-Based Retrieval Augmented Generation</a></li>
+        </ul>
+      </nav>
+      <div class="topic-header">
+        <div class="topic-breadcrumb">
+          <a href="../../index.html">Home</a> /
+          <a href="../index.html">RAG &amp; Retrieval</a>
+        </div>
+        <h1>GraphRAG — Graph-Based Retrieval Augmented Generation</h1>
+        <div class="topic-meta">
+          <span class="topic-stats">26 questions</span>
+        </div>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-wrap">
+          <svg class="filter-icon" width="13" height="13" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="9" cy="9" r="6"/><path d="m15 15 4 4"/></svg>
+          <input type="search" id="topic-filter" placeholder="Filter questions… (f)" autocomplete="off" spellcheck="false" aria-label="Filter questions on this page">
+        </div>
+        <span id="filter-count"></span>
+      </div>
+      <div id="filter-no-results" class="filter-no-results">No questions match your filter.</div>
+      <div class="content-with-toc">
+        <nav class="toc-sidebar" aria-label="Page sections">
+          <p class="toc-title">Sections</p>
+          <ul class="toc-list">
+        <li><a href="#what-is-graphrag-and-why-does-it-exist">What Is GraphRAG and Why Does It Exist?</a></li>
+        <li><a href="#neo4j-and-cypher-fundamentals">Neo4j and Cypher Fundamentals</a></li>
+        <li><a href="#building-a-graphrag-pipeline">Building a GraphRAG Pipeline</a></li>
+        <li><a href="#loading-graph-data">Loading Graph Data</a></li>
+        <li><a href="#the-cinegraph-architecture-graphrag-reference-implementation">The CineGraph Architecture (GraphRAG Reference Implementation)</a></li>
+        <li><a href="#setting-up-and-running-the-project">Setting Up and Running the Project</a></li>
+        <li><a href="#graphrag-design-patterns-best-practices">GraphRAG Design Patterns &amp; Best Practices</a></li>
+        <li><a href="#cypher-query-reference">Cypher Query Reference</a></li>
+        <li><a href="#complete-project-setup-reference">Complete Project Setup Reference</a></li>
+          </ul>
+        </nav>
+        <div class="qa-sections">
+      <section id="what-is-graphrag-and-why-does-it-exist" class="qa-section">
+        <div class="section-header">
+          <h2>What Is GraphRAG and Why Does It Exist?</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is GraphRAG and how is it fundamentally different from standard vector RAG?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Standard RAG retrieves text <b>chunks</b> by vector similarity — it finds paragraphs that are semantically close to your query and stuffs them into the LLM's context. GraphRAG retrieves <b>graph paths</b> — it traverses relationships between entities to answer questions that require multi-hop reasoning.</p>
+<p>Think of it this way:</p>
+<ul>
+<li><b>Vector RAG:</b> find the 5 most similar paragraphs to "Tom Hanks movies" → send to LLM</li>
+<li><b>GraphRAG:</b> traverse the graph → Person node "Tom Hanks" → ACTED_IN edges → all connected Movie nodes → return the subgraph</li>
+</ul>
+<p>The difference is structural. Vector similarity returns content that <i>looks like</i> your query. Graph traversal returns content that is <i>directly connected</i> to the entities in your query. For relational questions — "what did X and Y have in common?", "how are A and B connected?", "who worked with Z more than once?" — graph traversal is the only correct approach.</p>
+<p>The core claim: <b>no chunk size, no re-ranking, no retrieval-k setting can make vector RAG answer multi-hop graph queries correctly.</b> It's a structural limitation, not a tuning problem.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What specific types of queries can GraphRAG handle that vector RAG cannot?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Three structural operations are impossible for vector search but trivial for graph traversal:</p>
+<h3>1. Set intersection across relationship chains</h3>
+<p><i>"Which actors worked with both Tom Hanks AND Meg Ryan?"</i></p>
+<p>Requires simultaneously traversing two separate ACTED_IN chains and finding the intersection. Vector RAG can retrieve text about each actor separately, but has no mechanism to enforce AND logic across multi-document relationship paths.</p>
+<h3>2. Shortest-path traversal</h3>
+<p><i>"How is Kevin Bacon connected to Tom Hanks?"</i></p>
+<p>This is the "Six Degrees of Kevin Bacon" problem. It requires walking arbitrary relationship hops until a connection is found. In Cypher: <code>shortestPath((a)-[*]-(b))</code>. No amount of text retrieval can compute a graph path.</p>
+<h3>3. Exclusion reasoning (complement sets)</h3>
+<p><i>"Actors in Nolan films who never co-starred together?"</i></p>
+<p>Requires finding entities that do NOT have a specific relationship — the complement of a relationship set. Vector similarity returns similar items; it has no NOT operator across entity relationships.</p>
+<p>Summary table:</p>
+<table>
+<tr><th>Query type</th><th>Vector RAG</th><th>GraphRAG</th></tr>
+<tr><td>Semantic similarity ("movies like Inception")</td><td>✓ Good</td><td>Limited</td></tr>
+<tr><td>Multi-entity AND logic</td><td>✗ Cannot</td><td>✓ Native</td></tr>
+<tr><td>Shortest path between entities</td><td>✗ Cannot</td><td>✓ Native</td></tr>
+<tr><td>Exclusion / complement sets</td><td>✗ Cannot</td><td>✓ Native</td></tr>
+<tr><td>Aggregation (who directed the most…)</td><td>✗ Unreliable</td><td>✓ Native</td></tr>
+</table>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is a graph database and how is data structured in it?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>A graph database stores data as <b>nodes</b> (entities) and <b>edges</b> (relationships between entities). Each node and edge can have properties (key-value pairs).</p>
+<p>Example: a movie knowledge graph has these components:</p>
+<pre><code># Nodes (entities)
+(:Movie  {title: "The Matrix", year: 1999, rating: 8.7})
+(:Person {name: "Keanu Reeves", born: 1964})
+(:Genre  {name: "Action"})
+(:Studio {name: "Warner Bros."})
+
+# Edges (relationships)
+(:Person)-[:ACTED_IN {roles: ["Neo"]}]-&gt;(:Movie)
+(:Person)-[:DIRECTED]-&gt;(:Movie)
+(:Movie )-[:IN_GENRE]-&gt;(:Genre)
+(:Movie )-[:PRODUCED_BY]-&gt;(:Studio)</code></pre>
+<p>The key difference from a relational database: in a graph DB, relationships are first-class citizens — they have their own properties and can be queried directly. Finding all movies connected to a person takes O(1) edge lookups, not a JOIN across tables. For deeply connected data (social networks, knowledge graphs, recommendation engines), this is dramatically faster than SQL JOINs at scale.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>When should you choose GraphRAG over vector RAG, and when is vector RAG still better?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p><b>Choose GraphRAG when:</b></p>
+<ul>
+<li>Your data is inherently relational (people, movies, products, organisations — anything with typed relationships)</li>
+<li>Users ask multi-hop questions: "who connected to X also worked with Y?"</li>
+<li>You need aggregation across relationships: "who directed the most films in genre Z?"</li>
+<li>Exact relationship traversal matters: "find all co-authors of papers citing paper X"</li>
+<li>You need path-finding: "how many hops separate person A from company B?"</li>
+</ul>
+<p><b>Choose vector RAG when:</b></p>
+<ul>
+<li>Your data is unstructured text (articles, documents, PDFs)</li>
+<li>Queries are semantic: "what does this document say about climate change?"</li>
+<li>You don't have clear entity/relationship structure in your data</li>
+<li>You need fuzzy matching: "find content similar to this concept"</li>
+</ul>
+<p><b>Use both (hybrid):</b> many production systems combine graph traversal for structural retrieval + vector search for unstructured content. Example: retrieve related entities via graph, then find similar text chunks for those entities via vector search.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="neo4j-and-cypher-fundamentals" class="qa-section">
+        <div class="section-header">
+          <h2>Neo4j and Cypher Fundamentals</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Neo4j and how do you get a free cloud instance?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Neo4j is the leading graph database. <b>Neo4j AuraDB</b> is its managed cloud offering with a free tier — no credit card required, no infrastructure to manage. It's the fastest way to start building GraphRAG applications.</p>
+<p>Setup in 3 minutes:</p>
+<ol>
+<li>Go to <a href="https://neo4j.com/cloud/aura/" target="_blank">neo4j.com/cloud/aura</a></li>
+<li>Create a free account</li>
+<li>Click "New Instance" → Free (AuraDB Free)</li>
+<li>Download the generated credentials file — it contains your URI, username, and password</li>
+<li>Wait ~2 minutes for the instance to start</li>
+</ol>
+<p>The free tier provides: 200K nodes, 400K relationships, 50 MB storage — more than enough to build and demo a GraphRAG application. You get:</p>
+<pre><code># From the downloaded credentials file:
+NEO4J_URI=neo4j+s://xxxxxxxx.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your-generated-password</code></pre>
+<p>The <code>neo4j+s://</code> URI prefix means TLS-encrypted connection. The free tier supports all Cypher operations including path-finding functions.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is Cypher and what are its key syntax patterns?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Cypher is Neo4j's query language. Its visual syntax mirrors the graph structure — parentheses for nodes, arrows for relationships — making it highly readable compared to SQL JOINs.</p>
+<pre><code># Basic patterns:
+
+# Node:           (variable:Label {property: value})
+# Relationship:   -[:TYPE {property: value}]-&gt;
+# Path:           (a)-[:REL]-&gt;(b)
+
+# MATCH — find patterns
+MATCH (p:Person {name: "Tom Hanks"})-[:ACTED_IN]-&gt;(m:Movie)
+RETURN p.name, m.title, m.year
+
+# WHERE — filter (use with MATCH for readability)
+MATCH (p:Person)-[:ACTED_IN]-&gt;(m:Movie)
+WHERE p.name = 'Tom Hanks' AND m.year &gt; 2000
+RETURN m.title ORDER BY m.year DESC
+
+# WITH — pipe results (like SQL subquery)
+MATCH (p:Person)-[:ACTED_IN]-&gt;(m:Movie)
+WITH p, count(m) AS movie_count
+WHERE movie_count &gt; 5
+RETURN p.name, movie_count ORDER BY movie_count DESC
+
+# MERGE — upsert (create if not exists, match if it does)
+MERGE (p:Person {tmdb_id: 31})
+SET p.name = "Tom Hanks"
+
+# LIMIT — always add this for safety
+MATCH (m:Movie) RETURN m LIMIT 100
+
+# Case-insensitive matching
+WHERE toLower(p.name) = toLower('tom hanks')</code></pre>
+<p>Key difference from SQL: Cypher reads like a diagram. <code>(person)-[:ACTED_IN]-&gt;(movie)</code> is immediately clear; the equivalent SQL would require a JOIN through an actor_movie bridge table.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you write multi-hop Cypher queries, and what does &quot;hop count&quot; mean?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>A "hop" is one traversal of a relationship edge. Hop count determines query complexity and is the key metric for understanding what GraphRAG can do that vector RAG cannot.</p>
+<pre><code># 1 hop: direct relationship
+MATCH (p:Person)-[:ACTED_IN]-&gt;(m:Movie)
+WHERE toLower(p.name) = 'tom hanks'
+RETURN p, m LIMIT 100
+
+# 2 hops: through an intermediate node (set intersection)
+MATCH (tom:Person {name:"Tom Hanks"})-[:ACTED_IN]-&gt;(m1:Movie)
+       &lt;-[:ACTED_IN]-(shared:Person),
+      (meg:Person {name:"Meg Ryan"})-[:ACTED_IN]-&gt;(m2:Movie)
+       &lt;-[:ACTED_IN]-(shared)
+RETURN DISTINCT shared, m1, m2 LIMIT 100
+
+# 3 hops: director + genre + another movie
+MATCH (m1:Movie {title:"The Matrix"})&lt;-[:DIRECTED]-(d:Person),
+      (m1)-[:IN_GENRE]-&gt;(g:Genre),
+      (d)-[:DIRECTED]-&gt;(m2:Movie)-[:IN_GENRE]-&gt;(g)
+WHERE m2 &lt;&gt; m1
+RETURN d, m2, g LIMIT 100
+
+# 4+ hops: shortest path (variable length)
+MATCH path = shortestPath(
+  (a:Person {name:"Kevin Bacon"})-[*]-(b:Person {name:"Tom Hanks"})
+)
+RETURN path LIMIT 100</code></pre>
+<p>The <code>[*]</code> in <code>shortestPath</code> means "any number of relationships of any type" — Neo4j finds the minimum-hop path automatically. You can also constrain: <code>[*1..5]</code> means 1 to 5 hops.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you connect to Neo4j from Python and run async queries?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code>from neo4j import AsyncGraphDatabase
+import asyncio
+
+# Singleton driver pattern (create once, reuse for all queries)
+_driver = None
+
+def get_driver(uri: str, username: str, password: str):
+    global _driver
+    if _driver is None:
+        _driver = AsyncGraphDatabase.driver(
+            uri, auth=(username, password)
+        )
+    return _driver
+
+async def run_query(cypher: str, params: dict = None) -&gt; list[dict]:
+    """Run a Cypher query and return results as list of dicts."""
+    driver = get_driver(NEO4J_URI, NEO4J_USERNAME, NEO4J_PASSWORD)
+    async with driver.session() as session:
+        result = await session.run(cypher, params or {})
+        records = await result.data()
+        return records
+
+# Synchronous version (for scripts, data loading)
+from neo4j import GraphDatabase
+
+def run_sync(cypher: str, params: dict = None):
+    with GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USERNAME, NEO4J_PASSWORD)) as driver:
+        with driver.session() as session:
+            result = session.run(cypher, params or {})
+            return list(result.data())
+
+# Example
+async def main():
+    results = await run_query(
+        "MATCH (p:Person)-[:ACTED_IN]-&gt;(m:Movie) "
+        "WHERE toLower(p.name) = $name RETURN m.title, m.year",
+        {"name": "tom hanks"}
+    )
+    for r in results:
+        print(r["m.title"], r["m.year"])
+
+asyncio.run(main())</code></pre>
+<p>Important: always close the driver on shutdown. In FastAPI, use an <code>on_event("shutdown")</code> hook: <code>await driver.close()</code>. Leaked connections will exhaust the AuraDB connection pool.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="building-a-graphrag-pipeline" class="qa-section">
+        <div class="section-header">
+          <h2>Building a GraphRAG Pipeline</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is text-to-Cypher (NL-to-Cypher) and how does it work with an LLM?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Text-to-Cypher is the GraphRAG equivalent of text-to-SQL: you send a natural language question to an LLM along with your graph schema, and it generates a valid Cypher query. The LLM never touches the database directly — it produces query strings that your application then executes.</p>
+<p>The two-stage pipeline:</p>
+<ol>
+<li><b>Cypher generation</b> (temperature=0, deterministic): LLM receives the question + schema + few-shot examples → outputs a Cypher string</li>
+<li><b>Answer synthesis</b> (temperature=0.3, conversational): LLM receives the original question + the Cypher + the raw query results → outputs a natural language answer</li>
+</ol>
+<pre><code>from openai import AsyncOpenAI
+client = AsyncOpenAI()
+
+SCHEMA = """
+(:Movie  {title, year, tagline, revenue, rating})
+(:Person {name, born})
+(:Genre  {name})
+(:Studio {name})
+(:Person)-[:ACTED_IN {roles}]-&gt;(:Movie)
+(:Person)-[:DIRECTED]-&gt;(:Movie)
+(:Movie )-[:IN_GENRE]-&gt;(:Genre)
+(:Movie )-[:PRODUCED_BY]-&gt;(:Studio)
+"""
+
+CYPHER_SYSTEM = f"""You are a Neo4j Cypher expert. Given a natural-language question,
+output ONLY a valid Cypher query — no markdown, no explanation.
+
+Schema:
+{SCHEMA}
+
+Rules:
+- Always RETURN full node/relationship objects for graph visualization.
+- Use shortestPath() for path queries. No APOC procedures.
+- Add LIMIT 100 to every query.
+- Use toLower() for case-insensitive name matching.
+"""
+
+async def generate_cypher(question: str) -&gt; str:
+    resp = await client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": CYPHER_SYSTEM},
+            {"role": "user",   "content": question},
+        ],
+        temperature=0,   # deterministic — critical for valid syntax
+    )
+    return resp.choices[0].message.content.strip()
+
+async def synthesize_answer(question: str, cypher: str, results: list) -&gt; str:
+    resp = await client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": "Answer the question using the query results. End with one sentence explaining why this required graph traversal."},
+            {"role": "user", "content": f"Question: {question}\nCypher: {cypher}\nResults: {results}"},
+        ],
+        temperature=0.3,
+    )
+    return resp.choices[0].message.content.strip()</code></pre>
+<p>Why temperature=0 for Cypher generation? Invalid Cypher syntax (wrong brackets, missing colons, incorrect relationship direction) causes hard errors. Deterministic output prevents subtle variations that sometimes produce invalid queries.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you write effective few-shot examples for text-to-Cypher?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Few-shot examples are the most important component of your Cypher generation prompt. They teach the LLM your graph's relationship naming conventions, when to use <code>shortestPath()</code>, and when to use <code>WITH ... count()</code> for aggregation.</p>
+<p>Cover all the complexity tiers you need:</p>
+<pre><code>FEW_SHOT_EXAMPLES = """
+# 1 hop — filmography
+Q: Which movies did Tom Hanks act in?
+MATCH (p:Person)-[r:ACTED_IN]-&gt;(m:Movie)
+WHERE toLower(p.name) = 'tom hanks'
+RETURN p, r, m LIMIT 100
+
+# 2 hops — set intersection
+Q: Which actors worked with both Tom Hanks and Meg Ryan?
+MATCH (tom:Person {name:"Tom Hanks"})-[:ACTED_IN]-&gt;(m1:Movie)&lt;-[:ACTED_IN]-(shared:Person),
+      (meg:Person {name:"Meg Ryan"})-[:ACTED_IN]-&gt;(m2:Movie)&lt;-[:ACTED_IN]-(shared)
+RETURN DISTINCT shared, m1, m2 LIMIT 100
+
+# 2 hops — aggregation
+Q: Which directors have worked with Keanu Reeves more than once?
+MATCH (k:Person {name:"Keanu Reeves"})-[:ACTED_IN]-&gt;(m:Movie)&lt;-[:DIRECTED]-(d:Person)
+WITH d, count(m) AS collaborations
+WHERE collaborations &gt; 1
+MATCH (d)-[r:DIRECTED]-&gt;(m2:Movie)&lt;-[a:ACTED_IN]-(k)
+RETURN d, r, m2, a, k LIMIT 100
+
+# 4+ hops — shortest path
+Q: How is Kevin Bacon connected to Tom Hanks?
+MATCH path = shortestPath(
+  (a:Person {name:"Kevin Bacon"})-[*]-(b:Person {name:"Tom Hanks"})
+)
+RETURN path LIMIT 100
+
+# 3 hops — multi-condition join
+Q: Which movies share the director and genre of The Matrix?
+MATCH (m1:Movie {title:"The Matrix"})&lt;-[:DIRECTED]-(d:Person),
+      (m1)-[:IN_GENRE]-&gt;(g:Genre),
+      (d)-[:DIRECTED]-&gt;(m2:Movie)-[:IN_GENRE]-&gt;(g)
+WHERE m2 &lt;&gt; m1
+RETURN d, m2, g LIMIT 100
+"""</code></pre>
+<p>Key rule: every example must <code>RETURN</code> full node and relationship objects (not just properties) — this enables the graph visualization layer to work correctly without parsing individual properties from text.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you parse Neo4j query results that contain Node, Relationship, and Path objects?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>When you <code>RETURN p, r, m</code> in Cypher, the Python driver gives you typed objects (<code>neo4j.graph.Node</code>, <code>neo4j.graph.Relationship</code>, <code>neo4j.graph.Path</code>), not plain dicts. You need to walk them recursively to build your graph data structure.</p>
+<pre><code>from neo4j.graph import Node, Relationship, Path
+
+def build_graph_data(records: list[dict]) -&gt; dict:
+    """
+    Extract unique nodes and edges from raw Neo4j records.
+    Handles all three return types: Node, Relationship, Path.
+    """
+    nodes = {}   # element_id -&gt; node dict
+    edges = []
+
+    def add_node(node: Node):
+        nid = str(node.element_id)
+        if nid not in nodes:
+            label    = list(node.labels)[0] if node.labels else "Unknown"
+            props    = dict(node)
+            display  = props.get("title") or props.get("name") or nid
+            nodes[nid] = {
+                "id": nid, "label": label,
+                "properties": {**props, "display": display}
+            }
+
+    def add_relationship(rel: Relationship):
+        edges.append({
+            "source": str(rel.start_node.element_id),
+            "target": str(rel.end_node.element_id),
+            "type": rel.type,
+        })
+
+    def process_value(value):
+        if isinstance(value, Node):
+            add_node(value)
+        elif isinstance(value, Relationship):
+            add_node(value.start_node)
+            add_node(value.end_node)
+            add_relationship(value)
+        elif isinstance(value, Path):
+            for n in value.nodes:         add_node(n)
+            for r in value.relationships:
+                add_node(r.start_node);   add_node(r.end_node)
+                add_relationship(r)
+        elif isinstance(value, list):
+            for item in value: process_value(item)
+
+    for record in records:
+        for value in record.values():
+            process_value(value)
+
+    return {"nodes": list(nodes.values()), "edges": edges}
+
+# Usage
+records = await run_cypher("MATCH path = shortestPath(...) RETURN path LIMIT 100")
+graph_data = build_graph_data(records)
+print(f"{len(graph_data['nodes'])} nodes, {len(graph_data['edges'])} edges")</code></pre>
+<p>The deduplication via <code>element_id</code> is critical — the same node often appears in multiple records (e.g. Tom Hanks appears in every record from a filmography query). Without deduplication, you get duplicate visualization nodes.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="loading-graph-data" class="qa-section">
+        <div class="section-header">
+          <h2>Loading Graph Data</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you seed a Neo4j graph database from a REST API (TMDB example)?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The CineGraph project loads ~200 movies from TMDB (The Movie Database) into Neo4j. The pattern: fetch data from REST API → transform → upsert into Neo4j using MERGE (idempotent — safe to re-run).</p>
+<pre><code>import httpx
+from neo4j import GraphDatabase
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+TMDB_KEY = os.getenv("TMDB_API_KEY")
+NEO4J_URI = os.getenv("NEO4J_URI")
+driver = GraphDatabase.driver(NEO4J_URI,
+    auth=(os.getenv("NEO4J_USERNAME"), os.getenv("NEO4J_PASSWORD")))
+
+def create_constraints(session):
+    """Uniqueness constraints also create indexes automatically."""
+    for stmt in [
+        "CREATE CONSTRAINT IF NOT EXISTS FOR (m:Movie)  REQUIRE m.tmdb_id IS UNIQUE",
+        "CREATE CONSTRAINT IF NOT EXISTS FOR (p:Person) REQUIRE p.tmdb_id IS UNIQUE",
+        "CREATE CONSTRAINT IF NOT EXISTS FOR (g:Genre)  REQUIRE g.name    IS UNIQUE",
+        "CREATE CONSTRAINT IF NOT EXISTS FOR (s:Studio) REQUIRE s.name    IS UNIQUE",
+    ]:
+        session.run(stmt)
+
+def load_movie(session, details: dict):
+    mid = details["id"]
+    # MERGE = insert if not exists, match if it does (idempotent)
+    session.run("""
+        MERGE (m:Movie {tmdb_id: $id})
+        SET m.title=$title, m.year=$year, m.rating=$rating, m.revenue=$revenue
+        """,
+        id=mid, title=details["title"],
+        year=int((details.get("release_date") or "0000")[:4]),
+        rating=details.get("vote_average", 0.0),
+        revenue=details.get("revenue", 0),
+    )
+    # Genres
+    for g in details.get("genres", []):
+        session.run("""MERGE (g:Genre {name:$name})
+                       WITH g MATCH (m:Movie {tmdb_id:$id})
+                       MERGE (m)-[:IN_GENRE]-&gt;(g)""",
+                    name=g["name"], id=mid)
+    # Cast (top 15 only)
+    for actor in details.get("credits", {}).get("cast", [])[:15]:
+        session.run("""MERGE (p:Person {tmdb_id:$pid}) SET p.name=$name
+                       WITH p MATCH (m:Movie {tmdb_id:$mid})
+                       MERGE (p)-[r:ACTED_IN]-&gt;(m) SET r.roles=$roles""",
+                    pid=actor["id"], name=actor["name"],
+                    mid=mid, roles=[actor.get("character","")],
+        )
+    # Directors and writers
+    for crew in details.get("credits", {}).get("crew", []):
+        if crew.get("job") not in ("Director", "Writer", "Screenplay"):
+            continue
+        rel = "DIRECTED" if crew["job"] == "Director" else "WROTE"
+        session.run(f"""MERGE (p:Person {{tmdb_id:$pid}}) SET p.name=$name
+                        WITH p MATCH (m:Movie {{tmdb_id:$mid}})
+                        MERGE (p)-[:{rel}]-&gt;(m)""",
+                    pid=crew["id"], name=crew["name"], mid=mid)
+
+def seed():
+    with driver.session() as session:
+        session.run("MATCH (n) DETACH DELETE n")  # clear first
+        create_constraints(session)
+        # Fetch 10 pages × 20 movies = ~200 movies
+        for page in range(1, 11):
+            movies = httpx.get(
+                "https://api.themoviedb.org/3/movie/popular",
+                params={"api_key": TMDB_KEY, "page": page}
+            ).json()["results"]
+            for movie in movies:
+                details = httpx.get(
+                    f"https://api.themoviedb.org/3/movie/{movie['id']}",
+                    params={"api_key": TMDB_KEY, "append_to_response": "credits"}
+                ).json()
+                load_movie(session, details)
+                print(f"Loaded: {details.get('title', '?')}")
+
+if __name__ == "__main__":
+    seed()
+    print("Done.")</code></pre>
+<p>The <code>MERGE</code> pattern is essential: if you re-run the seed script, it updates existing nodes instead of creating duplicates. Always create uniqueness constraints before loading data — they enforce data integrity and speed up MERGE operations significantly.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are Neo4j uniqueness constraints and why do you create them before loading data?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Uniqueness constraints enforce that a property value is unique across all nodes of a label — exactly like a UNIQUE constraint in SQL. Creating them <i>before</i> loading data matters for two reasons:</p>
+<ol>
+<li><b>Data integrity:</b> if your seed script runs twice or has duplicate data, constraints prevent duplicate nodes</li>
+<li><b>Index creation:</b> constraints automatically create a B-tree index on the constrained property, making <code>MERGE (n:Movie {tmdb_id: $id})</code> O(log n) instead of O(n) — critical for large datasets</li>
+</ol>
+<pre><code># Create constraints (safe to run multiple times with IF NOT EXISTS)
+CREATE CONSTRAINT IF NOT EXISTS FOR (m:Movie)  REQUIRE m.tmdb_id IS UNIQUE
+CREATE CONSTRAINT IF NOT EXISTS FOR (p:Person) REQUIRE p.tmdb_id IS UNIQUE
+CREATE CONSTRAINT IF NOT EXISTS FOR (g:Genre)  REQUIRE g.name    IS UNIQUE
+CREATE CONSTRAINT IF NOT EXISTS FOR (s:Studio) REQUIRE s.name    IS UNIQUE
+
+# Verify constraints exist
+SHOW CONSTRAINTS
+
+# Check index usage in a query (EXPLAIN shows the query plan)
+EXPLAIN
+MATCH (m:Movie {tmdb_id: 603})
+RETURN m</code></pre>
+<p>The EXPLAIN output will show <code>NodeIndexSeek</code> (fast, uses index) vs <code>NodeByLabelScan</code> (slow, scans all nodes). Always verify with EXPLAIN that your MATCH patterns use indexes for production workloads.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="the-cinegraph-architecture-graphrag-reference-implementation" class="qa-section">
+        <div class="section-header">
+          <h2>The CineGraph Architecture (GraphRAG Reference Implementation)</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is CineGraph and how is it architected?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>CineGraph is an open-source GraphRAG demo built on top of TMDB movie data. It proves the GraphRAG thesis with a working application: FastAPI backend + Neo4j + GPT-4o + Streamlit frontend with live graph visualisation.</p>
+<p><b>Data flow for every query:</b></p>
+<pre><code>User question
+    ↓
+Streamlit frontend (app.py)
+    ↓ POST /api/query {"question": "..."}
+FastAPI backend (routes/query.py)
+    ↓
+    1. llm_service.generate_cypher(question)
+          GPT-4o [temperature=0] + schema + few-shot examples
+          → Cypher string
+    ↓
+    2. neo4j_service.run_cypher(cypher)
+          AsyncGraphDatabase → Neo4j AuraDB
+          → list[dict] of records
+    ↓
+    3. neo4j_service.build_graph_data(records)
+          Walk Node/Relationship/Path objects
+          → {nodes: [...], edges: [...]}
+    ↓
+    4. llm_service.synthesize_answer(question, cypher, records)
+          GPT-4o [temperature=0.3]
+          → Natural language answer
+    ↓
+QueryResponse {answer, cypher, hop_count, graph_data, meta}
+    ↓
+Streamlit renders:
+  - Force-directed graph (streamlit-agraph)
+  - Conversational answer
+  - Generated Cypher (visible to user)
+  - Metrics: node count, edge count, query time (ms)</code></pre>
+<p>Repository: <a href="https://github.com/techwithprateek/graphrag" target="_blank">github.com/techwithprateek/graphrag</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What does the complete FastAPI backend for a GraphRAG system look like?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code># backend/main.py
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+
+app = FastAPI(title="CineGraph API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:8501"],  # Streamlit default port
+    allow_methods=["*"], allow_headers=["*"],
+)
+
+# Global error handler — return JSON even for unhandled exceptions
+@app.exception_handler(Exception)
+async def global_error_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=200,   # 200 so frontend always gets JSON, not HTML error page
+        content={"error": True, "detail": str(exc)},
+    )
+
+@app.on_event("shutdown")
+async def shutdown():
+    await close_driver()   # close Neo4j connection pool cleanly</code></pre>
+<pre><code># backend/routes/query.py
+from fastapi import APIRouter
+from pydantic import BaseModel
+from typing import Any
+import time
+
+router = APIRouter()
+
+class QueryRequest(BaseModel):
+    question: str
+
+@router.post("/query")
+async def query(request: QueryRequest):
+    question = request.question
+
+    # Stage 1: Generate Cypher
+    cypher = await generate_cypher(question)
+
+    # Stage 2: Execute against Neo4j
+    start = time.time()
+    records = await run_cypher(cypher)
+    elapsed_ms = int((time.time() - start) * 1000)
+
+    # Stage 3: Build visualization data
+    graph_data = build_graph_data(records)
+
+    # Stage 4: Synthesize answer
+    answer = await synthesize_answer(question, cypher, records)
+
+    # Rough hop count from Cypher syntax
+    hop_count = max(cypher.count("-&gt;"), cypher.count("&lt;-"), 1)
+
+    return {
+        "answer": answer,
+        "cypher": cypher,
+        "hop_count": hop_count,
+        "graph_data": graph_data,
+        "meta": {
+            "node_count": len(graph_data["nodes"]),
+            "edge_count": len(graph_data["edges"]),
+            "query_ms": elapsed_ms,
+        }
+    }
+
+# API endpoints exposed:
+# GET  /api/health   → {"status": "ok"}
+# GET  /api/schema   → {labels, relationship_types, property_keys}
+# GET  /api/examples → {examples: [7 example questions]}
+# POST /api/query    → {answer, cypher, hop_count, graph_data, meta}</code></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you build a Streamlit frontend with live graph visualisation for GraphRAG?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The CineGraph frontend uses <code>streamlit-agraph</code> — a Streamlit component wrapping vis.js — to render physics-simulated force-directed graphs. Each node type gets a distinct color and size.</p>
+<pre><code">import streamlit as st
+import httpx
+from streamlit_agraph import agraph, Node, Edge, Config
+
+BACKEND = "http://localhost:8000"
+
+# Visual config by node label
+NODE_COLORS = {"Movie": "#E8593C", "Person": "#7F77DD",
+               "Genre": "#1D9E75", "Studio": "#BA7517"}
+NODE_SIZES  = {"Movie": 25, "Person": 20, "Genre": 15, "Studio": 15}
+
+# Layout: 3 columns
+col_controls, col_graph, col_answer = st.columns([1, 2, 1])
+
+with col_controls:
+    st.title("CineGraph")
+    question = st.text_area("Ask about movies", height=100)
+    if st.button("Ask", type="primary"):
+        # Call backend
+        resp = httpx.post(
+            f"{BACKEND}/api/query",
+            json={"question": question},
+            timeout=60,
+        )
+        result = resp.json()
+        st.session_state.result = result
+
+    # Example questions (fetch from /api/examples)
+    st.subheader("Try an example")
+    for ex in ["Which movies did Tom Hanks act in?",
+               "How is Kevin Bacon connected to Tom Hanks?",
+               "Actors in both Hanks and Meg Ryan films?"]:
+        if st.button(ex):
+            st.session_state.question = ex
+            st.rerun()
+
+with col_graph:
+    result = st.session_state.get("result")
+    if result and not result.get("error"):
+        nodes_data = result["graph_data"]["nodes"]
+        edges_data = result["graph_data"]["edges"]
+
+        agraph_nodes = [
+            Node(
+                id=n["id"],
+                label=n["properties"].get("display", n["id"]),
+                size=NODE_SIZES.get(n["label"], 15),
+                color=NODE_COLORS.get(n["label"], "#888"),
+            )
+            for n in nodes_data
+        ]
+        agraph_edges = [
+            Edge(source=e["source"], target=e["target"], label=e["type"])
+            for e in edges_data
+        ]
+        agraph(
+            nodes=agraph_nodes, edges=agraph_edges,
+            config=Config(height=580, directed=True, physics=True),
+        )
+
+with col_answer:
+    result = st.session_state.get("result")
+    if result and not result.get("error"):
+        st.subheader("Answer")
+        st.markdown(result["answer"])
+        st.subheader("Generated Cypher")
+        st.code(result["cypher"], language="cypher")
+        meta = result.get("meta", {})
+        c1, c2, c3 = st.columns(3)
+        c1.metric("Nodes", meta.get("node_count"))
+        c2.metric("Edges", meta.get("edge_count"))
+        c3.metric("Time",  f"{meta.get('query_ms')} ms")</code"></pre>
+<p>Run both services: <code>uvicorn backend.main:app --reload</code> (terminal 1) and <code>streamlit run frontend/app.py</code> (terminal 2). The Streamlit app health-checks the backend on startup and shows an error if it's not reachable.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="setting-up-and-running-the-project" class="qa-section">
+        <div class="section-header">
+          <h2>Setting Up and Running the Project</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you set up and run the complete CineGraph GraphRAG project from scratch?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The full stack requires three external services (all with free tiers): Neo4j AuraDB, OpenAI API, and TMDB API. No Docker, no npm, pure Python.</p>
+<pre><code># Step 1: Clone and install
+git clone https://github.com/techwithprateek/graphrag
+cd graphrag/cinegraph
+pip install -r requirements.txt
+
+# requirements.txt:
+# fastapi==0.111.0
+# uvicorn[standard]==0.29.0
+# neo4j==5.19.0
+# openai==1.30.1
+# pydantic-settings==2.2.1
+# python-dotenv==1.0.1
+# httpx==0.27.0
+# streamlit==1.35.0
+# streamlit-agraph==0.0.45
+
+# Step 2: Set up environment variables
+cp .env.example .env
+# Edit .env with your actual credentials:
+# OPENAI_API_KEY=sk-...           (needs GPT-4o access)
+# NEO4J_URI=neo4j+s://xxx.databases.neo4j.io
+# NEO4J_USERNAME=neo4j
+# NEO4J_PASSWORD=your-password
+# TMDB_API_KEY=your-tmdb-key      (free at themoviedb.org/settings/api)
+
+# Step 3: Seed the database (takes ~5 minutes for 200 movies)
+python seed/load_tmdb.py
+
+# Step 4: Start the backend API
+uvicorn backend.main:app --reload
+# API available at http://localhost:8000
+# Docs at http://localhost:8000/docs (Swagger UI)
+
+# Step 5: Start the frontend (in a second terminal)
+streamlit run frontend/app.py
+# Opens http://localhost:8501 in your browser</code></pre>
+<p>Test the backend directly before opening the UI:</p>
+<pre><code"># Test the query endpoint with curl
+curl -X POST http://localhost:8000/api/query \
+  -H "Content-Type: application/json" \
+  -d '{"question": "Which movies did Tom Hanks act in?"}'
+
+# Expected response:
+# {
+#   "answer": "Tom Hanks appeared in ...",
+#   "cypher": "MATCH (p:Person)-[r:ACTED_IN]-&gt;(m:Movie) WHERE toLower(p.name) = 'tom hanks' RETURN p, r, m LIMIT 100",
+#   "hop_count": 1,
+#   "graph_data": {"nodes": [...], "edges": [...]},
+#   "meta": {"node_count": 15, "edge_count": 14, "query_ms": 87}
+# }</code"></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you introspect a Neo4j database schema at runtime?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Rather than hardcoding the schema in your application, you can query it dynamically — useful when the schema evolves or when building generic GraphRAG tools.</p>
+<pre><code">async def get_schema() -&gt; dict:
+    """Dynamically discover the graph schema from Neo4j."""
+    driver = get_driver()
+    async with driver.session() as session:
+        # All node labels
+        label_result = await session.run("CALL db.labels()")
+        labels = [r["label"] async for r in label_result]
+
+        # All relationship types
+        rel_result = await session.run("CALL db.relationshipTypes()")
+        rel_types = [r["relationshipType"] async for r in rel_result]
+
+        # All property keys
+        prop_result = await session.run("CALL db.propertyKeys()")
+        prop_keys = [r["propertyKey"] async for r in prop_result]
+
+        # More detailed: node labels with their properties
+        sample_query = """
+        MATCH (n)
+        WITH labels(n)[0] AS label, keys(n) AS props
+        RETURN DISTINCT label, props
+        LIMIT 50
+        """
+        sample_result = await session.run(sample_query)
+        samples = [{"label": r["label"], "props": r["props"]}
+                   async for r in sample_result]
+
+    return {
+        "labels": labels,
+        "relationship_types": rel_types,
+        "property_keys": prop_keys,
+        "sample_schema": samples,
+    }
+
+# Use this to auto-generate your schema string for the Cypher prompt:
+schema = await get_schema()
+schema_str = "\n".join(
+    f"(:{s['label']} {{{', '.join(s['props'])}}})"
+    for s in schema["sample_schema"]
+)</code"></pre>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="graphrag-design-patterns-best-practices" class="qa-section">
+        <div class="section-header">
+          <h2>GraphRAG Design Patterns &amp; Best Practices</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the key design decisions when building a production GraphRAG system?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The CineGraph project embeds several production-grade design decisions worth understanding:</p>
+<h3>1. Temperature=0 for Cypher generation</h3>
+<p>Invalid Cypher causes hard runtime errors. Deterministic output (temperature=0) is non-negotiable for query generation. Use temperature only for the answer synthesis step.</p>
+<h3>2. LIMIT on every query</h3>
+<p>Always add <code>LIMIT 100</code> in your system prompt. Without it, a path query like <code>shortestPath((a)-[*]-(b))</code> can return thousands of nodes and exhaust memory.</p>
+<h3>3. MERGE over CREATE for seeding</h3>
+<p><code>MERGE</code> is idempotent — if you re-run the seed script after adding new data, it won't create duplicates. <code>CREATE</code> would duplicate every record.</p>
+<h3>4. Return full objects, not properties</h3>
+<p><code>RETURN p, r, m</code> not <code>RETURN p.name, m.title</code>. Full objects give you the graph structure needed for visualization. Individual properties lose edge information.</p>
+<h3>5. Singleton driver pattern</h3>
+<p>The Neo4j driver manages a connection pool internally. Create one driver at application startup and reuse it — don't create a new driver per request.</p>
+<h3>6. No APOC in system prompt</h3>
+<p>APOC is a Neo4j plugin not available on all tiers (especially AuraDB free). Use native Cypher functions: <code>shortestPath()</code> instead of APOC equivalents.</p>
+<h3>7. Explicit few-shot examples for every hop complexity</h3>
+<p>Cover 1-hop, 2-hop (intersection), 2-hop (aggregation), 3-hop (join), and 4+-hop (path) queries in your few-shot examples. Without examples for each tier, the LLM will default to overly simple 1-hop patterns.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the common failure modes in text-to-Cypher systems and how do you handle them?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Text-to-Cypher fails in predictable ways. Knowing them lets you write defensive code:</p>
+<h3>1. Property name hallucination</h3>
+<p>LLM uses <code>m.name</code> instead of <code>m.title</code>. The query runs but returns null. Fix: include exact property names in your schema prompt and few-shot examples.</p>
+<pre><code">async def run_cypher_safe(cypher: str) -&gt; tuple[list, str | None]:
+    """Returns (results, error). Empty results ≠ error."""
+    try:
+        results = await run_cypher(cypher)
+        return results, None
+    except Exception as e:
+        return [], str(e)
+
+# In the route handler:
+results, err = await run_cypher_safe(cypher)
+if err:
+    # Retry: send the error back to the LLM for correction
+    cypher = await fix_cypher(original_question, cypher, err)
+    results, _ = await run_cypher_safe(cypher)</code"></pre>
+<h3>2. Case sensitivity errors</h3>
+<p>LLM generates <code>WHERE p.name = "Tom Hanks"</code> — fails if the DB has "tom hanks". Fix: enforce <code>toLower()</code> in system prompt: "Always use <code>WHERE toLower(p.name) = toLower($name)</code>".</p>
+<h3>3. Relationship direction errors</h3>
+<p><code>(movie)-[:ACTED_IN]-&gt;(person)</code> instead of <code>(person)-[:ACTED_IN]-&gt;(movie)</code>. Fix: show directionality explicitly in the schema and all few-shot examples.</p>
+<h3>4. Markdown code fences in output</h3>
+<p>LLM returns <code>```cypher\nMATCH...```</code> instead of raw Cypher. Fix: strip fences after generation:</p>
+<pre><code">def clean_cypher(raw: str) -&gt; str:
+    import re
+    cleaned = re.sub(r"```(?:cypher)?\n?", "", raw)
+    return cleaned.strip().rstrip("`")</code"></pre>
+<h3>5. Empty results for valid queries</h3>
+<p>The graph doesn't contain the requested entity. Always check for empty results and return a graceful message: "No results found. The database contains movies from 2020-2024 — try a different actor."</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does GraphRAG differ from Microsoft&#x27;s GraphRAG (entity extraction approach)?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The term "GraphRAG" is used for two different approaches — it's important not to conflate them:</p>
+<table>
+<tr><th>Aspect</th><th>CineGraph / Neo4j GraphRAG</th><th>Microsoft GraphRAG</th></tr>
+<tr><td>Data source</td><td>Pre-structured relational data (movies, people, companies)</td><td>Unstructured text documents</td></tr>
+<tr><td>Graph construction</td><td>Manual schema design + data loading</td><td>Automatic: LLM extracts entities + relationships from text</td></tr>
+<tr><td>Query mechanism</td><td>Cypher queries (NL → Cypher → execute)</td><td>Global/local search over entity communities</td></tr>
+<tr><td>Strengths</td><td>Precise multi-hop traversal over known entities</td><td>Broad thematic questions over large document corpora</td></tr>
+<tr><td>Best for</td><td>Structured domains: movies, products, organisations, knowledge bases</td><td>Research, document analysis, "what are the themes of these reports?"</td></tr>
+</table>
+<p>Microsoft's GraphRAG automatically builds a knowledge graph from raw text using LLM entity extraction, then uses community detection to answer global questions ("what are the main themes?"). The Neo4j/Cypher approach requires a pre-existing structured graph but gives precise, verifiable results via deterministic Cypher queries.</p>
+<p>Choose Neo4j GraphRAG when you have structured data and need precise relational queries. Choose Microsoft GraphRAG when you have large unstructured document corpora and want high-level thematic insights.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the full Pydantic model structure for a GraphRAG API response?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Well-defined Pydantic models enforce response shape at the FastAPI layer, generate automatic OpenAPI docs, and prevent runtime type errors.</p>
+<pre><code">from pydantic import BaseModel
+from typing import Any
+
+class GraphNode(BaseModel):
+    id: str
+    label: str          # "Movie" | "Person" | "Genre" | "Studio"
+    properties: dict[str, Any] = {}
+
+class GraphEdge(BaseModel):
+    source: str         # element_id of start node
+    target: str         # element_id of end node
+    type: str           # relationship type, e.g. "ACTED_IN"
+
+class GraphData(BaseModel):
+    nodes: list[GraphNode] = []
+    edges: list[GraphEdge] = []
+
+class Meta(BaseModel):
+    node_count: int
+    edge_count: int
+    query_ms: int       # Neo4j round-trip time in milliseconds
+
+class QueryResponse(BaseModel):
+    answer: str         # LLM-synthesized natural language answer
+    cypher: str         # Generated Cypher query (shown to user)
+    hop_count: int      # Rough traversal depth estimate
+    graph_data: GraphData
+    meta: Meta
+
+# Request model
+class QueryRequest(BaseModel):
+    question: str
+
+# Example response (Kevin Bacon query):
+# {
+#   "answer": "Kevin Bacon is connected to Tom Hanks via...",
+#   "cypher": "MATCH path = shortestPath(...) RETURN path LIMIT 100",
+#   "hop_count": 4,
+#   "graph_data": {
+#     "nodes": [{"id": "4:abc", "label": "Person", "properties": {"name": "Kevin Bacon"}}],
+#     "edges": [{"source": "4:abc", "target": "4:def", "type": "ACTED_IN"}]
+#   },
+#   "meta": {"node_count": 12, "edge_count": 11, "query_ms": 87}
+# }</code"></pre>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="cypher-query-reference" class="qa-section">
+        <div class="section-header">
+          <h2>Cypher Query Reference</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What are the seven canonical GraphRAG query patterns with increasing complexity?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>These seven patterns cover the full spectrum from simple lookup to complex path-finding — the exact examples in the CineGraph project:</p>
+<pre><code"># 1. [1 hop] Filmography — direct relationship
+MATCH (p:Person)-[r:ACTED_IN]-&gt;(m:Movie)
+WHERE toLower(p.name) = 'tom hanks'
+RETURN p, r, m LIMIT 100
+
+# 2. [2 hops] Set intersection — actors in common
+MATCH (tom:Person {name:"Tom Hanks"})-[:ACTED_IN]-&gt;(m1:Movie)
+      &lt;-[:ACTED_IN]-(shared:Person),
+      (meg:Person {name:"Meg Ryan"})-[:ACTED_IN]-&gt;(m2:Movie)
+      &lt;-[:ACTED_IN]-(shared)
+RETURN DISTINCT shared, m1, m2 LIMIT 100
+
+# 3. [2 hops] Aggregation — directed together 2+ times
+MATCH (k:Person {name:"Keanu Reeves"})-[:ACTED_IN]-&gt;(m:Movie)
+      &lt;-[:DIRECTED]-(d:Person)
+WITH d, count(m) AS collab
+WHERE collab &gt; 1
+MATCH (d)-[r:DIRECTED]-&gt;(m2:Movie)&lt;-[a:ACTED_IN]-(k)
+RETURN d, r, m2, a, k LIMIT 100
+
+# 4. [3 hops] Most versatile actor (appeared in most genres)
+MATCH (p:Person)-[:ACTED_IN]-&gt;(m:Movie)-[:IN_GENRE]-&gt;(g:Genre)
+WITH p, count(DISTINCT g) AS genre_count
+ORDER BY genre_count DESC LIMIT 5
+MATCH (p)-[r:ACTED_IN]-&gt;(m2:Movie)-[ig:IN_GENRE]-&gt;(g2:Genre)
+RETURN p, r, m2, ig, g2 LIMIT 100
+
+# 5. [4+ hops] Shortest path — Kevin Bacon number
+MATCH path = shortestPath(
+  (a:Person {name:"Kevin Bacon"})-[*]-(b:Person {name:"Tom Hanks"})
+)
+RETURN path LIMIT 100
+
+# 6. [3 hops] Shared director AND genre
+MATCH (m1:Movie {title:"The Matrix"})&lt;-[:DIRECTED]-(d:Person),
+      (m1)-[:IN_GENRE]-&gt;(g:Genre),
+      (d)-[:DIRECTED]-&gt;(m2:Movie)-[:IN_GENRE]-&gt;(g)
+WHERE m2 &lt;&gt; m1
+RETURN d, m2, g LIMIT 100
+
+# 7. [3 hops + exclusion] Nolan actors who never co-starred
+MATCH (nolan:Person {name:"Christopher Nolan"})-[:DIRECTED]-&gt;(m:Movie)
+      &lt;-[:ACTED_IN]-(a:Person)
+WITH collect(DISTINCT a) AS nolan_actors, collect(DISTINCT m) AS nolan_films
+UNWIND nolan_actors AS actor1
+UNWIND nolan_actors AS actor2
+WHERE actor1 &lt;&gt; actor2
+  AND NOT EXISTS {
+    MATCH (actor1)-[:ACTED_IN]-&gt;(shared:Movie)&lt;-[:ACTED_IN]-(actor2)
+  }
+RETURN DISTINCT actor1.name, actor2.name LIMIT 50</code"></pre>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you use variable-length path queries and the shortestPath() function?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Variable-length paths let you traverse an unknown number of hops — essential for graph distance calculations and path-finding.</p>
+<pre><code"># Variable length: [*min..max] — any relationship type
+MATCH (a:Person {name:"Kevin Bacon"})-[*1..6]-(b:Person {name:"Tom Hanks"})
+RETURN count(*) AS paths_found
+
+# Shortest path between two nodes (built-in, no APOC needed)
+MATCH path = shortestPath(
+  (start:Person {name:"Kevin Bacon"})-[*]-(end:Person {name:"Tom Hanks"})
+)
+RETURN
+  [node IN nodes(path) | coalesce(node.name, node.title)] AS path_display,
+  length(path) AS hops
+
+# All shortest paths (when multiple exist)
+MATCH paths = allShortestPaths(
+  (a:Person {name:"Meryl Streep"})-[*]-(b:Person {name:"Robert De Niro"})
+)
+RETURN paths LIMIT 10
+
+# Path with relationship types
+MATCH path = shortestPath(
+  (a:Person {name:"Kevin Bacon"})-[:ACTED_IN|DIRECTED*]-(b:Person {name:"Spielberg"})
+)
+RETURN path
+
+# Extract nodes and relationships from a path
+MATCH path = shortestPath((a:Person {name:"Kevin Bacon"})-[*]-(b:Person {name:"Tom Hanks"}))
+RETURN
+  nodes(path)         AS all_nodes,
+  relationships(path) AS all_rels,
+  length(path)        AS hop_count</code"></pre>
+<p>Key syntax notes: <code>[*]</code> = any number of hops of any type. <code>[*1..5]</code> = 1 to 5 hops. <code>[:ACTED_IN|DIRECTED*]</code> = variable hops but only those relationship types. Always add a hop limit for production queries — unbounded <code>[*]</code> on large graphs is extremely slow.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="complete-project-setup-reference" class="qa-section">
+        <div class="section-header">
+          <h2>Complete Project Setup Reference</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the complete environment configuration for a GraphRAG project?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code"># .env (all values required for the CineGraph project)
+
+# OpenAI — GPT-4o access required for Cypher generation
+OPENAI_API_KEY=sk-proj-...
+
+# Neo4j AuraDB — Free tier: neo4j.com/cloud/aura/
+# Format: neo4j+s://xxxx.databases.neo4j.io
+NEO4J_URI=neo4j+s://xxxxxxxx.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your-generated-password
+
+# TMDB — Free API key: themoviedb.org/settings/api
+# Required ONLY for seed/load_tmdb.py (one-time database seeding)
+TMDB_API_KEY=your-tmdb-key</code"></pre>
+<pre><code"># Python config using pydantic-settings (auto-reads .env)
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    openai_api_key: str
+    neo4j_uri: str
+    neo4j_username: str
+    neo4j_password: str
+    tmdb_api_key: str = ""     # optional: only needed for seeding
+
+    class Config:
+        env_file = ".env"
+
+settings = Settings()
+
+# Usage throughout the app:
+# from backend.config import settings
+# settings.openai_api_key, settings.neo4j_uri, etc.</code"></pre>
+<p>The <code>pydantic-settings</code> approach validates all required environment variables at startup — the application crashes immediately with a clear error if any are missing, rather than failing silently later at runtime.</p>
+<p><b>Repository:</b> <a href="https://github.com/techwithprateek/graphrag" rel="noopener" target="_blank">github.com/techwithprateek/graphrag</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the complete project structure and what does each file do?</summary>
+            <div class="qa-answer answer-inner">
+              
+<pre><code">cinegraph/
+├── .env.example            # Template for environment variables
+├── requirements.txt        # Python dependencies (no npm, no Docker)
+├── ARCHITECTURE.md         # System design documentation
+│
+├── seed/
+│   └── load_tmdb.py        # One-time script: fetch TMDB data → load into Neo4j
+│                           # Run once before starting the app
+│
+├── backend/                # FastAPI application
+│   ├── config.py           # pydantic-settings: loads .env, validates required vars
+│   ├── models.py           # Pydantic v2 request/response models
+│   ├── main.py             # FastAPI app: CORS, error handler, shutdown event
+│   │
+│   ├── prompts/
+│   │   └── cypher_prompt.py  # GRAPH_SCHEMA + CYPHER_SYSTEM_PROMPT + few-shot examples
+│   │                          # ANSWER_SYSTEM_PROMPT for synthesis
+│   │
+│   ├── routes/
+│   │   ├── query.py        # POST /api/query — the main endpoint
+│   │   └── schema.py       # GET /api/health, /api/schema, /api/examples
+│   │
+│   └── services/
+│       ├── llm_service.py  # generate_cypher() + synthesize_answer() via AsyncOpenAI
+│       └── neo4j_service.py # run_cypher(), build_graph_data(), get_schema()
+│                            # Singleton async driver + Path/Node/Rel object parsing
+│
+└── frontend/
+    └── app.py              # Streamlit UI: 3-column layout, agraph visualization,
+                            # session state, example questions, schema display</code"></pre>
+<p>The separation of concerns is clean: prompts in <code>prompts/</code>, external service calls in <code>services/</code>, HTTP routing in <code>routes/</code>. This makes it easy to swap the LLM (change <code>llm_service.py</code>) or the graph database (change <code>neo4j_service.py</code>) without touching business logic.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+<script src="../../assets/main.js"></script>
+</body>
+</html>

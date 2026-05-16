@@ -66,7 +66,7 @@
         </div>
         <h1>Multimodal LLMs</h1>
         <div class="topic-meta">
-          <span class="topic-stats">21 questions</span>
+          <span class="topic-stats">23 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -86,6 +86,7 @@
         <li><a href="#section-3-architecture-families">Section 3: Architecture Families</a></li>
         <li><a href="#section-4-multimodal-rag">Section 4: Multimodal RAG</a></li>
         <li><a href="#section-5-production-patterns-evaluation">Section 5: Production Patterns &amp; Evaluation</a></li>
+        <li><a href="#hands-on-code-multimodal-embeddings-with-clip-chapter-9-hands-on-llms-book">Hands-On Code: Multimodal Embeddings with CLIP (Chapter 9 — Hands-On LLMs Book)</a></li>
           </ul>
         </nav>
         <div class="qa-sections">
@@ -597,6 +598,105 @@ Query → text embedding → retrieve page images (by embedding similarity) → 
 <p><strong>LLM-as-judge for open-ended outputs:</strong> use a separate VLM (ideally with vision capability) to evaluate whether the generated answer correctly describes the image. Prompt it with the image and both the expected and generated answer, and ask it to rate accuracy 1–5.</p>
 <p><strong>The hallucination problem:</strong> VLM hallucinations are harder to detect than text hallucinations because the evaluator needs access to the source image. If you use an LLM-as-judge for automated eval, make sure it receives the image, not just the text description.</p>
 <p>Final advice: run your eval on every model version upgrade. VLM quality shifts significantly between versions — improvements in some capabilities sometimes come with regressions in others.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="hands-on-code-multimodal-embeddings-with-clip-chapter-9-hands-on-llms-book" class="qa-section">
+        <div class="section-header">
+          <h2>Hands-On Code: Multimodal Embeddings with CLIP (Chapter 9 — Hands-On LLMs Book)</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How does CLIP work in practice — how do you embed both images and text into the same vector space?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>CLIP (Contrastive Language-Image Pretraining) trains a vision encoder and text encoder jointly so that matching image-text pairs have high cosine similarity. This shared embedding space enables zero-shot image classification, semantic image search, and multimodal RAG.</p>
+<pre><code>from transformers import CLIPProcessor, CLIPModel
+from PIL import Image
+import requests
+import torch
+
+# Load CLIP
+model     = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+
+# Load a sample image from URL (or use PIL.Image.open for local file)
+image_url = "http://images.cocodataset.org/val2017/000000039769.jpg"  # cats
+image = Image.open(requests.get(image_url, stream=True).raw)
+
+# Candidate text labels
+text_candidates = [
+    "a photo of a cat",
+    "a photo of a dog",
+    "a photo of a car",
+    "a photo of food",
+]
+
+# Process inputs
+inputs = processor(
+    text=text_candidates,
+    images=image,
+    return_tensors="pt",
+    padding=True,
+)
+
+# Get similarity scores
+with torch.no_grad():
+    outputs = model(**inputs)
+
+logits_per_image = outputs.logits_per_image  # shape (1, 4)
+probs = logits_per_image.softmax(dim=1)      # normalise to probabilities
+
+for label, prob in zip(text_candidates, probs[0]):
+    print(f"  {prob.item():.3f}  {label}")</code></pre>
+<p>Expected: "a photo of a cat" will have &gt;0.95 probability. CLIP's logits are already similarity scores scaled by temperature — softmax converts them to class probabilities for zero-shot classification without any fine-tuning.</p>
+<p><a href="https://colab.research.google.com/github/HandsOnLLM/Hands-On-Large-Language-Models/blob/main/chapter09/Chapter%209%20-%20Multimodal%20Large%20Language%20Models.ipynb" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">▶ Open in Google Colab — Chapter 9</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you use CLIP embeddings for image search — finding images semantically similar to a text query?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Because CLIP maps images and text to the same embedding space, you can search a collection of images using text queries — and vice versa. This is the foundation of multimodal RAG: retrieve relevant images using natural language.</p>
+<pre><code>from transformers import CLIPProcessor, CLIPModel
+import torch
+from PIL import Image
+import numpy as np
+
+model     = CLIPModel.from_pretrained("openai/clip-vit-base-patch32")
+processor = CLIPProcessor.from_pretrained("openai/clip-vit-base-patch32")
+
+# Suppose we have a small image corpus
+# In production: pre-compute and cache these embeddings
+image_paths = ["cat1.jpg", "dog1.jpg", "beach.jpg", "city.jpg"]  # your local images
+images = [Image.open(p) for p in image_paths]
+
+# 1. Pre-compute image embeddings
+with torch.no_grad():
+    image_inputs = processor(images=images, return_tensors="pt", padding=True)
+    image_features = model.get_image_features(**image_inputs)
+    image_features = image_features / image_features.norm(dim=-1, keepdim=True)
+
+# 2. At query time: embed text and search
+query = "a fluffy animal"
+
+with torch.no_grad():
+    text_inputs   = processor(text=[query], return_tensors="pt", padding=True)
+    text_features = model.get_text_features(**text_inputs)
+    text_features = text_features / text_features.norm(dim=-1, keepdim=True)
+
+# 3. Cosine similarity (dot product on L2-normalised vectors)
+similarities = (text_features @ image_features.T).squeeze(0)
+ranked = similarities.argsort(descending=True)
+
+print(f"Query: '{query}'")
+for rank, idx in enumerate(ranked):
+    print(f"  Rank {rank+1}: {image_paths[idx]}  (score={similarities[idx]:.3f})")</code></pre>
+<p>In production this scales to millions of images by storing the pre-computed image embeddings in a vector database (FAISS, Qdrant, Pinecone) and doing ANN search at query time. The text query is encoded on the fly — only O(1) forward passes needed per search.</p>
 
             </div>
           </details>

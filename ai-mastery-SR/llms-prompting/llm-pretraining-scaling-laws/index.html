@@ -66,7 +66,7 @@
         </div>
         <h1>LLM Pretraining &amp; Scaling Laws</h1>
         <div class="topic-meta">
-          <span class="topic-stats">33 questions</span>
+          <span class="topic-stats">35 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -88,6 +88,7 @@
         <li><a href="#section-5-scaling-laws">Section 5: Scaling Laws</a></li>
         <li><a href="#section-6-the-alignment-pipeline">Section 6: The Alignment Pipeline</a></li>
         <li><a href="#section-7-open-vs-closed-model-landscape">Section 7: Open vs. Closed Model Landscape</a></li>
+        <li><a href="#further-reading-visual-guides-to-moe-and-modern-llm-architecture">Further Reading: Visual Guides to MoE and Modern LLM Architecture</a></li>
           </ul>
         </nav>
         <div class="qa-sections">
@@ -745,6 +746,76 @@ used_memory = actual_tokens × kv_cache_bytes/token + small_overhead
 # Near 0% waste</code></pre>
 <p>The result: 2–4× higher throughput at the same hardware cost compared to HuggingFace Transformers inference. For a production system serving thousands of requests per minute, this directly translates to fewer GPUs needed and lower operating costs.</p>
 <p>Beyond PagedAttention, vLLM provides <b>continuous batching</b> (new requests join in-flight batches without waiting for current batch to finish), <b>tensor parallelism</b>, and an <b>OpenAI-compatible REST API</b> — so existing code written for the OpenAI SDK works with zero changes against a self-hosted vLLM endpoint. It's the de facto standard for production open-weight serving.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="further-reading-visual-guides-to-moe-and-modern-llm-architecture" class="qa-section">
+        <div class="section-header">
+          <h2>Further Reading: Visual Guides to MoE and Modern LLM Architecture</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Where can I learn more about Mixture of Experts (MoE) — the architecture behind GPT-4, Mixtral, and DeepSeek?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>MoE is the architectural innovation that allowed frontier labs to scale model capacity without proportionally scaling inference cost. The "Visual Guide to Mixture of Experts" explains this clearly with diagrams.</p>
+<p>Key concepts covered:</p>
+<ul>
+<li><b>Sparse MoE:</b> only top-k experts (typically 2 of 8-64) are activated per token — the rest are unused</li>
+<li><b>Routing mechanism:</b> a learned gating network decides which experts process each token</li>
+<li><b>Why it's efficient:</b> Mixtral-8x7B has 46.7B total parameters but only uses ~12.9B per token — cheaper to run than a 13B dense model while having capacity comparable to a 46B model</li>
+<li><b>DeepSeek MoE:</b> 256 total experts, 8 activated per token — extreme sparsity for maximum efficiency</li>
+<li><b>Training challenges:</b> load balancing loss prevents expert collapse (one expert handling all tokens)</li>
+</ul>
+<p><a href="https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-mixture-of-experts" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">📖 Read: A Visual Guide to Mixture of Experts</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you use tiktoken to count tokens accurately for cost estimation and context window planning?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>tiktoken is OpenAI's official tokenizer — used by GPT-4, GPT-4o, and o1/o3. Accurate token counting matters for cost estimation (you pay per token) and for staying within context window limits.</p>
+<pre><code>import tiktoken
+
+# Different models use different tokenizers
+encoders = {
+    "gpt-4o":       tiktoken.encoding_for_model("gpt-4o"),
+    "gpt-3.5-turbo": tiktoken.encoding_for_model("gpt-3.5-turbo"),
+    "o1":           tiktoken.encoding_for_model("o1"),
+}
+
+test_texts = [
+    "Hello, world!",
+    "Large language models are pretrained on trillions of tokens from diverse text sources.",
+    "def fibonacci(n): return n if n &lt; 2 else fibonacci(n-1) + fibonacci(n-2)",
+    "Transformers use self-attention: QKᵀV/√d where Q,K,V are learned projections.",
+    # Non-English (tokenized less efficiently)
+    "大規模言語モデルはテキストの次のトークンを予測することで学習します",  # Japanese
+]
+
+print(f"{'Text':&lt;60} {'gpt-4o':&gt;8} {'vocab':&gt;8}")
+print("-" * 80)
+for text in test_texts:
+    enc = encoders["gpt-4o"]
+    n_tokens = len(enc.encode(text))
+    print(f"{text[:58]:&lt;60} {n_tokens:&gt;8,}")
+
+# Cost estimation example
+def estimate_cost(text, model="gpt-4o", input_price_per_1m=2.50):
+    enc = tiktoken.encoding_for_model(model)
+    n_tokens = len(enc.encode(text))
+    cost = (n_tokens / 1_000_000) * input_price_per_1m
+    return n_tokens, cost
+
+with open("my_document.txt") as f:  # your document
+    text = f.read()
+tokens, cost = estimate_cost(text)
+print(f"\nDocument: {tokens:,} tokens ≈ ${cost:.4f} at GPT-4o input pricing")</code></pre>
+<p>Key insight: Japanese/Chinese/Korean text is tokenized much less efficiently than English — the same information takes 2-3x more tokens, meaning 2-3x higher cost. Always test your actual production text with the specific model's tokenizer before estimating costs at scale.</p>
 
             </div>
           </details>

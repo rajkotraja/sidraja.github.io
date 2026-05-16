@@ -66,7 +66,7 @@
         </div>
         <h1>Agentic AI Patterns</h1>
         <div class="topic-meta">
-          <span class="topic-stats">50 questions</span>
+          <span class="topic-stats">52 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -1654,6 +1654,100 @@ plan = llm.generate_plan(goal)
 </code><br/></pre><p>In this example, the language model generates a <b>structured plan</b>, and the system executes each step sequentially.<br/></p><div><hr/><br/></div><p>In simple terms, LLM-powered planning gives AI agents the ability to <b>think before acting</b>.<br/></p><p>Instead of responding instantly to a request, the agent first creates a plan and then executes the plan step by step.<br/></p><p>This makes the agent <b>more organized, accurate, and capable of solving complex problems</b>.<br/></p><div><hr/><br/></div><p>Summary:<br/></p><p><b>LLM-powered planning allows agentic AI systems to convert high-level goals into structured sequences of actions. The language model analyzes the task, decomposes it into subtasks, selects appropriate tools, and coordinates execution. This planning capability enables AI agents to solve complex problems, adapt workflows dynamically, and collaborate effectively with other agents or systems.</b><br/></p><div><br/></div>
 </div>
 <p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="further-reading-visual-guide-to-llm-agents" class="qa-section">
+        <div class="section-header">
+          <h2>Further Reading: Visual Guide to LLM Agents</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>Where can I find a comprehensive visual overview of LLM agent architecture and patterns?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Maarten Grootendorst's <b>A Visual Guide to LLM Agents</b> is one of the clearest overviews of the agent landscape — covering tools, memory, planning, and multi-agent collaboration with detailed diagrams and concrete examples.</p>
+<p>Key topics covered in the guide:</p>
+<ul>
+<li><b>Tool use:</b> how agents call functions and APIs, structured tool-call format</li>
+<li><b>Memory types:</b> in-context (conversation history), external (vector store retrieval), in-weights (fine-tuned knowledge)</li>
+<li><b>Planning patterns:</b> ReAct, Plan-and-Execute, Reflection, Reflexion</li>
+<li><b>Multi-agent architectures:</b> orchestrator + sub-agents, peer networks, specialised agent teams</li>
+<li><b>Model Context Protocol (MCP):</b> standardised tool connection interface</li>
+</ul>
+<p><a href="https://newsletter.maartengrootendorst.com/p/a-visual-guide-to-llm-agents" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">📖 Read: A Visual Guide to LLM Agents</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you implement a simple tool-calling agent from scratch without a framework?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Understanding the raw tool-call loop demystifies what LangGraph, CrewAI, and AutoGen are doing internally. Here's the minimal implementation:</p>
+<pre><code>from openai import OpenAI
+import json
+
+client = OpenAI()
+
+# Define tools as JSON Schema (OpenAI function format)
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get the current weather for a city",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "city": {"type": "string", "description": "City name"},
+                    "units": {"type": "string", "enum": ["celsius", "fahrenheit"]},
+                },
+                "required": ["city"],
+            },
+        },
+    }
+]
+
+# Fake tool implementation (in production, call a real weather API)
+def get_weather(city: str, units: str = "celsius") -&gt; str:
+    return json.dumps({"city": city, "temp": 22, "condition": "sunny", "units": units})
+
+messages = [{"role": "user", "content": "What's the weather in Mumbai right now?"}]
+
+# Agent loop
+while True:
+    response = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=messages,
+        tools=tools,
+        tool_choice="auto",
+    )
+    msg = response.choices[0].message
+
+    # If no tool call, we have the final answer
+    if not msg.tool_calls:
+        print("Final answer:", msg.content)
+        break
+
+    # Execute the tool
+    for call in msg.tool_calls:
+        func_name = call.function.name
+        args      = json.loads(call.function.arguments)
+        result    = get_weather(**args)    # call our function
+
+        # Append tool call and result to messages
+        messages.append(msg)
+        messages.append({
+            "role": "tool",
+            "tool_call_id": call.id,
+            "content": result,
+        })
+
+    # Continue the loop — model will now reason with the tool result</code></pre>
+<p>The key insight: the loop appends both the model's tool-call request <i>and</i> the tool's result to the message history, then calls the model again. The model sees: "User asked about weather → I called get_weather → result was 22°C sunny → now I can answer." This is the ReAct loop in its simplest form.</p>
+
             </div>
           </details>
         </div>

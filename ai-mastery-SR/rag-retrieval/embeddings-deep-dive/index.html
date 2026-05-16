@@ -42,6 +42,7 @@
         <li class=""><a href="../rag-systems/index.html">RAG Systems</a></li>
         <li class="active"><a href="../embeddings-deep-dive/index.html">Embeddings Deep Dive</a></li>
         <li class=""><a href="../advanced-rag/index.html">Advanced RAG</a></li>
+        <li class=""><a href="../graphrag/index.html">GraphRAG — Graph-Based Retrieval Augmented Generation</a></li>
       </ul>
     </nav>
     <main class="topic-main" id="main-content">
@@ -51,6 +52,7 @@
           <li class=""><a href="../rag-systems/index.html">RAG Systems</a></li>
           <li class="active"><a href="../embeddings-deep-dive/index.html">Embeddings Deep Dive</a></li>
           <li class=""><a href="../advanced-rag/index.html">Advanced RAG</a></li>
+          <li class=""><a href="../graphrag/index.html">GraphRAG — Graph-Based Retrieval Augmented Generation</a></li>
         </ul>
       </nav>
       <div class="topic-header">
@@ -60,7 +62,7 @@
         </div>
         <h1>Embeddings Deep Dive</h1>
         <div class="topic-meta">
-          <span class="topic-stats">23 questions</span>
+          <span class="topic-stats">27 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -81,6 +83,7 @@
         <li><a href="#section-4-matryoshka-embeddings">Section 4: Matryoshka Embeddings</a></li>
         <li><a href="#section-5-similarity-metrics-vector-search">Section 5: Similarity Metrics &amp; Vector Search</a></li>
         <li><a href="#section-6-cross-encoders-reranking">Section 6: Cross-Encoders &amp; Reranking</a></li>
+        <li><a href="#hands-on-code-tokens-embeddings-similarity-chapters-2-5-10-hands-on-llms-book">Hands-On Code: Tokens, Embeddings &amp; Similarity (Chapters 2, 5, 10 — Hands-On LLMs Book)</a></li>
           </ul>
         </nav>
         <div class="qa-sections">
@@ -530,6 +533,163 @@ top_5 = [candidates[i] for i in ranked_indices[:5]]
 <li><strong>Precision@3 above 0.7:</strong> embedding model quality becomes the marginal lever. Switching to a better model or fine-tuning on your domain is likely to yield measurable gains.</li>
 </ul>
 <p>The order of operations: get chunking right, add a reranker, then fine-tune your embedding model. Most RAG quality problems are chunking problems in disguise.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="hands-on-code-tokens-embeddings-similarity-chapters-2-5-10-hands-on-llms-book" class="qa-section">
+        <div class="section-header">
+          <h2>Hands-On Code: Tokens, Embeddings &amp; Similarity (Chapters 2, 5, 10 — Hands-On LLMs Book)</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you compare tokenizers across different LLMs and see how they split the same text differently?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Different model families use different tokenizers with different vocabularies. Understanding these differences matters because the same text can be very different in token count across models — affecting context length, cost, and multilingual performance.</p>
+<pre><code>from transformers import AutoTokenizer
+
+text = "LLMs tokenize text differently: gpt2, t5, and llama all split words uniquely!"
+
+models = [
+    "gpt2",                             # GPT-2 style BPE, 50K vocab
+    "t5-small",                         # SentencePiece, 32K vocab
+    "meta-llama/Llama-2-7b-hf",        # LLaMA BPE, 32K vocab
+    "bert-base-uncased",                # WordPiece, 30K vocab
+    "bigcode/starcoder2-3b",            # multi-language code model
+]
+
+for model_name in models:
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokens = tokenizer.tokenize(text)
+    print(f"{model_name.split('/')[-1]:20s}  vocab={tokenizer.vocab_size:6,}  "
+          f"tokens={len(tokens):3d}  {tokens[:8]}")</code></pre>
+<p>Expected insight: BERT uses WordPiece (splits "tokenize" into "token" + "##ize"), LLaMA uses BPE (tends to produce longer tokens for common words), GPT-2 is aggressive at merging common character pairs. Same 15-word sentence might be 18 tokens in one model and 25 in another.</p>
+<p><a href="https://colab.research.google.com/github/HandsOnLLM/Hands-On-Large-Language-Models/blob/main/chapter02/Chapter%202%20-%20Tokens%20and%20Token%20Embeddings.ipynb" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">▶ Open in Google Colab — Chapter 2</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you extract sentence embeddings and compute semantic similarity between sentences?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Sentence Transformers produce a single vector per sentence. You can then use cosine similarity to measure how semantically related two sentences are — the foundation of all semantic search and RAG retrieval.</p>
+<pre><code>from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+
+model = SentenceTransformer("sentence-transformers/all-mpnet-base-v2")
+
+sentences = [
+    "A dog is running in the park.",
+    "A puppy sprints through the garden.",
+    "The stock market fell sharply today.",
+    "Neural networks learn from data.",
+]
+
+# Embed all sentences at once (batched efficiently)
+embeddings = model.encode(sentences)
+print(f"Embedding shape: {embeddings.shape}")  # (4, 768)
+
+# Compute all-pairs cosine similarity
+sim_matrix = cosine_similarity(embeddings)
+
+# Print similarity between each pair
+for i in range(len(sentences)):
+    for j in range(i + 1, len(sentences)):
+        print(f"{sim_matrix[i, j]:.3f}  '{sentences[i][:40]}' ↔ '{sentences[j][:40]}'")</code></pre>
+<p>Expected: sentences 0 and 1 (dog/puppy running) will score ~0.85+ cosine similarity. Sentences 0 and 2 (dog vs. stock market) will score ~0.1. This geometric separation is exactly what RAG exploits for retrieval.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you build a semantic clustering pipeline over a large text corpus using embeddings + UMAP + HDBSCAN?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>This is the complete pipeline used in Chapter 5 of Hands-On LLMs to discover 156 topic clusters in 44,949 research abstracts — the same approach used in BERTopic.</p>
+<pre><code>from datasets import load_dataset
+from sentence_transformers import SentenceTransformer
+from umap import UMAP
+import hdbscan
+import numpy as np
+
+# 1. Load dataset
+dataset = load_dataset("maartengr/arxiv_nlp", split="train")
+abstracts = dataset["Abstracts"][:5000]   # use a subset for speed
+
+# 2. Embed with a small fast model
+embed_model = SentenceTransformer("thenlper/gte-small")  # 384 dims
+embeddings = embed_model.encode(abstracts, batch_size=64, show_progress_bar=True)
+print(f"Embeddings: {embeddings.shape}")  # (5000, 384)
+
+# 3. Reduce dimensions for clustering (UMAP preserves local structure)
+umap_model = UMAP(n_components=5, metric="cosine", random_state=42)
+reduced = umap_model.fit_transform(embeddings)
+print(f"UMAP output: {reduced.shape}")  # (5000, 5)
+
+# 4. Cluster with HDBSCAN (density-based, no need to specify k)
+clusterer = hdbscan.HDBSCAN(min_cluster_size=30, metric="euclidean")
+labels = clusterer.fit_predict(reduced)
+
+n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+n_noise    = (labels == -1).sum()
+print(f"Clusters found: {n_clusters},  Noise points: {n_noise}")
+
+# 5. Inspect a cluster
+cluster_5_docs = [abstracts[i] for i, l in enumerate(labels) if l == 5]
+print(f"\nCluster 5 ({len(cluster_5_docs)} docs), first abstract:")
+print(cluster_5_docs[0][:300])</code></pre>
+<p>This pipeline is the foundation of BERTopic and many production document organisation systems. The UMAP step is critical — HDBSCAN works better in 5 dimensions than 384 because the curse of dimensionality makes density estimation unreliable in high dimensions.</p>
+<p><a href="https://colab.research.google.com/github/HandsOnLLM/Hands-On-Large-Language-Models/blob/main/chapter05/Chapter%205%20-%20Text%20Clustering%20and%20Topic%20Modeling.ipynb" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">▶ Open in Google Colab — Chapter 5</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you fine-tune a sentence embedding model on your own data using MultipleNegativesRankingLoss?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>This is the standard recipe from Chapter 10 of Hands-On LLMs for training a custom embedding model. MNRL loss is the workhorse of modern embedding model training — all you need is pairs of semantically related sentences.</p>
+<pre><code>from sentence_transformers import SentenceTransformer, SentenceTransformerTrainer
+from sentence_transformers.losses import MultipleNegativesRankingLoss
+from sentence_transformers.evaluation import EmbeddingSimilarityEvaluator
+from datasets import load_dataset
+
+# 1. Load a base model (small and fast for demonstration)
+model = SentenceTransformer("bert-base-uncased")
+
+# 2. Load training data — MNLI pairs work well for general-purpose embeddings
+train_dataset = load_dataset("multi_nli", split="train[:10000]")
+# Use entailment pairs as positive (anchor, positive) pairs
+train_data = train_dataset.filter(lambda x: x["label"] == 0)  # entailment only
+train_data = train_data.select_columns(["premise", "hypothesis"])
+train_data = train_data.rename_columns({"premise": "anchor", "hypothesis": "positive"})
+
+# 3. Validation evaluator on STS-B benchmark
+stsb = load_dataset("sentence-transformers/stsb", split="validation")
+evaluator = EmbeddingSimilarityEvaluator(
+    sentences1=stsb["sentence1"],
+    sentences2=stsb["sentence2"],
+    scores=[s / 5.0 for s in stsb["score"]],
+)
+
+# 4. Set up loss and train
+loss    = MultipleNegativesRankingLoss(model)
+trainer = SentenceTransformerTrainer(
+    model=model,
+    train_dataset=train_data,
+    loss=loss,
+    evaluator=evaluator,
+    args=dict(num_train_epochs=1, per_device_train_batch_size=32, fp16=True),
+)
+trainer.train()
+
+# 5. Evaluate
+score = evaluator(model)
+print(f"Spearman correlation on STS-B: {score:.4f}")</code></pre>
+<p>The key insight: MNRL loss doesn't need explicit negative examples. Within each batch, every other anchor-positive pair acts as a negative — you get batch_size × (batch_size-1) implicit negatives for free. Larger batches = harder negatives = better model.</p>
+<p><a href="https://colab.research.google.com/github/HandsOnLLM/Hands-On-Large-Language-Models/blob/main/chapter10/Chapter%2010%20-%20Creating%20Text%20Embedding%20Models.ipynb" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">▶ Open in Google Colab — Chapter 10</a></p>
 
             </div>
           </details>

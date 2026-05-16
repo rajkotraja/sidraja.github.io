@@ -66,7 +66,7 @@
         </div>
         <h1>LangChain Mastery</h1>
         <div class="topic-meta">
-          <span class="topic-stats">109 questions</span>
+          <span class="topic-stats">112 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -2050,6 +2050,149 @@ result = chain.invoke(inputs)
     <span class="hljs-keyword">assert</span> trimmed[<span class="hljs-number">0</span>][<span class="hljs-string">"content"</span>] == <span class="hljs-string">"15"</span>
 </code><br/></pre><p>Test explanation:<br/></p><ul><li>Creates 20 messages.<br/></li><li>Trims to 5.<br/></li><li>Confirms only last 5 remain and order is correct.<br/></li></ul><p>For chains that call the model:<br/></p><ul><li>create a fake model that returns constant text<br/></li><li>verify the chain output equals expected value<br/></li><li>verify validators catch invalid outputs<br/></li></ul><div><br/></div>
 </div>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="hands-on-code-langchain-chains-memory-react-agents-chapter-7-hands-on-llms-book" class="qa-section">
+        <div class="section-header">
+          <h2>Hands-On Code: LangChain Chains, Memory &amp; ReAct Agents (Chapter 7 — Hands-On LLMs Book)</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you build a multi-step chain using modern LCEL (LangChain Expression Language)?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>LCEL uses the pipe operator <code>|</code> to compose chains declaratively. This replaced the deprecated <code>LLMChain</code> and <code>SequentialChain</code> classes. Each <code>|</code> passes the output of the left operand as input to the right.</p>
+<pre><code>from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0.7)
+
+# Chain 1: generate a blog post title from a topic
+title_prompt = ChatPromptTemplate.from_messages([
+    ("system", "You are a creative content writer."),
+    ("user",   "Generate a catchy blog post title about: {topic}"),
+])
+
+# Chain 2: write an intro paragraph for the title
+intro_prompt = ChatPromptTemplate.from_messages([
+    ("system", "You are a professional blogger."),
+    ("user",   "Write a short engaging intro paragraph for this blog post: {title}"),
+])
+
+# LCEL composition — output of chain1 feeds into chain2
+chain1 = title_prompt  | llm | StrOutputParser()
+chain2 = intro_prompt  | llm | StrOutputParser()
+
+# Full pipeline: topic → title → intro
+full_chain = (
+    {"topic": lambda x: x["topic"]}
+    | chain1
+    | (lambda title: {"title": title})
+    | chain2
+)
+
+result = full_chain.invoke({"topic": "retrieval-augmented generation"})
+print(result)</code></pre>
+<p>The LCEL pipe syntax makes data flow explicit. Each step's output becomes the next step's input. The lambda <code>(lambda title: {"title": title})</code> reshapes the output from chain1 into the expected input format for chain2's prompt template.</p>
+<p><a href="https://colab.research.google.com/github/HandsOnLLM/Hands-On-Large-Language-Models/blob/main/chapter07/Chapter%207%20-%20Advanced%20Text%20Generation%20Techniques%20and%20Tools.ipynb" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">▶ Open in Google Colab — Chapter 7</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you build a ReAct agent with tools in LangChain?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>ReAct (Reason + Act) agents alternate between generating reasoning traces and taking actions (tool calls). The agent decides which tool to call, observes the result, and reasons again — until it has enough information to answer.</p>
+<pre><code>from langchain_openai import ChatOpenAI
+from langchain.agents import create_react_agent, AgentExecutor
+from langchain.tools import DuckDuckGoSearchResults
+from langchain_community.tools import WikipediaQueryRun
+from langchain_community.utilities import WikipediaAPIWrapper
+from langchain_core.prompts import PromptTemplate
+
+llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+
+# Define tools the agent can use
+tools = [
+    DuckDuckGoSearchResults(name="web_search", description="Search the web for current info"),
+    WikipediaQueryRun(
+        api_wrapper=WikipediaAPIWrapper(),
+        description="Look up factual information on Wikipedia",
+    ),
+]
+
+# ReAct requires a specific prompt template with Thought/Action/Observation
+from langchain import hub
+react_prompt = hub.pull("hwchase17/react")
+
+# Create the agent
+agent = create_react_agent(llm, tools, react_prompt)
+agent_executor = AgentExecutor(
+    agent=agent,
+    tools=tools,
+    verbose=True,   # print Thought/Action/Observation traces
+    max_iterations=5,
+    handle_parsing_errors=True,
+)
+
+result = agent_executor.invoke({
+    "input": "What is LangChain and when was it first released? Search the web."
+})
+print("\nFinal answer:", result["output"])</code></pre>
+<p>Setting <code>verbose=True</code> prints the full ReAct trace: <code>Thought: I need to search for LangChain → Action: web_search → Observation: [results] → Thought: Now I have the info → Final Answer: ...</code>. This trace is invaluable for debugging agent behaviour.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you add conversation memory to a LangChain chain using the modern RunnableWithMessageHistory pattern?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Modern LangChain uses <code>RunnableWithMessageHistory</code> instead of deprecated memory classes. It wraps any chain with session-aware chat history, supporting in-memory or persistent backends (Redis, DynamoDB).</p>
+<pre><code>from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_core.runnables.history import RunnableWithMessageHistory
+from langchain_community.chat_message_histories import ChatMessageHistory
+
+llm = ChatOpenAI(model="gpt-3.5-turbo")
+
+# Prompt with a history placeholder
+prompt = ChatPromptTemplate.from_messages([
+    ("system", "You are a helpful assistant. Answer concisely."),
+    MessagesPlaceholder(variable_name="history"),   # conversation history goes here
+    ("human",  "{input}"),
+])
+
+chain = prompt | llm
+
+# In-memory store: session_id → ChatMessageHistory
+store = {}
+def get_session_history(session_id: str) -&gt; ChatMessageHistory:
+    if session_id not in store:
+        store[session_id] = ChatMessageHistory()
+    return store[session_id]
+
+# Wrap with session-aware memory
+chain_with_memory = RunnableWithMessageHistory(
+    chain,
+    get_session_history,
+    input_messages_key="input",
+    history_messages_key="history",
+)
+
+config = {"configurable": {"session_id": "user_123"}}
+
+# Multi-turn conversation
+r1 = chain_with_memory.invoke({"input": "My name is Siddharth."}, config=config)
+print("Turn 1:", r1.content)
+
+r2 = chain_with_memory.invoke({"input": "What is my name?"}, config=config)
+print("Turn 2:", r2.content)  # Should remember "Siddharth"</code></pre>
+<p>The <code>session_id</code> key allows multiple independent conversations. In production, replace <code>ChatMessageHistory</code> with a Redis or DynamoDB backend so history persists across server restarts.</p>
 
             </div>
           </details>

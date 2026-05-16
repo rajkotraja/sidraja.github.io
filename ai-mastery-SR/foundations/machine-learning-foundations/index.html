@@ -64,7 +64,7 @@
         </div>
         <h1>Machine Learning Foundations</h1>
         <div class="topic-meta">
-          <span class="topic-stats">73 questions</span>
+          <span class="topic-stats">75 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -75,8 +75,15 @@
         <span id="filter-count"></span>
       </div>
       <div id="filter-no-results" class="filter-no-results">No questions match your filter.</div>
-      <div class="qa-sections-full">
-
+      <div class="content-with-toc">
+        <nav class="toc-sidebar" aria-label="Page sections">
+          <p class="toc-title">Sections</p>
+          <ul class="toc-list">
+        <li><a href="#machine-learning-basics-terminology">Machine Learning Basics &amp; Terminology</a></li>
+        <li><a href="#the-bitter-lesson-data-centric-ai">The Bitter Lesson &amp; Data-Centric AI</a></li>
+        <li><a href="#hands-on-code-text-classification-with-ml-llms-chapter-4-hands-on-llms-book">Hands-On Code: Text Classification with ML &amp; LLMs (Chapter 4 — Hands-On LLMs Book)</a></li>
+          </ul>
+        </nav>
         <div class="qa-sections">
       <section id="machine-learning-basics-terminology" class="qa-section">
         <div class="section-header">
@@ -826,6 +833,84 @@
 <p>Evidence for: GPT-2 could barely write coherent paragraphs (2019); GPT-4 solves complex math, writes code, and passes professional exams (2023). Same architecture, 1,000x more compute.</p>
 <p>Evidence against (or complicating): some capabilities (complex reasoning, factual precision) haven't scaled as cleanly as early scaling laws predicted, motivating test-time compute as a complement to pretraining scale.</p>
 <p>What it means for practitioners: incremental architecture improvements are less reliable than scaling; foundational capabilities of commercial models will continue to improve; the question is whether there are qualitative limits that compute alone cannot overcome.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="hands-on-code-text-classification-with-ml-llms-chapter-4-hands-on-llms-book" class="qa-section">
+        <div class="section-header">
+          <h2>Hands-On Code: Text Classification with ML &amp; LLMs (Chapter 4 — Hands-On LLMs Book)</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you build a text classifier using sentence embeddings + logistic regression — and why does this beat bag-of-words?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>This is the "embedding + classifier" pattern that bridges classical ML and modern NLP. Sentence embeddings capture semantics — "great film" and "excellent movie" are close in embedding space, even though they share no words. Logistic regression on top of them gives you a lightweight, interpretable classifier.</p>
+<pre><code>from datasets import load_dataset
+from sentence_transformers import SentenceTransformer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+import numpy as np
+
+# 1. Load dataset
+dataset = load_dataset("rotten_tomatoes")
+X_train_text = dataset["train"]["text"]
+y_train      = dataset["train"]["label"]
+X_test_text  = dataset["test"]["text"]
+y_test       = dataset["test"]["label"]
+
+# 2. Embed (semantic representation)
+model      = SentenceTransformer("sentence-transformers/all-mpnet-base-v2")
+X_train    = model.encode(X_train_text, batch_size=64, show_progress_bar=True)
+X_test_emb = model.encode(X_test_text,  batch_size=64, show_progress_bar=True)
+
+print(f"Train embedding shape: {X_train.shape}")   # (8530, 768)
+
+# 3. Train logistic regression (fast — embeddings are fixed)
+clf = LogisticRegression(max_iter=1000)
+clf.fit(X_train, y_train)
+
+# 4. Evaluate
+y_pred = clf.predict(X_test_emb)
+print(classification_report(y_test, y_pred, target_names=["negative", "positive"]))</code></pre>
+<p>Expected accuracy: ~87-89% on rotten_tomatoes. For comparison, a bag-of-words + logistic regression baseline gets ~79-82%. The embedding captures that "disappointing" and "underwhelming" both predict negative sentiment, even though they share no characters.</p>
+<p><a href="https://colab.research.google.com/github/HandsOnLLM/Hands-On-Large-Language-Models/blob/main/chapter04/Chapter%204%20-%20Text%20Classification.ipynb" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">▶ Open in Google Colab — Chapter 4</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you do zero-shot classification with embeddings — no training data required?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Zero-shot classification exploits the fact that label names themselves can be embedded. If a document embedding is closest to the "positive" label embedding, we classify it as positive — no training data needed. This works remarkably well for clear label semantics.</p>
+<pre><code>from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+
+model = SentenceTransformer("sentence-transformers/all-mpnet-base-v2")
+
+# Label embeddings — the model already "knows" what these labels mean
+labels       = ["positive review", "negative review"]
+label_embeds = model.encode(labels)
+
+# Test sentences
+test_sentences = [
+    "An absolute masterpiece. Best film I've seen this year.",
+    "Boring and predictable. Walked out after 30 minutes.",
+    "Some good moments but ultimately disappointing.",
+    "Stunning visuals and a compelling story. Highly recommend!",
+]
+
+for sentence in test_sentences:
+    sent_embed = model.encode([sentence])
+    similarities = cosine_similarity(sent_embed, label_embeds)[0]
+    pred = labels[np.argmax(similarities)]
+    print(f"  [{pred.split()[0].upper():8s}]  sim=({similarities[0]:.2f}, {similarities[1]:.2f})  '{sentence[:50]}'")
+</code></pre>
+<p>This pattern is powerful for prototyping classifiers before you collect labeled data. The limitation: it works well when the label names clearly describe the content (positive/negative, sports/politics) but poorly when labels are ambiguous or domain-specific jargon.</p>
 
             </div>
           </details>

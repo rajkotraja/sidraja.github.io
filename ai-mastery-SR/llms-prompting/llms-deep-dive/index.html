@@ -66,7 +66,7 @@
         </div>
         <h1>LLMs Deep Dive</h1>
         <div class="topic-meta">
-          <span class="topic-stats">45 questions</span>
+          <span class="topic-stats">48 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -77,8 +77,15 @@
         <span id="filter-count"></span>
       </div>
       <div id="filter-no-results" class="filter-no-results">No questions match your filter.</div>
-      <div class="qa-sections-full">
-
+      <div class="content-with-toc">
+        <nav class="toc-sidebar" aria-label="Page sections">
+          <p class="toc-title">Sections</p>
+          <ul class="toc-list">
+        <li><a href="#llms-fundamentals-comparison">LLMs: Fundamentals &amp; Comparison</a></li>
+        <li><a href="#the-alignment-pipeline-from-base-model-to-chat-assistant">The Alignment Pipeline — From Base Model to Chat Assistant</a></li>
+        <li><a href="#hands-on-code-running-your-first-llm-chapter-1-hands-on-llms-book">Hands-On Code: Running Your First LLM (Chapter 1 — Hands-On LLMs Book)</a></li>
+          </ul>
+        </nav>
         <div class="qa-sections">
       <section id="llms-fundamentals-comparison" class="qa-section">
         <div class="section-header">
@@ -556,6 +563,102 @@
 <li>Use the (original, revised) pairs as preference data for DPO/RLHF</li>
 </ul>
 <p>Why it scales: removes the human annotation bottleneck while maintaining principled guidance. Used in training Claude (Anthropic). Limitation: RLAIF inherits the biases of the base model used as judge.</p>
+
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="hands-on-code-running-your-first-llm-chapter-1-hands-on-llms-book" class="qa-section">
+        <div class="section-header">
+          <h2>Hands-On Code: Running Your First LLM (Chapter 1 — Hands-On LLMs Book)</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you load and run an open-source LLM using HuggingFace Transformers in just a few lines?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The <b>HuggingFace <code>pipeline</code> API</b> is the fastest way to get an LLM generating text. Under the hood it handles tokenization, model loading, GPU allocation, and decoding — you just pass in text and get text back.</p>
+<pre><code>from transformers import pipeline
+
+# Load Phi-3-mini (3.8B params) — works on a T4 GPU in Colab
+pipe = pipeline(
+    "text-generation",
+    model="microsoft/Phi-3-mini-4k-instruct",
+    device_map="cuda",           # auto-place layers on GPU
+    torch_dtype="auto",          # use bf16/fp16 automatically
+)
+
+messages = [
+    {"role": "system", "content": "You are a helpful AI assistant."},
+    {"role": "user",   "content": "Explain what a transformer is in 2 sentences."},
+]
+
+output = pipe(messages, max_new_tokens=200, return_full_text=False)
+print(output[0]["generated_text"])</code></pre>
+<p>Key parameters: <code>device_map="cuda"</code> puts the model on GPU; <code>torch_dtype="auto"</code> uses bf16 which halves memory vs float32; <code>return_full_text=False</code> returns only the new tokens, not the prompt.</p>
+<p><a href="https://colab.research.google.com/github/HandsOnLLM/Hands-On-Large-Language-Models/blob/main/chapter01/Chapter%201%20-%20Introduction%20to%20Language%20Models.ipynb" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">▶ Open in Google Colab — Chapter 1</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>What is the difference between the pipeline API and loading a model manually with AutoModelForCausalLM?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>The <code>pipeline</code> wraps everything for convenience. Loading manually gives you full control — essential when you need to inspect hidden states, extract embeddings, or implement custom decoding.</p>
+<pre><code>from transformers import AutoModelForCausalLM, AutoTokenizer
+import torch
+
+model_name = "microsoft/Phi-3-mini-4k-instruct"
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model     = AutoModelForCausalLM.from_pretrained(
+    model_name,
+    device_map="cuda",
+    torch_dtype=torch.bfloat16,
+)
+
+# Manual forward pass
+prompt = "The capital of France is"
+inputs = tokenizer(prompt, return_tensors="pt").to("cuda")
+
+with torch.no_grad():
+    outputs = model.generate(
+        **inputs,
+        max_new_tokens=50,
+        do_sample=False,        # greedy decoding
+    )
+
+decoded = tokenizer.decode(outputs[0], skip_special_tokens=True)
+print(decoded)</code></pre>
+<p>Use <b>pipeline</b> for quick experiments and production serving. Use <b>AutoModel</b> when you need access to hidden states, custom generation loops, or when debugging generation behaviour step by step.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you inspect what tokens a model produces, and how does tokenization affect generation?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Tokenization is the first thing that happens before any generation. The model never sees raw text — it sees token IDs. Understanding this is essential for debugging unexpected outputs.</p>
+<pre><code>from transformers import AutoTokenizer
+
+tokenizer = AutoTokenizer.from_pretrained("microsoft/Phi-3-mini-4k-instruct")
+
+text = "Tokenization is the first step in any LLM pipeline."
+
+# Encode: text → token IDs
+tokens = tokenizer.encode(text)
+print("Token IDs:", tokens)
+print("Num tokens:", len(tokens))
+
+# Decode individual tokens — see exactly how the text was split
+for token_id in tokens:
+    token_str = tokenizer.decode([token_id])
+    print(f"  {token_id:6d}  →  {repr(token_str)}")
+
+# Vocabulary size
+print(f"\nVocabulary size: {tokenizer.vocab_size:,}")</code></pre>
+<p>Practical insight: the string <code>"Phi-3-mini"</code> might tokenize as <code>["Ph", "i", "-", "3", "-", "mini"]</code> — 6 tokens, not 1. This affects context length calculation and cost.</p>
 
             </div>
           </details>

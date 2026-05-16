@@ -42,6 +42,7 @@
         <li class="active"><a href="../rag-systems/index.html">RAG Systems</a></li>
         <li class=""><a href="../embeddings-deep-dive/index.html">Embeddings Deep Dive</a></li>
         <li class=""><a href="../advanced-rag/index.html">Advanced RAG</a></li>
+        <li class=""><a href="../graphrag/index.html">GraphRAG — Graph-Based Retrieval Augmented Generation</a></li>
       </ul>
     </nav>
     <main class="topic-main" id="main-content">
@@ -51,6 +52,7 @@
           <li class="active"><a href="../rag-systems/index.html">RAG Systems</a></li>
           <li class=""><a href="../embeddings-deep-dive/index.html">Embeddings Deep Dive</a></li>
           <li class=""><a href="../advanced-rag/index.html">Advanced RAG</a></li>
+          <li class=""><a href="../graphrag/index.html">GraphRAG — Graph-Based Retrieval Augmented Generation</a></li>
         </ul>
       </nav>
       <div class="topic-header">
@@ -60,7 +62,7 @@
         </div>
         <h1>RAG Systems</h1>
         <div class="topic-meta">
-          <span class="topic-stats">66 questions</span>
+          <span class="topic-stats">69 questions</span>
         </div>
       </div>
       <div class="filter-bar">
@@ -761,6 +763,167 @@ What is the refund policy for damaged products?
 <p>RAG with feedback loops means the system evaluates its own output and decides whether to improve it.<br/></p><p>It does not stop after the first answer.<br/></p><p>Instead, it:<br/></p><ol><li><p style="margin-top: 0px">Retrieves documents<br/></p></li><li><p style="margin-top: 0px">Generates an answer<br/></p></li><li><p style="margin-top: 0px">Evaluates whether the answer is complete and grounded<br/></p></li><li><p style="margin-top: 0px">If not, it adjusts retrieval or revises the answer<br/></p></li></ol><p>This loop continues until the answer meets certain quality conditions.<br/></p><div><hr/><br/></div><p>There are different types of feedback loops.<br/></p><div><hr/><br/></div><h3>1️⃣ Retrieval Feedback Loop<br/></h3><p>If the answer is incomplete, the system:<br/></p><ul><li><p style="margin-top: 0px">Reformulates the query<br/></p></li><li><p style="margin-top: 0px">Retrieves different documents<br/></p></li><li><p style="margin-top: 0px">Tries again<br/></p></li></ul><p>Example:<br/></p><p></p><div>If retrieved documents are irrelevant,<br/></div><div> the system may expand or rephrase the query.<br/></div><p></p><div><hr/><br/></div><h3>2️⃣ Answer Verification Loop<br/></h3><p>After generating an answer, the model checks:<br/></p><ul><li><p style="margin-top: 0px">Is this fully supported by the context?<br/></p></li><li><p style="margin-top: 0px">Did I introduce unsupported claims?<br/></p></li></ul><p>If yes, it corrects itself.<br/></p><p>This reduces hallucination.<br/></p><div><hr/><br/></div><h3>3️⃣ Human-in-the-Loop Feedback<br/></h3><p>In production systems:<br/></p><ul><li><p style="margin-top: 0px">Users can rate answers<br/></p></li><li><p style="margin-top: 0px">Developers review failures<br/></p></li><li><p style="margin-top: 0px">The system is improved based on feedback<br/></p></li></ul><p>This improves long-term performance.<br/></p><div><hr/><br/></div><p>Simple analogy:<br/></p><p></p><div>Normal RAG:<br/></div><div> Student writes answer and submits immediately.<br/></div><p></p><p></p><div>RAG with feedback loop:<br/></div><div> Student writes answer → reviews notes → corrects mistakes → improves answer → submits.<br/></div><p></p><div><hr/><br/></div><p>Why is this powerful?<br/></p><p>Because first answers are not always perfect.<br/></p><p>Feedback loops:<br/></p><ul><li><p style="margin-top: 0px">Improve grounding<br/></p></li><li><p style="margin-top: 0px">Reduce hallucination<br/></p></li><li><p style="margin-top: 0px">Increase completeness<br/></p></li><li><p style="margin-top: 0px">Increase reliability<br/></p></li></ul><p>Especially useful for:<br/></p><ul><li><p style="margin-top: 0px">Legal research<br/></p></li><li><p style="margin-top: 0px">Financial analysis<br/></p></li><li><p style="margin-top: 0px">Medical knowledge systems<br/></p></li><li><p style="margin-top: 0px">Enterprise decision support<br/></p></li></ul><div><br/></div>
 </div>
 <p class="media-note">[Image/Media]</p>
+            </div>
+          </details>
+        </div>
+      </section>
+      <section id="hands-on-code-building-a-complete-rag-pipeline-chapter-8-hands-on-llms-book" class="qa-section">
+        <div class="section-header">
+          <h2>Hands-On Code: Building a Complete RAG Pipeline (Chapter 8 — Hands-On LLMs Book)</h2>
+          <button class="expand-btn" aria-label="Expand all in this section">Expand all</button>
+        </div>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you build a dense retrieval system with FAISS from scratch?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>FAISS (Facebook AI Similarity Search) is the standard library for fast approximate nearest-neighbor search over embedding vectors. Here's a complete example: embed a document corpus, build a FAISS index, then retrieve the most relevant chunks for a query.</p>
+<pre><code>import faiss
+import numpy as np
+from sentence_transformers import SentenceTransformer
+
+# Sample document corpus
+documents = [
+    "RAG combines retrieval with language model generation.",
+    "FAISS enables fast approximate nearest-neighbor search.",
+    "Embeddings map text to points in high-dimensional space.",
+    "BM25 is a classic sparse retrieval algorithm based on term frequency.",
+    "Vector databases store embeddings for semantic similarity search.",
+    "The attention mechanism allows transformers to focus on relevant tokens.",
+    "Fine-tuning adjusts model weights for domain-specific tasks.",
+    "Chain-of-thought prompting improves multi-step reasoning.",
+]
+
+# 1. Embed all documents
+model      = SentenceTransformer("BAAI/bge-small-en-v1.5")  # fast, good quality
+embeddings = model.encode(documents, normalize_embeddings=True)
+print(f"Corpus embeddings: {embeddings.shape}")  # (8, 384)
+
+# 2. Build FAISS index (IndexFlatIP = exact inner product = cosine for normalized vectors)
+dimension = embeddings.shape[1]
+index     = faiss.IndexFlatIP(dimension)
+index.add(embeddings.astype(np.float32))
+print(f"FAISS index size: {index.ntotal} vectors")
+
+# 3. Query
+query       = "How does semantic search work?"
+query_emb   = model.encode([query], normalize_embeddings=True).astype(np.float32)
+scores, ids = index.search(query_emb, k=3)   # top-3 results
+
+print(f"\nQuery: '{query}'")
+for score, doc_id in zip(scores[0], ids[0]):
+    print(f"  [{score:.3f}] {documents[doc_id]}")</code></pre>
+<p>Why <code>normalize_embeddings=True</code>? BGE embeddings perform better with cosine similarity. After L2 normalisation, inner product = cosine similarity, so <code>IndexFlatIP</code> (inner product) gives cosine results. For large corpora (&gt;1M vectors), switch to <code>IndexIVFFlat</code> or <code>IndexHNSWFlat</code> for approximate search.</p>
+<p><a href="https://colab.research.google.com/github/HandsOnLLM/Hands-On-Large-Language-Models/blob/main/chapter08/Chapter%208%20-%20Semantic%20Search.ipynb" rel="noopener" style="display:inline-block; padding:6px 14px; border-radius:5px; font-weight:600; text-decoration:none; margin:.4rem 0" target="_blank">▶ Open in Google Colab — Chapter 8</a></p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you build a complete end-to-end RAG pipeline with LangChain using a local LLM?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>This is the complete local RAG pipeline from Hands-On LLMs Chapter 8: BGE embeddings for retrieval, FAISS as the vector store, and Phi-3 (via llama.cpp) as the generator. Runs on a free Colab T4 GPU.</p>
+<pre><code>from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.llms import LlamaCpp
+from langchain.chains import RetrievalQA
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+# Sample knowledge base (in production: load PDFs, web pages, docs)
+texts = [
+    "RAG (Retrieval-Augmented Generation) combines information retrieval with language model generation. It first retrieves relevant documents from a knowledge base, then uses them as context for the LLM to generate a grounded answer.",
+    "The retrieval step in RAG uses embedding similarity: the query is embedded and compared against pre-embedded document chunks using cosine similarity.",
+    "RAG reduces hallucinations compared to pure generation because the model is anchored to retrieved facts. It also allows knowledge updates without retraining the LLM.",
+    "Chunking strategy affects retrieval quality: chunks should be semantically coherent, not arbitrarily split mid-sentence. 256-512 tokens with overlap works well for most documents.",
+    "Hybrid retrieval combines dense (embedding) search with sparse (BM25) search. This handles both semantic and keyword matching, improving recall.",
+]
+
+# 1. Chunk and embed
+splitter   = RecursiveCharacterTextSplitter(chunk_size=300, chunk_overlap=50)
+chunks     = splitter.create_documents(texts)
+embed_model = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en-v1.5")
+vectorstore = FAISS.from_documents(chunks, embed_model)
+
+# 2. Load local LLM (Phi-3-mini GGUF — ~2.2GB, runs on T4)
+llm = LlamaCpp(
+    model_path="phi-3-mini-4k-instruct.Q4_K_M.gguf",  # download from HuggingFace
+    n_ctx=4096,
+    temperature=0.1,
+    verbose=False,
+)
+
+# 3. Build RAG chain
+rag_chain = RetrievalQA.from_chain_type(
+    llm=llm,
+    chain_type="stuff",                  # "stuff" = all retrieved docs in one prompt
+    retriever=vectorstore.as_retriever(search_kwargs={"k": 3}),
+    return_source_documents=True,
+)
+
+# 4. Query
+result = rag_chain.invoke({"query": "Why does RAG reduce hallucinations?"})
+print("Answer:", result["result"])
+print("\nSources:")
+for doc in result["source_documents"]:
+    print(f"  - {doc.page_content[:100]}...")</code></pre>
+<p>The <code>chain_type="stuff"</code> simply stuffs all retrieved chunks into the prompt context. For longer documents, use <code>"map_reduce"</code> (summarise each chunk, then combine) or <code>"refine"</code> (iteratively refine the answer). The full Colab notebook downloads the model and runs the complete pipeline.</p>
+
+            </div>
+          </details>
+          <details class="qa-item">
+            <summary><svg class="qa-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>How do you implement BM25 lexical search and combine it with dense retrieval for hybrid search?</summary>
+            <div class="qa-answer answer-inner">
+              
+<p>Pure dense retrieval misses exact keyword matches ("GPT-4 version 0613") while BM25 misses semantic similarity. Hybrid search combines both — dramatically improving recall especially for technical queries with specific terms.</p>
+<pre><code>from rank_bm25 import BM25Okapi
+from sentence_transformers import SentenceTransformer
+import numpy as np
+
+# Document corpus
+documents = [
+    "RAG retrieves relevant documents using embedding similarity.",
+    "BM25 scores documents based on term frequency and inverse document frequency.",
+    "Hybrid search combines dense retrieval with lexical BM25 search.",
+    "Vector databases use HNSW or IVF indexing for fast approximate search.",
+    "The GPT-4 model supports 128K token context windows.",
+]
+
+# --- BM25 (lexical) ---
+tokenised_corpus = [doc.lower().split() for doc in documents]
+bm25 = BM25Okapi(tokenised_corpus)
+
+# --- Dense (semantic) ---
+embed_model = SentenceTransformer("BAAI/bge-small-en-v1.5")
+doc_embeddings = embed_model.encode(documents, normalize_embeddings=True)
+
+def hybrid_search(query: str, k: int = 3, alpha: float = 0.5):
+    """
+    alpha=1.0 → pure BM25
+    alpha=0.0 → pure dense
+    alpha=0.5 → equal weighting
+    """
+    # BM25 scores (normalise to [0,1])
+    bm25_scores = bm25.get_scores(query.lower().split())
+    bm25_norm   = bm25_scores / (bm25_scores.max() + 1e-8)
+
+    # Dense scores
+    query_emb   = embed_model.encode([query], normalize_embeddings=True)
+    dense_scores = (query_emb @ doc_embeddings.T)[0]
+
+    # Combine
+    combined = alpha * bm25_norm + (1 - alpha) * dense_scores
+    top_k    = np.argsort(combined)[::-1][:k]
+
+    return [(combined[i], documents[i]) for i in top_k]
+
+# Test
+query = "exact term BM25 frequency"
+results = hybrid_search(query, k=3)
+print(f"Hybrid results for '{query}':")
+for score, doc in results:
+    print(f"  [{score:.3f}] {doc}")</code></pre>
+<p>The <code>alpha</code> parameter controls the trade-off. For general semantic questions, use <code>alpha=0.3</code> (mostly dense). For technical queries with specific product names, IDs, or rare terms, use <code>alpha=0.7</code> (mostly BM25). In production, tune <code>alpha</code> on a validation set.</p>
+
             </div>
           </details>
         </div>
